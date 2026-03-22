@@ -1,0 +1,1814 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kids Cognitive Assessment</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--blue:#4A90D9;--green:#27AE60;--red:#E74C3C;--orange:#F39C12;--purple:#8E44AD;--teal:#1ABC9C;--pink:#E91E63;--bg:#F0F4F8;--card:#FFF;--text:#2C3E50;--radius:16px;--shadow:0 4px 15px rgba(0,0,0,.1)}
+html{font-size:18px}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+button{font-family:inherit;cursor:pointer;border:none;border-radius:var(--radius);padding:14px 28px;font-size:1.1rem;font-weight:600;transition:all .2s;touch-action:manipulation;min-height:48px;min-width:48px}
+button:active{transform:scale(.95)}
+.container{max-width:900px;margin:0 auto;padding:16px}
+.hidden{display:none!important}
+.page{animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+h1{font-size:1.8rem;text-align:center;margin:16px 0;color:var(--blue)}
+h2{font-size:1.4rem;margin:12px 0;color:var(--text)}
+h3{font-size:1.1rem;margin:8px 0}
+.card{background:var(--card);border-radius:var(--radius);padding:24px;margin:12px 0;box-shadow:var(--shadow)}
+
+/* Landing */
+.profiles{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin:24px 0}
+.profile-card{background:var(--card);border-radius:var(--radius);padding:32px 48px;box-shadow:var(--shadow);cursor:pointer;text-align:center;transition:all .2s;border:3px solid transparent;min-width:200px}
+.profile-card:hover{transform:translateY(-4px);box-shadow:0 8px 25px rgba(0,0,0,.15)}
+.profile-card.sel{border-color:var(--blue)}
+.profile-card .avatar{width:80px;height:80px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;color:#FFF}
+.profile-card .name{font-size:1.3rem;font-weight:700}
+.profile-card .age{font-size:1rem;color:#666;margin-top:4px}
+
+/* Module Selection */
+.mod-list{display:flex;flex-direction:column;gap:12px;margin:16px 0}
+.mod-item{display:flex;align-items:center;gap:16px;padding:16px 20px;background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);cursor:pointer;transition:all .2s}
+.mod-item:hover{transform:translateX(4px)}
+.mod-item input[type=checkbox]{width:24px;height:24px;cursor:pointer}
+.mod-item .mod-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center}
+.mod-item .mod-info{flex:1}
+.mod-item .mod-name{font-weight:700;font-size:1.1rem}
+.mod-item .mod-desc{font-size:.85rem;color:#666}
+
+/* Progress Bar */
+.progress-bar{height:12px;background:#E0E0E0;border-radius:6px;margin:12px 0;overflow:hidden}
+.progress-fill{height:100%;border-radius:6px;transition:width .3s;background:linear-gradient(90deg,var(--blue),var(--teal))}
+.test-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px}
+.timer{font-size:.9rem;color:#666;background:var(--card);padding:6px 14px;border-radius:20px;box-shadow:var(--shadow)}
+
+/* Question Area */
+.question-area{text-align:center;margin:16px 0}
+.question-text{font-size:1.3rem;font-weight:600;margin:16px 0;line-height:1.4}
+.question-sub{font-size:1rem;color:#666;margin:8px 0}
+.svg-display{display:flex;justify-content:center;margin:16px 0}
+.options-grid{display:grid;gap:16px;margin:20px auto;max-width:700px}
+.options-grid.cols-2{grid-template-columns:1fr 1fr}
+.options-grid.cols-3{grid-template-columns:1fr 1fr 1fr}
+.options-grid.cols-4{grid-template-columns:1fr 1fr}
+.opt-btn{background:var(--card);border:3px solid #DDD;border-radius:var(--radius);padding:16px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100px;position:relative}
+.opt-btn:hover{border-color:var(--blue);transform:translateY(-2px)}
+.opt-btn.selected{border-color:var(--blue);background:#EBF5FB}
+.opt-btn .label{font-size:1.4rem;font-weight:700;color:var(--blue);margin-bottom:4px}
+.opt-btn svg{max-width:120px;max-height:120px}
+.next-btn{background:var(--blue);color:#FFF;padding:16px 48px;font-size:1.2rem;margin:20px auto;display:block}
+.next-btn:hover{background:#357ABD}
+.next-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* Draw */
+.draw-area{position:relative;background:#FFF;border-radius:var(--radius);box-shadow:var(--shadow);margin:12px auto;touch-action:none;max-width:100%}
+.draw-area canvas{display:block;border-radius:var(--radius)}
+.draw-tools{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:12px 0}
+.draw-tools button{padding:10px 18px;font-size:.95rem}
+.tool-active{background:var(--blue)!important;color:#FFF!important}
+
+/* Checklist */
+.checklist{max-height:60vh;overflow-y:auto;padding:8px}
+.checklist-group{margin:12px 0}
+.checklist-group h3{color:var(--purple);border-bottom:2px solid var(--purple);padding-bottom:4px;margin-bottom:8px}
+.checklist label{display:flex;align-items:center;gap:10px;padding:8px 4px;cursor:pointer;font-size:.95rem}
+.checklist input[type=checkbox]{width:22px;height:22px;cursor:pointer}
+
+/* Results */
+.result-card{background:var(--card);border-radius:var(--radius);padding:20px;margin:12px 0;box-shadow:var(--shadow)}
+.composite-score{text-align:center;padding:24px;background:linear-gradient(135deg,var(--blue),var(--purple));color:#FFF;border-radius:var(--radius);margin:16px 0}
+.composite-score .big{font-size:3rem;font-weight:700}
+.composite-score .lbl{font-size:1.1rem;opacity:.9}
+.bar-chart{margin:16px 0}
+.bar-row{display:flex;align-items:center;gap:12px;margin:8px 0}
+.bar-label{width:140px;font-size:.9rem;font-weight:600;text-align:right;flex-shrink:0}
+.bar-track{flex:1;height:28px;background:#E8E8E8;border-radius:14px;overflow:hidden;position:relative}
+.bar-fill{height:100%;border-radius:14px;transition:width .8s ease;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;color:#FFF;font-size:.8rem;font-weight:600;min-width:30px}
+.bar-val{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:.8rem;font-weight:600}
+.score-table{width:100%;border-collapse:collapse;margin:12px 0}
+.score-table th,.score-table td{padding:10px 12px;text-align:left;border-bottom:1px solid #EEE}
+.score-table th{background:#F8F9FA;font-weight:700;font-size:.9rem}
+.score-table td{font-size:.95rem}
+.classification{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.85rem;font-weight:600;color:#FFF}
+
+/* History */
+.history-entry{background:var(--card);border-radius:var(--radius);padding:16px;margin:8px 0;box-shadow:var(--shadow);cursor:pointer;transition:all .2s}
+.history-entry:hover{transform:translateX(4px)}
+.history-entry .date{font-size:.85rem;color:#666}
+.history-entry .child{font-weight:700;font-size:1.1rem}
+.history-entry .iq{font-size:1.3rem;font-weight:700;float:right}
+.line-chart-container{background:var(--card);border-radius:var(--radius);padding:16px;margin:16px 0;box-shadow:var(--shadow);overflow-x:auto}
+.action-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:16px 0}
+.btn-green{background:var(--green);color:#FFF}
+.btn-red{background:var(--red);color:#FFF}
+.btn-blue{background:var(--blue);color:#FFF}
+.btn-purple{background:var(--purple);color:#FFF}
+.btn-orange{background:var(--orange);color:#FFF}
+.btn-outline{background:transparent;border:2px solid var(--blue);color:var(--blue)}
+nav{display:flex;justify-content:space-between;align-items:center;padding:8px 0;flex-wrap:wrap;gap:8px}
+nav button{padding:8px 16px;font-size:.9rem}
+@media(max-width:600px){
+html{font-size:16px}
+.profiles{flex-direction:column;align-items:center}
+.options-grid.cols-4{grid-template-columns:1fr 1fr}
+.bar-label{width:100px;font-size:.8rem}
+.profile-card{padding:24px 32px}
+}
+</style>
+</head>
+<body>
+<div class="container" id="app"></div>
+<script>
+
+// ===== CONSTANTS & STATE =====
+const CHILDREN = [
+  {name:'Liam', dob:'2021-03-15', color:'#4A90D9'},
+  {name:'Noah', dob:'2023-03-15', color:'#27AE60'}
+];
+const LS_KEY = 'kidsIqTestHistory';
+let state = {page:'landing', child:null, modules:[], currentMod:0, currentQ:0, answers:{}, startTime:null, qStartTime:null, drawData:null, dapChecklist:[]};
+
+function getAge(dob){
+  const d=new Date(dob), now=new Date();
+  let y=now.getFullYear()-d.getFullYear(), m=now.getMonth()-d.getMonth();
+  if(m<0){y--;m+=12}
+  return {years:y, months:m, total:y+m/12, label:y+' years'+(m>0?', '+m+' months':'')};
+}
+
+function saveHistory(entry){
+  const h=JSON.parse(localStorage.getItem(LS_KEY)||'[]');
+  h.push(entry);
+  localStorage.setItem(LS_KEY,JSON.stringify(h));
+}
+function getHistory(){return JSON.parse(localStorage.getItem(LS_KEY)||'[]')}
+
+// ===== SVG HELPERS =====
+function svgWrap(inner,w=120,h=120){return `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`}
+
+function drawShape(type,cx,cy,size,color){
+  const s=size;
+  switch(type){
+    case 'circle': return `<circle cx="${cx}" cy="${cy}" r="${s/2}" fill="${color}" stroke="#333" stroke-width="1.5"/>`;
+    case 'square': return `<rect x="${cx-s/2}" y="${cy-s/2}" width="${s}" height="${s}" fill="${color}" stroke="#333" stroke-width="1.5"/>`;
+    case 'triangle': return `<polygon points="${cx},${cy-s/2} ${cx-s/2},${cy+s/2} ${cx+s/2},${cy+s/2}" fill="${color}" stroke="#333" stroke-width="1.5"/>`;
+    case 'diamond': return `<polygon points="${cx},${cy-s/2} ${cx+s/2},${cy} ${cx},${cy+s/2} ${cx-s/2},${cy}" fill="${color}" stroke="#333" stroke-width="1.5"/>`;
+    case 'cross': {
+      const t=s/4;
+      return `<polygon points="${cx-t},${cy-s/2} ${cx+t},${cy-s/2} ${cx+t},${cy-t} ${cx+s/2},${cy-t} ${cx+s/2},${cy+t} ${cx+t},${cy+t} ${cx+t},${cy+s/2} ${cx-t},${cy+s/2} ${cx-t},${cy+t} ${cx-s/2},${cy+t} ${cx-s/2},${cy-t} ${cx-t},${cy-t}" fill="${color}" stroke="#333" stroke-width="1.5"/>`;
+    }
+    case 'star': {
+      let pts=[];
+      for(let i=0;i<5;i++){
+        let a1=Math.PI/2+i*2*Math.PI/5, a2=a1+Math.PI/5;
+        pts.push(`${cx+s/2*Math.cos(-a1)},${cy-s/2*Math.sin(a1)}`);
+        pts.push(`${cx+s/5*Math.cos(-a2)},${cy-s/5*Math.sin(a2)}`);
+      }
+      return `<polygon points="${pts.join(' ')}" fill="${color}" stroke="#333" stroke-width="1.5"/>`;
+    }
+    case 'pentagon': {
+      let pts=[];
+      for(let i=0;i<5;i++){let a=-Math.PI/2+i*2*Math.PI/5;pts.push(`${cx+s/2*Math.cos(a)},${cy+s/2*Math.sin(a)}`);}
+      return `<polygon points="${pts.join(' ')}" fill="${color}" stroke="#333" stroke-width="1.5"/>`;
+    }
+    case 'hexagon': {
+      let pts=[];
+      for(let i=0;i<6;i++){let a=i*Math.PI/3;pts.push(`${cx+s/2*Math.cos(a)},${cy+s/2*Math.sin(a)}`);}
+      return `<polygon points="${pts.join(' ')}" fill="${color}" stroke="#333" stroke-width="1.5"/>`;
+    }
+    default: return `<circle cx="${cx}" cy="${cy}" r="${s/2}" fill="${color}" stroke="#333" stroke-width="1.5"/>`;
+  }
+}
+
+const COLORS = {red:'#E74C3C',blue:'#4A90D9',green:'#27AE60',yellow:'#F1C40F',purple:'#8E44AD',orange:'#F39C12'};
+const SHAPES = ['circle','square','triangle','diamond','cross','star'];
+
+
+// ===== MATRIX REASONING ITEMS =====
+// Each item: {cells: [topLeft, topRight, bottomLeft, bottomRight(null=missing)], options: [...], correct: index}
+// Cell: {shape, color} or null for missing
+
+function buildMatrixItems3(){
+  return [
+    // 1. Row-constant shape: circles top, squares bottom
+    {cells:[{shape:'circle',color:'red'},{shape:'circle',color:'blue'},{shape:'square',color:'red'},null],
+     options:[{shape:'square',color:'blue'},{shape:'circle',color:'blue'},{shape:'triangle',color:'red'},{shape:'square',color:'green'}],correct:0},
+    // 2. Column-constant color: red left, blue right
+    {cells:[{shape:'triangle',color:'red'},{shape:'triangle',color:'blue'},{shape:'circle',color:'red'},null],
+     options:[{shape:'circle',color:'blue'},{shape:'circle',color:'red'},{shape:'triangle',color:'blue'},{shape:'square',color:'blue'}],correct:0},
+    // 3. Same shape all: squares, different colors per row
+    {cells:[{shape:'square',color:'red'},{shape:'square',color:'red'},{shape:'square',color:'blue'},null],
+     options:[{shape:'square',color:'blue'},{shape:'circle',color:'blue'},{shape:'square',color:'red'},{shape:'triangle',color:'blue'}],correct:0},
+    // 4. Row-constant shape: triangles top, diamonds bottom
+    {cells:[{shape:'triangle',color:'green'},{shape:'triangle',color:'yellow'},{shape:'diamond',color:'green'},null],
+     options:[{shape:'triangle',color:'yellow'},{shape:'diamond',color:'yellow'},{shape:'diamond',color:'green'},{shape:'circle',color:'yellow'}],correct:1},
+    // 5. Column-constant color: green left, orange right
+    {cells:[{shape:'circle',color:'green'},{shape:'circle',color:'orange'},{shape:'square',color:'green'},null],
+     options:[{shape:'circle',color:'orange'},{shape:'square',color:'green'},{shape:'square',color:'orange'},{shape:'triangle',color:'orange'}],correct:2},
+    // 6. All same color, row-constant shape
+    {cells:[{shape:'diamond',color:'purple'},{shape:'diamond',color:'purple'},{shape:'star',color:'purple'},null],
+     options:[{shape:'diamond',color:'purple'},{shape:'star',color:'purple'},{shape:'circle',color:'purple'},{shape:'star',color:'red'}],correct:1},
+    // 7. Column-constant shape: circles left, triangles right
+    {cells:[{shape:'circle',color:'red'},{shape:'triangle',color:'red'},{shape:'circle',color:'blue'},null],
+     options:[{shape:'circle',color:'blue'},{shape:'triangle',color:'blue'},{shape:'triangle',color:'red'},{shape:'square',color:'blue'}],correct:1},
+    // 8. Row-constant color: red top, green bottom
+    {cells:[{shape:'circle',color:'red'},{shape:'square',color:'red'},{shape:'triangle',color:'green'},null],
+     options:[{shape:'diamond',color:'green'},{shape:'diamond',color:'red'},{shape:'triangle',color:'red'},{shape:'circle',color:'green'}],correct:0},
+    // 9. Same shape everywhere (circle), colors by column
+    {cells:[{shape:'circle',color:'blue'},{shape:'circle',color:'yellow'},{shape:'circle',color:'blue'},null],
+     options:[{shape:'circle',color:'yellow'},{shape:'circle',color:'blue'},{shape:'square',color:'yellow'},{shape:'circle',color:'red'}],correct:0},
+    // 10. Diagonal pattern: same shape on diagonals
+    {cells:[{shape:'star',color:'red'},{shape:'square',color:'blue'},{shape:'square',color:'blue'},null],
+     options:[{shape:'star',color:'red'},{shape:'square',color:'blue'},{shape:'square',color:'red'},{shape:'star',color:'blue'}],correct:0},
+    // 11. Row-constant shape: crosses top, circles bottom
+    {cells:[{shape:'cross',color:'orange'},{shape:'cross',color:'blue'},{shape:'circle',color:'orange'},null],
+     options:[{shape:'cross',color:'orange'},{shape:'circle',color:'blue'},{shape:'circle',color:'orange'},{shape:'cross',color:'blue'}],correct:1},
+    // 12. Column-constant color: yellow left, purple right
+    {cells:[{shape:'triangle',color:'yellow'},{shape:'square',color:'purple'},{shape:'diamond',color:'yellow'},null],
+     options:[{shape:'circle',color:'purple'},{shape:'circle',color:'yellow'},{shape:'diamond',color:'purple'},{shape:'triangle',color:'purple'}],correct:0}
+  ];
+}
+
+function buildMatrixItems5(){
+  return [
+    // 1. Row-constant shape + column-constant color
+    {cells:[{shape:'circle',color:'red'},{shape:'circle',color:'blue'},{shape:'square',color:'red'},null],
+     options:[{shape:'square',color:'blue'},{shape:'circle',color:'red'},{shape:'square',color:'red'},{shape:'triangle',color:'blue'},{shape:'circle',color:'blue'},{shape:'square',color:'green'}],correct:0},
+    // 2. Shape changes across columns, color constant per row
+    {cells:[{shape:'circle',color:'green'},{shape:'square',color:'green'},{shape:'triangle',color:'orange'},null],
+     options:[{shape:'diamond',color:'orange'},{shape:'square',color:'orange'},{shape:'triangle',color:'green'},{shape:'circle',color:'orange'},{shape:'diamond',color:'green'},{shape:'square',color:'green'}],correct:1},
+    // 3. Progressive: 1 dot top-left, 2 dots top-right, 3 dots bottom-left, ? bottom-right
+    {cells:[{shape:'circle',color:'blue',count:1},{shape:'circle',color:'blue',count:2},{shape:'circle',color:'blue',count:3},null],
+     options:[{shape:'circle',color:'blue',count:4},{shape:'circle',color:'blue',count:3},{shape:'circle',color:'blue',count:5},{shape:'circle',color:'red',count:4},{shape:'square',color:'blue',count:4},{shape:'circle',color:'blue',count:2}],correct:0},
+    // 4. Row shape + column color combo
+    {cells:[{shape:'triangle',color:'red'},{shape:'triangle',color:'purple'},{shape:'diamond',color:'red'},null],
+     options:[{shape:'diamond',color:'purple'},{shape:'triangle',color:'purple'},{shape:'diamond',color:'red'},{shape:'circle',color:'purple'},{shape:'star',color:'red'},{shape:'diamond',color:'blue'}],correct:0},
+    // 5. Size progression: small->medium->large across rows
+    {cells:[{shape:'square',color:'blue',size:'small'},{shape:'square',color:'blue',size:'medium'},{shape:'square',color:'green',size:'small'},null],
+     options:[{shape:'square',color:'green',size:'medium'},{shape:'square',color:'blue',size:'large'},{shape:'circle',color:'green',size:'medium'},{shape:'square',color:'green',size:'small'},{shape:'square',color:'red',size:'medium'},{shape:'square',color:'green',size:'large'}],correct:0},
+    // 6. Shape rotation pattern
+    {cells:[{shape:'triangle',color:'red'},{shape:'diamond',color:'red'},{shape:'triangle',color:'blue'},null],
+     options:[{shape:'diamond',color:'blue'},{shape:'triangle',color:'blue'},{shape:'circle',color:'blue'},{shape:'diamond',color:'red'},{shape:'square',color:'blue'},{shape:'star',color:'blue'}],correct:0},
+    // 7. Column constant shape, row constant color
+    {cells:[{shape:'star',color:'yellow'},{shape:'cross',color:'yellow'},{shape:'star',color:'purple'},null],
+     options:[{shape:'cross',color:'purple'},{shape:'star',color:'purple'},{shape:'cross',color:'yellow'},{shape:'diamond',color:'purple'},{shape:'star',color:'yellow'},{shape:'circle',color:'purple'}],correct:0},
+    // 8. Two rules: shape per row, alternating colors
+    {cells:[{shape:'circle',color:'red'},{shape:'circle',color:'blue'},{shape:'triangle',color:'blue'},null],
+     options:[{shape:'triangle',color:'red'},{shape:'circle',color:'red'},{shape:'triangle',color:'blue'},{shape:'square',color:'red'},{shape:'diamond',color:'blue'},{shape:'circle',color:'blue'}],correct:0},
+    // 9. Progressive count + shape constant
+    {cells:[{shape:'star',color:'orange',count:2},{shape:'star',color:'orange',count:3},{shape:'star',color:'orange',count:4},null],
+     options:[{shape:'star',color:'orange',count:5},{shape:'star',color:'orange',count:4},{shape:'star',color:'orange',count:6},{shape:'circle',color:'orange',count:5},{shape:'star',color:'red',count:5},{shape:'star',color:'orange',count:3}],correct:0},
+    // 10. Complex: row shape + col color + size change
+    {cells:[{shape:'hexagon',color:'blue'},{shape:'hexagon',color:'green'},{shape:'pentagon',color:'blue'},null],
+     options:[{shape:'pentagon',color:'green'},{shape:'hexagon',color:'green'},{shape:'pentagon',color:'blue'},{shape:'circle',color:'green'},{shape:'pentagon',color:'red'},{shape:'hexagon',color:'blue'}],correct:0},
+    // 11. XOR-like: shapes differ on diagonal
+    {cells:[{shape:'circle',color:'red'},{shape:'square',color:'blue'},{shape:'square',color:'green'},null],
+     options:[{shape:'circle',color:'orange'},{shape:'square',color:'red'},{shape:'circle',color:'purple'},{shape:'triangle',color:'blue'},{shape:'diamond',color:'green'},{shape:'circle',color:'yellow'}],correct:0},
+    // 12. Three shapes cycling
+    {cells:[{shape:'circle',color:'red'},{shape:'square',color:'blue'},{shape:'triangle',color:'green'},null],
+     options:[{shape:'diamond',color:'orange'},{shape:'circle',color:'red'},{shape:'star',color:'purple'},{shape:'cross',color:'yellow'},{shape:'diamond',color:'red'},{shape:'hexagon',color:'blue'}],correct:0},
+    // 13. Column-constant shape+different colors
+    {cells:[{shape:'diamond',color:'orange'},{shape:'star',color:'orange'},{shape:'diamond',color:'purple'},null],
+     options:[{shape:'star',color:'purple'},{shape:'diamond',color:'purple'},{shape:'star',color:'orange'},{shape:'cross',color:'purple'},{shape:'circle',color:'orange'},{shape:'star',color:'blue'}],correct:0},
+    // 14. Additive: shapes appear progressively
+    {cells:[{shape:'circle',color:'blue',count:1},{shape:'circle',color:'red',count:1},{shape:'circle',color:'blue',count:2},null],
+     options:[{shape:'circle',color:'red',count:2},{shape:'circle',color:'blue',count:2},{shape:'circle',color:'red',count:1},{shape:'circle',color:'red',count:3},{shape:'square',color:'red',count:2},{shape:'circle',color:'blue',count:1}],correct:0},
+    // 15. Shape transformation across rows
+    {cells:[{shape:'square',color:'green'},{shape:'diamond',color:'green'},{shape:'square',color:'red'},null],
+     options:[{shape:'diamond',color:'red'},{shape:'square',color:'red'},{shape:'diamond',color:'green'},{shape:'circle',color:'red'},{shape:'triangle',color:'red'},{shape:'star',color:'red'}],correct:0},
+    // 16. Color blending concept
+    {cells:[{shape:'circle',color:'red'},{shape:'circle',color:'blue'},{shape:'square',color:'red'},null],
+     options:[{shape:'square',color:'blue'},{shape:'circle',color:'blue'},{shape:'triangle',color:'red'},{shape:'square',color:'red'},{shape:'diamond',color:'blue'},{shape:'square',color:'green'}],correct:0},
+    // 17. Triple rule: shape+color+count
+    {cells:[{shape:'triangle',color:'yellow',count:1},{shape:'triangle',color:'yellow',count:2},{shape:'square',color:'purple',count:1},null],
+     options:[{shape:'square',color:'purple',count:2},{shape:'triangle',color:'purple',count:2},{shape:'square',color:'yellow',count:2},{shape:'square',color:'purple',count:1},{shape:'circle',color:'purple',count:2},{shape:'triangle',color:'yellow',count:3}],correct:0},
+    // 18. Hardest: shape rotation + color shift
+    {cells:[{shape:'star',color:'blue'},{shape:'cross',color:'green'},{shape:'cross',color:'blue'},null],
+     options:[{shape:'star',color:'green'},{shape:'cross',color:'green'},{shape:'star',color:'blue'},{shape:'diamond',color:'green'},{shape:'circle',color:'blue'},{shape:'star',color:'red'}],correct:0}
+  ];
+}
+
+function renderMatrixSVG(cells, sz){
+  sz=sz||200;
+  const cs=sz/2-4, pad=4;
+  let svg='';
+  const positions=[[pad,pad],[cs+pad*2,pad],[pad,cs+pad*2],[cs+pad*2,cs+pad*2]];
+  for(let i=0;i<4;i++){
+    const [x,y]=positions[i];
+    if(cells[i]===null){
+      svg+=`<rect x="${x}" y="${y}" width="${cs}" height="${cs}" fill="#F5F5F5" stroke="#999" stroke-width="2" stroke-dasharray="6,3" rx="4"/>`;
+      svg+=`<text x="${x+cs/2}" y="${y+cs/2+8}" text-anchor="middle" font-size="24" fill="#999" font-weight="700">?</text>`;
+    } else {
+      svg+=`<rect x="${x}" y="${y}" width="${cs}" height="${cs}" fill="#FAFAFA" stroke="#CCC" stroke-width="1.5" rx="4"/>`;
+      const c=cells[i], ccx=x+cs/2, ccy=y+cs/2;
+      const szM = c.size==='small'?cs*0.3 : c.size==='medium'?cs*0.5 : cs*0.55;
+      if(c.count && c.count>1){
+        const cnt=c.count;
+        if(cnt===2){
+          svg+=drawShape(c.shape,ccx-szM*0.4,ccy,szM*0.6,COLORS[c.color]||c.color);
+          svg+=drawShape(c.shape,ccx+szM*0.4,ccy,szM*0.6,COLORS[c.color]||c.color);
+        }else if(cnt===3){
+          svg+=drawShape(c.shape,ccx,ccy-szM*0.35,szM*0.5,COLORS[c.color]||c.color);
+          svg+=drawShape(c.shape,ccx-szM*0.35,ccy+szM*0.25,szM*0.5,COLORS[c.color]||c.color);
+          svg+=drawShape(c.shape,ccx+szM*0.35,ccy+szM*0.25,szM*0.5,COLORS[c.color]||c.color);
+        }else if(cnt===4){
+          svg+=drawShape(c.shape,ccx-szM*0.3,ccy-szM*0.3,szM*0.45,COLORS[c.color]||c.color);
+          svg+=drawShape(c.shape,ccx+szM*0.3,ccy-szM*0.3,szM*0.45,COLORS[c.color]||c.color);
+          svg+=drawShape(c.shape,ccx-szM*0.3,ccy+szM*0.3,szM*0.45,COLORS[c.color]||c.color);
+          svg+=drawShape(c.shape,ccx+szM*0.3,ccy+szM*0.3,szM*0.45,COLORS[c.color]||c.color);
+        }else if(cnt===5){
+          svg+=drawShape(c.shape,ccx,ccy,szM*0.35,COLORS[c.color]||c.color);
+          svg+=drawShape(c.shape,ccx-szM*0.35,ccy-szM*0.35,szM*0.35,COLORS[c.color]||c.color);
+          svg+=drawShape(c.shape,ccx+szM*0.35,ccy-szM*0.35,szM*0.35,COLORS[c.color]||c.color);
+          svg+=drawShape(c.shape,ccx-szM*0.35,ccy+szM*0.35,szM*0.35,COLORS[c.color]||c.color);
+          svg+=drawShape(c.shape,ccx+szM*0.35,ccy+szM*0.35,szM*0.35,COLORS[c.color]||c.color);
+        }else{
+          for(let r=0;r<2;r++)for(let cc=0;cc<3;cc++){
+            svg+=drawShape(c.shape,ccx-szM*0.3+cc*szM*0.3,ccy-szM*0.2+r*szM*0.4,szM*0.28,COLORS[c.color]||c.color);
+          }
+        }
+      } else {
+        svg+=drawShape(c.shape,ccx,ccy,szM,COLORS[c.color]||c.color);
+      }
+    }
+  }
+  // Grid lines
+  svg+=`<line x1="${sz/2}" y1="0" x2="${sz/2}" y2="${sz}" stroke="#AAA" stroke-width="2"/>`;
+  svg+=`<line x1="0" y1="${sz/2}" x2="${sz}" y2="${sz/2}" stroke="#AAA" stroke-width="2"/>`;
+  svg+=`<rect x="0" y="0" width="${sz}" height="${sz}" fill="none" stroke="#888" stroke-width="3" rx="8"/>`;
+  return svgWrap(svg,sz,sz);
+}
+
+function renderMatrixOption(cell,sz){
+  sz=sz||80;
+  let svg=`<rect x="2" y="2" width="${sz-4}" height="${sz-4}" fill="#FAFAFA" stroke="#CCC" stroke-width="1.5" rx="6"/>`;
+  const cx=sz/2, cy=sz/2;
+  const szM=cell.size==='small'?sz*0.3:cell.size==='medium'?sz*0.45:sz*0.5;
+  if(cell.count && cell.count>1){
+    const cnt=cell.count;
+    if(cnt===2){
+      svg+=drawShape(cell.shape,cx-szM*0.35,cy,szM*0.5,COLORS[cell.color]||cell.color);
+      svg+=drawShape(cell.shape,cx+szM*0.35,cy,szM*0.5,COLORS[cell.color]||cell.color);
+    }else if(cnt===3){
+      svg+=drawShape(cell.shape,cx,cy-szM*0.3,szM*0.4,COLORS[cell.color]||cell.color);
+      svg+=drawShape(cell.shape,cx-szM*0.3,cy+szM*0.2,szM*0.4,COLORS[cell.color]||cell.color);
+      svg+=drawShape(cell.shape,cx+szM*0.3,cy+szM*0.2,szM*0.4,COLORS[cell.color]||cell.color);
+    }else if(cnt===4){
+      svg+=drawShape(cell.shape,cx-szM*0.25,cy-szM*0.25,szM*0.35,COLORS[cell.color]||cell.color);
+      svg+=drawShape(cell.shape,cx+szM*0.25,cy-szM*0.25,szM*0.35,COLORS[cell.color]||cell.color);
+      svg+=drawShape(cell.shape,cx-szM*0.25,cy+szM*0.25,szM*0.35,COLORS[cell.color]||cell.color);
+      svg+=drawShape(cell.shape,cx+szM*0.25,cy+szM*0.25,szM*0.35,COLORS[cell.color]||cell.color);
+    }else if(cnt===5){
+      svg+=drawShape(cell.shape,cx,cy,szM*0.3,COLORS[cell.color]||cell.color);
+      svg+=drawShape(cell.shape,cx-szM*0.3,cy-szM*0.3,szM*0.3,COLORS[cell.color]||cell.color);
+      svg+=drawShape(cell.shape,cx+szM*0.3,cy-szM*0.3,szM*0.3,COLORS[cell.color]||cell.color);
+      svg+=drawShape(cell.shape,cx-szM*0.3,cy+szM*0.3,szM*0.3,COLORS[cell.color]||cell.color);
+      svg+=drawShape(cell.shape,cx+szM*0.3,cy+szM*0.3,szM*0.3,COLORS[cell.color]||cell.color);
+    }else{
+      for(let r=0;r<2;r++)for(let c=0;c<3;c++){
+        svg+=drawShape(cell.shape,cx-szM*0.25+c*szM*0.25,cy-szM*0.15+r*szM*0.35,szM*0.22,COLORS[cell.color]||cell.color);
+      }
+    }
+  } else {
+    svg+=drawShape(cell.shape,cx,cy,szM,COLORS[cell.color]||cell.color);
+  }
+  return svgWrap(svg,sz,sz);
+}
+
+
+// ===== VOCABULARY SVG ICONS =====
+// Each function returns SVG inner content for a concept
+
+const vocabSVGs = {
+  // Age 3 words
+  ball: ()=>`<circle cx="60" cy="60" r="35" fill="#E74C3C" stroke="#333" stroke-width="2"/><path d="M35 40 Q60 25 85 40" fill="none" stroke="#FFF" stroke-width="2.5"/><path d="M35 75 Q60 90 85 75" fill="none" stroke="#FFF" stroke-width="2.5"/><line x1="60" y1="25" x2="60" y2="95" stroke="#FFF" stroke-width="2"/>`,
+  cat: ()=>`<ellipse cx="60" cy="70" rx="25" ry="20" fill="#F39C12" stroke="#333" stroke-width="2"/><circle cx="60" cy="42" r="16" fill="#F39C12" stroke="#333" stroke-width="2"/><polygon points="47,32 44,16 54,28" fill="#F39C12" stroke="#333" stroke-width="1.5"/><polygon points="73,32 76,16 66,28" fill="#F39C12" stroke="#333" stroke-width="1.5"/><circle cx="54" cy="40" r="2.5" fill="#333"/><circle cx="66" cy="40" r="2.5" fill="#333"/><ellipse cx="60" cy="46" rx="3" ry="2" fill="#E91E63"/><line x1="40" y1="43" x2="48" y2="44" stroke="#333" stroke-width="1"/><line x1="40" y1="47" x2="48" y2="46" stroke="#333" stroke-width="1"/><line x1="80" y1="43" x2="72" y2="44" stroke="#333" stroke-width="1"/><line x1="80" y1="47" x2="72" y2="46" stroke="#333" stroke-width="1"/><path d="M85 65 Q95 55 90 75" fill="#F39C12" stroke="#333" stroke-width="2"/>`,
+  shoe: ()=>`<path d="M20 70 Q20 50 40 50 L80 50 Q100 50 100 60 L100 75 Q100 85 90 85 L30 85 Q20 85 20 75 Z" fill="#8E44AD" stroke="#333" stroke-width="2"/><path d="M40 50 Q42 35 55 35 Q65 38 60 50" fill="#8E44AD" stroke="#333" stroke-width="2"/><line x1="50" y1="55" x2="50" y2="50" stroke="#FFF" stroke-width="2"/><line x1="60" y1="55" x2="60" y2="50" stroke="#FFF" stroke-width="2"/><line x1="70" y1="55" x2="70" y2="50" stroke="#FFF" stroke-width="2"/><rect x="18" y="82" width="85" height="6" rx="3" fill="#5D3F6A" stroke="#333" stroke-width="1"/>`,
+  tree: ()=>`<rect x="52" y="70" width="16" height="30" fill="#8B4513" stroke="#333" stroke-width="1.5" rx="2"/><ellipse cx="60" cy="50" rx="32" ry="30" fill="#27AE60" stroke="#333" stroke-width="2"/><circle cx="48" cy="42" r="4" fill="#E74C3C"/><circle cx="68" cy="55" r="3" fill="#E74C3C"/>`,
+  cup: ()=>`<path d="M30 35 L35 90 L85 90 L90 35 Z" fill="#3498DB" stroke="#333" stroke-width="2"/><path d="M90 45 Q105 45 105 60 Q105 75 90 75" fill="none" stroke="#333" stroke-width="2.5"/><ellipse cx="60" cy="35" rx="30" ry="6" fill="#5DADE2" stroke="#333" stroke-width="1.5"/>`,
+  baby: ()=>`<circle cx="60" cy="40" r="22" fill="#FDEBD0" stroke="#333" stroke-width="2"/><ellipse cx="60" cy="80" rx="22" ry="18" fill="#AED6F1" stroke="#333" stroke-width="2"/><circle cx="52" cy="37" r="3" fill="#333"/><circle cx="68" cy="37" r="3" fill="#333"/><path d="M55 47 Q60 52 65 47" fill="none" stroke="#E74C3C" stroke-width="2"/><path d="M42 25 Q60 12 78 25" fill="none" stroke="#F5CBA7" stroke-width="4"/>`,
+  car: ()=>`<rect x="15" y="50" width="90" height="30" rx="5" fill="#E74C3C" stroke="#333" stroke-width="2"/><path d="M35 50 L45 30 L75 30 L85 50" fill="#E74C3C" stroke="#333" stroke-width="2"/><rect x="48" y="33" width="24" height="15" rx="2" fill="#AED6F1" stroke="#333" stroke-width="1"/><circle cx="35" cy="82" r="10" fill="#333"/><circle cx="35" cy="82" r="5" fill="#888"/><circle cx="85" cy="82" r="10" fill="#333"/><circle cx="85" cy="82" r="5" fill="#888"/><rect x="92" y="55" width="10" height="6" rx="2" fill="#F1C40F"/>`,
+  flower: ()=>`<line x1="60" y1="60" x2="60" y2="100" stroke="#27AE60" stroke-width="4"/><path d="M56 78 Q40 72 35 82" fill="none" stroke="#27AE60" stroke-width="2.5"/><circle cx="60" cy="45" r="10" fill="#F1C40F" stroke="#333" stroke-width="1.5"/><circle cx="48" cy="35" r="10" fill="#E74C3C" stroke="#333" stroke-width="1.5"/><circle cx="72" cy="35" r="10" fill="#E74C3C" stroke="#333" stroke-width="1.5"/><circle cx="48" cy="55" r="10" fill="#E74C3C" stroke="#333" stroke-width="1.5"/><circle cx="72" cy="55" r="10" fill="#E74C3C" stroke="#333" stroke-width="1.5"/><circle cx="45" cy="45" r="10" fill="#E74C3C" stroke="#333" stroke-width="1.5"/><circle cx="75" cy="45" r="10" fill="#E74C3C" stroke="#333" stroke-width="1.5"/><circle cx="60" cy="45" r="8" fill="#F1C40F"/>`,
+  bird: ()=>`<ellipse cx="55" cy="55" rx="22" ry="16" fill="#3498DB" stroke="#333" stroke-width="2"/><circle cx="42" cy="48" r="10" fill="#3498DB" stroke="#333" stroke-width="2"/><circle cx="39" cy="46" r="2.5" fill="#333"/><polygon points="30,48 20,46 30,50" fill="#F39C12" stroke="#333" stroke-width="1"/><path d="M65 45 Q80 30 85 45" fill="#3498DB" stroke="#333" stroke-width="2"/><line x1="50" y1="71" x2="50" y2="85" stroke="#F39C12" stroke-width="2.5"/><line x1="60" y1="71" x2="60" y2="85" stroke="#F39C12" stroke-width="2.5"/><line x1="46" y1="85" x2="54" y2="85" stroke="#F39C12" stroke-width="2"/><line x1="56" y1="85" x2="64" y2="85" stroke="#F39C12" stroke-width="2"/>`,
+  fish: ()=>`<ellipse cx="55" cy="60" rx="30" ry="18" fill="#F39C12" stroke="#333" stroke-width="2"/><polygon points="85,60 105,42 105,78" fill="#F39C12" stroke="#333" stroke-width="2"/><circle cx="38" cy="55" r="4" fill="#FFF" stroke="#333" stroke-width="1.5"/><circle cx="39" cy="54" r="2" fill="#333"/><path d="M50 55 Q60 48 70 55" fill="none" stroke="#333" stroke-width="1.5"/><path d="M50 65 Q60 58 70 65" fill="none" stroke="#E67E22" stroke-width="1.5"/>`,
+  hat: ()=>`<ellipse cx="60" cy="75" rx="45" ry="10" fill="#2C3E50" stroke="#333" stroke-width="2"/><path d="M35 75 Q35 35 60 30 Q85 35 85 75" fill="#2C3E50" stroke="#333" stroke-width="2"/><rect x="35" y="65" width="50" height="5" fill="#E74C3C"/>`,
+  book: ()=>`<rect x="25" y="25" width="70" height="70" rx="3" fill="#2980B9" stroke="#333" stroke-width="2"/><rect x="30" y="28" width="62" height="64" rx="2" fill="#FFF" stroke="#333" stroke-width="1"/><line x1="60" y1="28" x2="60" y2="92" stroke="#CCC" stroke-width="1"/><line x1="35" y1="40" x2="55" y2="40" stroke="#333" stroke-width="1.5"/><line x1="35" y1="48" x2="55" y2="48" stroke="#CCC" stroke-width="1"/><line x1="35" y1="56" x2="55" y2="56" stroke="#CCC" stroke-width="1"/><line x1="65" y1="40" x2="85" y2="40" stroke="#CCC" stroke-width="1"/><line x1="65" y1="48" x2="85" y2="48" stroke="#CCC" stroke-width="1"/>`,
+  dog: ()=>`<ellipse cx="55" cy="65" rx="28" ry="20" fill="#D4A574" stroke="#333" stroke-width="2"/><circle cx="40" cy="42" r="16" fill="#D4A574" stroke="#333" stroke-width="2"/><circle cx="35" cy="38" r="3" fill="#333"/><ellipse cx="42" cy="48" rx="5" ry="3" fill="#333"/><path d="M26 32 Q18 20 24 30" fill="#C49A6C" stroke="#333" stroke-width="2"/><path d="M54 32 Q62 20 56 30" fill="#C49A6C" stroke="#333" stroke-width="2"/><path d="M83 60 Q95 55 95 65 Q95 70 85 68" fill="#D4A574" stroke="#333" stroke-width="2"/><line x1="38" y1="85" x2="38" y2="97" stroke="#333" stroke-width="3"/><line x1="50" y1="85" x2="50" y2="97" stroke="#333" stroke-width="3"/><line x1="62" y1="85" x2="62" y2="97" stroke="#333" stroke-width="3"/><line x1="72" y1="83" x2="72" y2="97" stroke="#333" stroke-width="3"/>`,
+  house: ()=>`<rect x="25" y="55" width="70" height="40" fill="#E67E22" stroke="#333" stroke-width="2"/><polygon points="15,55 60,20 105,55" fill="#C0392B" stroke="#333" stroke-width="2"/><rect x="48" y="70" width="18" height="25" fill="#8B4513" stroke="#333" stroke-width="1.5"/><circle cx="62" cy="83" r="2" fill="#F1C40F"/><rect x="32" y="62" width="12" height="12" fill="#AED6F1" stroke="#333" stroke-width="1.5"/><line x1="38" y1="62" x2="38" y2="74" stroke="#333" stroke-width="1"/><line x1="32" y1="68" x2="44" y2="68" stroke="#333" stroke-width="1"/><rect x="72" y="62" width="12" height="12" fill="#AED6F1" stroke="#333" stroke-width="1.5"/><line x1="78" y1="62" x2="78" y2="74" stroke="#333" stroke-width="1"/><line x1="72" y1="68" x2="84" y2="68" stroke="#333" stroke-width="1"/>`,
+  sun: ()=>`<circle cx="60" cy="60" r="22" fill="#F1C40F" stroke="#F39C12" stroke-width="2"/><line x1="60" y1="10" x2="60" y2="28" stroke="#F39C12" stroke-width="3"/><line x1="60" y1="92" x2="60" y2="110" stroke="#F39C12" stroke-width="3"/><line x1="10" y1="60" x2="28" y2="60" stroke="#F39C12" stroke-width="3"/><line x1="92" y1="60" x2="110" y2="60" stroke="#F39C12" stroke-width="3"/><line x1="25" y1="25" x2="38" y2="38" stroke="#F39C12" stroke-width="3"/><line x1="82" y1="82" x2="95" y2="95" stroke="#F39C12" stroke-width="3"/><line x1="95" y1="25" x2="82" y2="38" stroke="#F39C12" stroke-width="3"/><line x1="38" y1="82" x2="25" y2="95" stroke="#F39C12" stroke-width="3"/>`,
+
+  // Age 5 words
+  bicycle: ()=>`<circle cx="30" cy="70" r="18" fill="none" stroke="#333" stroke-width="2.5"/><circle cx="90" cy="70" r="18" fill="none" stroke="#333" stroke-width="2.5"/><line x1="30" y1="70" x2="55" y2="45" stroke="#333" stroke-width="2.5"/><line x1="55" y1="45" x2="70" y2="70" stroke="#333" stroke-width="2.5"/><line x1="70" y1="70" x2="90" y2="70" stroke="#333" stroke-width="2.5"/><line x1="55" y1="45" x2="90" y2="70" stroke="#333" stroke-width="2.5"/><line x1="55" y1="45" x2="50" y2="35" stroke="#333" stroke-width="2"/><line x1="45" y1="35" x2="58" y2="35" stroke="#333" stroke-width="3"/><circle cx="30" cy="70" r="3" fill="#333"/><circle cx="90" cy="70" r="3" fill="#333"/>`,
+  umbrella: ()=>`<path d="M20 55 Q20 20 60 15 Q100 20 100 55" fill="#E74C3C" stroke="#333" stroke-width="2"/><line x1="60" y1="15" x2="60" y2="90" stroke="#333" stroke-width="3"/><path d="M60 90 Q60 100 50 100" fill="none" stroke="#333" stroke-width="3"/><line x1="20" y1="55" x2="35" y2="40" stroke="#C0392B" stroke-width="1.5"/><line x1="50" y1="55" x2="60" y2="35" stroke="#C0392B" stroke-width="1.5"/><line x1="75" y1="55" x2="60" y2="35" stroke="#C0392B" stroke-width="1.5"/>`,
+  envelope: ()=>`<rect x="15" y="30" width="90" height="60" rx="3" fill="#ECF0F1" stroke="#333" stroke-width="2"/><polyline points="15,30 60,65 105,30" fill="none" stroke="#333" stroke-width="2"/><line x1="15" y1="90" x2="45" y2="60" stroke="#333" stroke-width="1.5"/><line x1="105" y1="90" x2="75" y2="60" stroke="#333" stroke-width="1.5"/>`,
+  helicopter: ()=>`<ellipse cx="55" cy="55" rx="30" ry="16" fill="#3498DB" stroke="#333" stroke-width="2"/><circle cx="42" cy="50" r="8" fill="#AED6F1" stroke="#333" stroke-width="1.5"/><line x1="85" y1="52" x2="110" y2="38" stroke="#333" stroke-width="2.5"/><line x1="108" y1="38" x2="112" y2="48" stroke="#333" stroke-width="2"/><line x1="55" y1="39" x2="55" y2="28" stroke="#333" stroke-width="2.5"/><line x1="20" y1="28" x2="90" y2="28" stroke="#333" stroke-width="3"/><line x1="45" y1="71" x2="40" y2="82" stroke="#333" stroke-width="2.5"/><line x1="65" y1="71" x2="70" y2="82" stroke="#333" stroke-width="2.5"/><line x1="30" y1="82" x2="80" y2="82" stroke="#333" stroke-width="2.5"/>`,
+  thermometer: ()=>`<rect x="50" y="15" width="20" height="70" rx="10" fill="#ECF0F1" stroke="#333" stroke-width="2"/><circle cx="60" cy="90" r="14" fill="#E74C3C" stroke="#333" stroke-width="2"/><rect x="55" y="45" width="10" height="40" fill="#E74C3C"/><line x1="72" y1="30" x2="78" y2="30" stroke="#333" stroke-width="1.5"/><line x1="72" y1="40" x2="78" y2="40" stroke="#333" stroke-width="1.5"/><line x1="72" y1="50" x2="78" y2="50" stroke="#333" stroke-width="1.5"/><line x1="72" y1="60" x2="78" y2="60" stroke="#333" stroke-width="1.5"/>`,
+  telescope: ()=>`<rect x="15" y="55" width="60" height="14" rx="3" fill="#7F8C8D" stroke="#333" stroke-width="2" transform="rotate(-25,45,62)"/><circle cx="18" cy="68" r="12" fill="#95A5A6" stroke="#333" stroke-width="2" transform="rotate(-25,45,62)"/><line x1="55" y1="72" x2="45" y2="100" stroke="#333" stroke-width="3"/><line x1="55" y1="72" x2="72" y2="100" stroke="#333" stroke-width="3"/><line x1="48" y1="88" x2="68" y2="88" stroke="#333" stroke-width="2"/>`,
+  calculator: ()=>`<rect x="28" y="15" width="64" height="90" rx="5" fill="#2C3E50" stroke="#333" stroke-width="2"/><rect x="34" y="22" width="52" height="22" rx="2" fill="#27AE60"/><text x="78" y="40" font-size="16" fill="#FFF" text-anchor="end" font-family="monospace">123</text><rect x="36" y="52" width="14" height="12" rx="2" fill="#ECF0F1"/><rect x="53" y="52" width="14" height="12" rx="2" fill="#ECF0F1"/><rect x="70" y="52" width="14" height="12" rx="2" fill="#F39C12"/><rect x="36" y="68" width="14" height="12" rx="2" fill="#ECF0F1"/><rect x="53" y="68" width="14" height="12" rx="2" fill="#ECF0F1"/><rect x="70" y="68" width="14" height="12" rx="2" fill="#F39C12"/><rect x="36" y="84" width="14" height="12" rx="2" fill="#ECF0F1"/><rect x="53" y="84" width="14" height="12" rx="2" fill="#ECF0F1"/><rect x="70" y="84" width="14" height="12" rx="2" fill="#E74C3C"/>`,
+  parachute: ()=>`<path d="M20 40 Q60 0 100 40" fill="#E74C3C" stroke="#333" stroke-width="2"/><path d="M20 40 Q40 55 60 40" fill="#F1C40F" stroke="#333" stroke-width="1.5"/><path d="M60 40 Q80 55 100 40" fill="#3498DB" stroke="#333" stroke-width="1.5"/><line x1="20" y1="40" x2="55" y2="90" stroke="#333" stroke-width="1.5"/><line x1="100" y1="40" x2="65" y2="90" stroke="#333" stroke-width="1.5"/><line x1="60" y1="40" x2="60" y2="90" stroke="#333" stroke-width="1.5"/><rect x="52" y="88" width="16" height="12" rx="2" fill="#F39C12" stroke="#333" stroke-width="1.5"/>`,
+  rectangle: ()=>`<rect x="20" y="30" width="80" height="55" fill="#9B59B6" stroke="#333" stroke-width="3" rx="2"/>`,
+  skeleton: ()=>`<circle cx="60" cy="22" r="14" fill="#ECF0F1" stroke="#333" stroke-width="2"/><circle cx="54" cy="20" r="3" fill="#333"/><circle cx="66" cy="20" r="3" fill="#333"/><path d="M55 28 L65 28" stroke="#333" stroke-width="1.5"/><line x1="60" y1="36" x2="60" y2="72" stroke="#ECF0F1" stroke-width="6"/><line x1="60" y1="72" x2="60" y2="72" stroke="#333" stroke-width="1"/><line x1="38" y1="48" x2="82" y2="48" stroke="#ECF0F1" stroke-width="5"/><line x1="55" y1="55" x2="65" y2="55" stroke="#333" stroke-width="2"/><line x1="55" y1="62" x2="65" y2="62" stroke="#333" stroke-width="2"/><line x1="60" y1="72" x2="45" y2="100" stroke="#ECF0F1" stroke-width="5"/><line x1="60" y1="72" x2="75" y2="100" stroke="#ECF0F1" stroke-width="5"/>`,
+  microscope: ()=>`<rect x="35" y="90" width="50" height="8" rx="2" fill="#2C3E50" stroke="#333" stroke-width="1.5"/><rect x="55" y="30" width="14" height="55" rx="3" fill="#7F8C8D" stroke="#333" stroke-width="2"/><circle cx="62" cy="28" r="10" fill="#95A5A6" stroke="#333" stroke-width="2"/><rect x="40" y="78" width="40" height="6" rx="2" fill="#2C3E50" stroke="#333" stroke-width="1.5"/><rect x="52" y="84" width="20" height="8" rx="2" fill="#7F8C8D" stroke="#333" stroke-width="1.5"/><rect x="36" y="55" width="18" height="5" rx="1" fill="#95A5A6" stroke="#333" stroke-width="1"/>`,
+  volcano: ()=>`<polygon points="60,15 15,95 105,95" fill="#8B4513" stroke="#333" stroke-width="2"/><polygon points="50,15 60,5 70,15" fill="#E74C3C" stroke="none"/><ellipse cx="60" cy="15" rx="12" ry="4" fill="#C0392B"/><path d="M52 15 Q48 5 55 0" stroke="#F39C12" stroke-width="2" fill="none"/><path d="M65 15 Q70 2 63 -3" stroke="#F39C12" stroke-width="2" fill="none"/><path d="M58 15 Q58 8 60 0" stroke="#E74C3C" stroke-width="2" fill="none"/><rect x="0" y="95" width="120" height="25" fill="#27AE60"/>`,
+  flamingo: ()=>`<ellipse cx="60" cy="50" rx="15" ry="20" fill="#FF69B4" stroke="#333" stroke-width="2"/><circle cx="55" cy="28" r="10" fill="#FF69B4" stroke="#333" stroke-width="2"/><path d="M45 28 L35 30 L45 32" fill="#F39C12" stroke="#333" stroke-width="1.5"/><circle cx="52" cy="26" r="2" fill="#333"/><path d="M58 38 Q62 42 60 50" fill="none" stroke="#FF69B4" stroke-width="3"/><line x1="55" y1="70" x2="50" y2="100" stroke="#FF69B4" stroke-width="3"/><line x1="65" y1="70" x2="68" y2="100" stroke="#FF69B4" stroke-width="3"/><line x1="45" y1="100" x2="55" y2="100" stroke="#FF69B4" stroke-width="2"/><line x1="63" y1="100" x2="73" y2="100" stroke="#FF69B4" stroke-width="2"/>`,
+  penguin: ()=>`<ellipse cx="60" cy="60" rx="22" ry="32" fill="#2C3E50" stroke="#333" stroke-width="2"/><ellipse cx="60" cy="68" rx="14" ry="24" fill="#ECF0F1"/><circle cx="60" cy="35" r="14" fill="#2C3E50" stroke="#333" stroke-width="2"/><circle cx="54" cy="33" r="2.5" fill="#FFF"/><circle cx="54" cy="33" r="1.5" fill="#333"/><circle cx="66" cy="33" r="2.5" fill="#FFF"/><circle cx="66" cy="33" r="1.5" fill="#333"/><polygon points="57,40 60,46 63,40" fill="#F39C12" stroke="#333" stroke-width="1"/><path d="M38 55 Q28 65 34 75" fill="#2C3E50" stroke="#333" stroke-width="2"/><path d="M82 55 Q92 65 86 75" fill="#2C3E50" stroke="#333" stroke-width="2"/><ellipse cx="50" cy="93" rx="8" ry="4" fill="#F39C12" stroke="#333" stroke-width="1"/><ellipse cx="70" cy="93" rx="8" ry="4" fill="#F39C12" stroke="#333" stroke-width="1"/>`,
+  rhinoceros: ()=>`<ellipse cx="55" cy="60" rx="35" ry="22" fill="#95A5A6" stroke="#333" stroke-width="2"/><circle cx="25" cy="48" r="16" fill="#95A5A6" stroke="#333" stroke-width="2"/><polygon points="20,38 15,20 22,35" fill="#7F8C8D" stroke="#333" stroke-width="1.5"/><polygon points="25,42 22,30 28,40" fill="#95A5A6" stroke="#333" stroke-width="1"/><circle cx="22" cy="44" r="2.5" fill="#333"/><line x1="35" y1="82" x2="35" y2="98" stroke="#95A5A6" stroke-width="6"/><line x1="50" y1="82" x2="50" y2="98" stroke="#95A5A6" stroke-width="6"/><line x1="65" y1="82" x2="65" y2="98" stroke="#95A5A6" stroke-width="6"/><line x1="78" y1="80" x2="78" y2="98" stroke="#95A5A6" stroke-width="6"/><path d="M25 40 Q18 38 18 42" fill="none" stroke="#333" stroke-width="1.5"/>`,
+  accordion: ()=>`<rect x="15" y="25" width="20" height="70" rx="3" fill="#E74C3C" stroke="#333" stroke-width="2"/><rect x="85" y="25" width="20" height="70" rx="3" fill="#E74C3C" stroke="#333" stroke-width="2"/><path d="M35 25 L45 25 L38 47 L48 47 L40 70 L50 70 L42 95 L35 95 Z" fill="#F5F5F5" stroke="#333" stroke-width="1.5"/><path d="M50 25 L60 25 L52 47 L62 47 L55 70 L65 70 L57 95 L50 95 Z" fill="#ECE" stroke="#333" stroke-width="1.5"/><path d="M65 25 L75 25 L68 47 L78 47 L70 70 L80 70 L72 95 L65 95 Z" fill="#F5F5F5" stroke="#333" stroke-width="1.5"/><circle cx="22" cy="45" r="3" fill="#333"/><circle cx="22" cy="58" r="3" fill="#333"/><circle cx="22" cy="71" r="3" fill="#333"/>`,
+  binoculars: ()=>`<circle cx="38" cy="55" r="22" fill="#2C3E50" stroke="#333" stroke-width="2"/><circle cx="82" cy="55" r="22" fill="#2C3E50" stroke="#333" stroke-width="2"/><circle cx="38" cy="55" r="15" fill="#AED6F1" stroke="#333" stroke-width="1.5"/><circle cx="82" cy="55" r="15" fill="#AED6F1" stroke="#333" stroke-width="1.5"/><rect x="50" y="45" width="20" height="20" rx="3" fill="#2C3E50" stroke="#333" stroke-width="2"/>`,
+  submarine: ()=>`<ellipse cx="60" cy="60" rx="42" ry="18" fill="#7F8C8D" stroke="#333" stroke-width="2"/><rect x="45" y="40" width="20" height="14" rx="3" fill="#95A5A6" stroke="#333" stroke-width="2"/><circle cx="50" cy="46" r="4" fill="#AED6F1" stroke="#333" stroke-width="1"/><circle cx="62" cy="46" r="4" fill="#AED6F1" stroke="#333" stroke-width="1"/><circle cx="30" cy="60" r="5" fill="#AED6F1" stroke="#333" stroke-width="1.5"/><circle cx="50" cy="60" r="5" fill="#AED6F1" stroke="#333" stroke-width="1.5"/><circle cx="70" cy="60" r="5" fill="#AED6F1" stroke="#333" stroke-width="1.5"/><polygon points="100,55 110,50 110,70 100,65" fill="#7F8C8D" stroke="#333" stroke-width="1.5"/><line x1="55" y1="40" x2="55" y2="30" stroke="#333" stroke-width="2"/><rect x="52" y="28" width="6" height="5" fill="#E74C3C" stroke="#333" stroke-width="1"/>`,
+  caterpillar: ()=>`<circle cx="20" cy="60" r="12" fill="#27AE60" stroke="#333" stroke-width="2"/><circle cx="38" cy="55" r="11" fill="#2ECC71" stroke="#333" stroke-width="2"/><circle cx="55" cy="52" r="11" fill="#27AE60" stroke="#333" stroke-width="2"/><circle cx="72" cy="55" r="11" fill="#2ECC71" stroke="#333" stroke-width="2"/><circle cx="89" cy="58" r="12" fill="#27AE60" stroke="#333" stroke-width="2"/><circle cx="85" cy="50" r="3" fill="#333"/><line x1="84" y1="46" x2="80" y2="36" stroke="#333" stroke-width="1.5"/><line x1="90" y1="46" x2="94" y2="36" stroke="#333" stroke-width="1.5"/><circle cx="80" cy="34" r="2" fill="#E74C3C"/><circle cx="94" cy="34" r="2" fill="#E74C3C"/><path d="M92 62 Q96 65 93 68" stroke="#E74C3C" stroke-width="1.5" fill="none"/>`,
+  hammock: ()=>`<line x1="10" y1="30" x2="10" y2="95" stroke="#8B4513" stroke-width="5"/><line x1="110" y1="30" x2="110" y2="95" stroke="#8B4513" stroke-width="5"/><path d="M10 45 Q60 95 110 45" fill="none" stroke="#F39C12" stroke-width="3"/><path d="M10 48 Q60 98 110 48" fill="none" stroke="#E67E22" stroke-width="3"/><line x1="10" y1="45" x2="25" y2="55" stroke="#8B4513" stroke-width="1.5"/><line x1="10" y1="45" x2="30" y2="62" stroke="#8B4513" stroke-width="1.5"/><line x1="110" y1="45" x2="95" y2="55" stroke="#8B4513" stroke-width="1.5"/><line x1="110" y1="45" x2="90" y2="62" stroke="#8B4513" stroke-width="1.5"/><path d="M5 28 Q10 22 15 28" fill="#27AE60" stroke="#333" stroke-width="1.5"/><path d="M105 28 Q110 22 115 28" fill="#27AE60" stroke="#333" stroke-width="1.5"/>`
+};
+
+// Distractors for vocabulary
+const vocabDistractors = {
+  ball:['cup','hat','sun'],cat:['dog','bird','fish'],shoe:['hat','cup','book'],
+  tree:['flower','sun','house'],cup:['hat','shoe','ball'],baby:['cat','dog','bird'],
+  car:['shoe','house','book'],flower:['tree','sun','bird'],bird:['cat','fish','dog'],
+  fish:['bird','cat','ball'],hat:['shoe','cup','book'],book:['house','hat','cup'],
+  dog:['cat','bird','baby'],house:['car','book','tree'],sun:['ball','flower','hat'],
+  bicycle:['car','umbrella','submarine'],umbrella:['parachute','tree','hat'],
+  envelope:['book','rectangle','calculator'],helicopter:['airplane','car','submarine'],
+  thermometer:['telescope','microscope','calculator'],telescope:['microscope','binoculars','thermometer'],
+  calculator:['book','envelope','rectangle'],parachute:['umbrella','balloon','hat'],
+  rectangle:['envelope','book','calculator'],skeleton:['penguin','tree','caterpillar'],
+  microscope:['telescope','thermometer','calculator'],volcano:['tree','house','hat'],
+  flamingo:['penguin','bird','caterpillar'],penguin:['flamingo','bird','cat'],
+  rhinoceros:['dog','cat','penguin'],accordion:['calculator','book','envelope'],
+  binoculars:['telescope','microscope','submarine'],submarine:['fish','car','helicopter'],
+  caterpillar:['fish','flamingo','bird'],hammock:['umbrella','parachute','bicycle']
+};
+
+// Note: some distractor words reuse age-3 SVGs or age-5 SVGs
+// We also need a few extra SVGs for distractors not in main lists
+const extraSVGs = {
+  airplane: ()=>`<ellipse cx="60" cy="55" rx="40" ry="10" fill="#BDC3C7" stroke="#333" stroke-width="2"/><polygon points="20,55 5,40 5,55" fill="#95A5A6" stroke="#333" stroke-width="1.5"/><polygon points="40,50 60,25 80,50" fill="#BDC3C7" stroke="#333" stroke-width="1.5"/><polygon points="90,52 105,40 105,55" fill="#95A5A6" stroke="#333" stroke-width="1.5"/><circle cx="30" cy="55" r="3" fill="#AED6F1" stroke="#333" stroke-width="1"/><circle cx="45" cy="55" r="3" fill="#AED6F1" stroke="#333" stroke-width="1"/>`,
+  balloon: ()=>`<ellipse cx="60" cy="45" rx="22" ry="28" fill="#E74C3C" stroke="#333" stroke-width="2"/><path d="M60 73 Q58 78 62 80 Q58 82 60 85" stroke="#333" stroke-width="1.5" fill="none"/><line x1="60" y1="85" x2="60" y2="105" stroke="#333" stroke-width="1.5"/>`
+};
+
+function getVocabSVG(word){
+  if(vocabSVGs[word]) return svgWrap(vocabSVGs[word]());
+  if(extraSVGs[word]) return svgWrap(extraSVGs[word]());
+  // Fallback
+  return svgWrap(`<rect x="20" y="20" width="80" height="80" fill="#DDD" rx="8"/><text x="60" y="68" text-anchor="middle" font-size="12" fill="#666">${word}</text>`);
+}
+
+function buildVocabItems3(){
+  const words=['ball','cat','shoe','tree','cup','baby','car','flower','bird','fish','hat','book','dog','house','sun'];
+  return words.map(w=>{
+    const distractors=vocabDistractors[w]||['ball','cat','shoe'];
+    const opts=[w,...distractors];
+    // Shuffle but track correct
+    const shuffled=opts.map((o,i)=>({word:o,orig:i})).sort(()=>Math.random()-0.5);
+    return {word:w, options:shuffled.map(s=>s.word), correct:shuffled.findIndex(s=>s.orig===0)};
+  });
+}
+
+function buildVocabItems5(){
+  const words=['bicycle','umbrella','envelope','helicopter','thermometer','telescope','calculator','parachute','rectangle','skeleton','microscope','volcano','flamingo','penguin','rhinoceros','accordion','binoculars','submarine','caterpillar','hammock'];
+  return words.map(w=>{
+    const distractors=vocabDistractors[w]||['ball','cat','shoe'];
+    const opts=[w,...distractors];
+    const shuffled=opts.map((o,i)=>({word:o,orig:i})).sort(()=>Math.random()-0.5);
+    return {word:w, options:shuffled.map(s=>s.word), correct:shuffled.findIndex(s=>s.orig===0)};
+  });
+}
+
+
+// ===== BASIC CONCEPTS (Boehm-style) =====
+// Each item: {concept, instruction, sceneSVG(highlightIndex), options:[labels], correct:index}
+
+function conceptScene(concept){
+  switch(concept){
+    case 'top': return {
+      instruction:'Which ball is on TOP?',
+      svg:()=>`<rect x="40" y="20" width="40" height="80" fill="#DEB887" stroke="#333" stroke-width="2" rx="2"/>`+
+        `<circle cx="60" cy="28" r="10" fill="#E74C3C" stroke="#333" stroke-width="2"/>`+
+        `<circle cx="60" cy="55" r="10" fill="#3498DB" stroke="#333" stroke-width="2"/>`+
+        `<circle cx="60" cy="82" r="10" fill="#27AE60" stroke="#333" stroke-width="2"/>`,
+      options:['Red (top)','Blue (middle)','Green (bottom)'], correct:0};
+    case 'bottom': return {
+      instruction:'Which star is at the BOTTOM?',
+      svg:()=>{let s='';s+=drawShape('star',60,25,22,'#F1C40F');s+=drawShape('star',60,60,22,'#E74C3C');s+=drawShape('star',60,95,22,'#8E44AD');return s;},
+      options:['Yellow (top)','Red (middle)','Purple (bottom)'], correct:2};
+    case 'big': return {
+      instruction:'Which circle is BIG?',
+      svg:()=>`<circle cx="30" cy="60" r="28" fill="#E74C3C" stroke="#333" stroke-width="2"/><circle cx="80" cy="70" r="14" fill="#3498DB" stroke="#333" stroke-width="2"/><circle cx="105" cy="75" r="8" fill="#27AE60" stroke="#333" stroke-width="2"/>`,
+      options:['Red (big)','Blue (medium)','Green (small)'], correct:0};
+    case 'little': return {
+      instruction:'Which square is LITTLE?',
+      svg:()=>`<rect x="10" y="30" width="45" height="45" fill="#F39C12" stroke="#333" stroke-width="2"/><rect x="70" y="55" width="15" height="15" fill="#8E44AD" stroke="#333" stroke-width="2"/><rect x="95" y="40" width="28" height="28" fill="#27AE60" stroke="#333" stroke-width="2"/>`,
+      options:['Orange (big)','Purple (little)','Green (medium)'], correct:1};
+    case 'in': return {
+      instruction:'Which ball is IN the box?',
+      svg:()=>`<rect x="15" y="40" width="40" height="40" fill="none" stroke="#333" stroke-width="3" rx="2"/><circle cx="35" cy="60" r="10" fill="#E74C3C" stroke="#333" stroke-width="2"/><circle cx="85" cy="35" r="10" fill="#3498DB" stroke="#333" stroke-width="2"/><circle cx="85" cy="75" r="10" fill="#27AE60" stroke="#333" stroke-width="2"/>`,
+      options:['Red (in box)','Blue (outside)','Green (outside)'], correct:0};
+    case 'on': return {
+      instruction:'Which cat is ON the table?',
+      svg:()=>`<rect x="10" y="60" width="100" height="6" fill="#8B4513" stroke="#333" stroke-width="1.5"/><rect x="15" y="66" width="6" height="30" fill="#8B4513"/><rect x="99" y="66" width="6" height="30" fill="#8B4513"/>`+
+        `<ellipse cx="45" cy="50" rx="12" ry="8" fill="#F39C12" stroke="#333" stroke-width="2"/><circle cx="38" cy="42" r="6" fill="#F39C12" stroke="#333" stroke-width="1.5"/>`+
+        `<ellipse cx="85" cy="85" rx="12" ry="8" fill="#95A5A6" stroke="#333" stroke-width="2"/><circle cx="78" cy="77" r="6" fill="#95A5A6" stroke="#333" stroke-width="1.5"/>`,
+      options:['Orange cat (on table)','Gray cat (under table)'], correct:0};
+    case 'under': return {
+      instruction:'Which ball is UNDER the chair?',
+      svg:()=>`<rect x="30" y="35" width="50" height="5" fill="#8B4513" stroke="#333" stroke-width="1.5"/><rect x="32" y="40" width="5" height="35" fill="#8B4513"/><rect x="73" y="40" width="5" height="35" fill="#8B4513"/><rect x="30" y="15" width="5" height="25" fill="#8B4513"/><rect x="75" y="15" width="5" height="25" fill="#8B4513"/>`+
+        `<circle cx="55" cy="62" r="10" fill="#E74C3C" stroke="#333" stroke-width="2"/><circle cx="100" cy="30" r="10" fill="#3498DB" stroke="#333" stroke-width="2"/>`,
+      options:['Red (under chair)','Blue (beside chair)'], correct:0};
+    case 'same': return {
+      instruction:'Which two shapes are the SAME?',
+      svg:()=>`<circle cx="25" cy="55" r="18" fill="#E74C3C" stroke="#333" stroke-width="2"/><rect x="50" y="37" width="30" height="36" fill="#3498DB" stroke="#333" stroke-width="2"/><circle cx="105" cy="55" r="18" fill="#27AE60" stroke="#333" stroke-width="2"/>`,
+      options:['Circle and Circle (same shape)','Circle and Square','Square and Circle'], correct:0};
+    case 'different': return {
+      instruction:'Which shape is DIFFERENT from the others?',
+      svg:()=>drawShape('circle',25,55,30,'#E74C3C')+drawShape('circle',60,55,30,'#3498DB')+drawShape('square',95,55,30,'#27AE60'),
+      options:['Red circle','Blue circle','Green square (different)'], correct:2};
+    case 'more': return {
+      instruction:'Which group has MORE stars?',
+      svg:()=>{
+        let s='';
+        s+=drawShape('star',20,30,15,'#F1C40F')+drawShape('star',40,30,15,'#F1C40F');
+        s+=`<text x="30" y="55" text-anchor="middle" font-size="12" fill="#333">Group A</text>`;
+        s+=drawShape('star',70,25,15,'#E74C3C')+drawShape('star',90,25,15,'#E74C3C')+drawShape('star',110,25,15,'#E74C3C')+drawShape('star',80,42,15,'#E74C3C')+drawShape('star',100,42,15,'#E74C3C');
+        s+=`<text x="90" y="65" text-anchor="middle" font-size="12" fill="#333">Group B</text>`;
+        return s;
+      },
+      options:['Group A (2 stars)','Group B (5 stars)'], correct:1};
+    case 'empty': return {
+      instruction:'Which glass is EMPTY?',
+      svg:()=>`<path d="M15 25 L20 85 L45 85 L50 25 Z" fill="none" stroke="#333" stroke-width="2"/>`+
+        `<path d="M65 25 L70 85 L95 85 L100 25 Z" fill="none" stroke="#333" stroke-width="2"/><rect x="68" y="40" width="28" height="43" fill="#AED6F1"/>`,
+      options:['Left glass (empty)','Right glass (has water)'], correct:0};
+    case 'full': return {
+      instruction:'Which bucket is FULL?',
+      svg:()=>`<path d="M10 30 L15 85 L50 85 L55 30 Z" fill="none" stroke="#333" stroke-width="2"/><rect x="13" y="35" width="38" height="48" fill="#F1C40F"/>`+
+        `<path d="M65 30 L70 85 L105 85 L110 30 Z" fill="none" stroke="#333" stroke-width="2"/><rect x="68" y="70" width="38" height="13" fill="#F1C40F"/>`,
+      options:['Left bucket (full)','Right bucket (not full)'], correct:0};
+
+    // Age 5 concepts
+    case 'between': return {
+      instruction:'Which shape is BETWEEN the two circles?',
+      svg:()=>`<circle cx="25" cy="55" r="16" fill="#E74C3C" stroke="#333" stroke-width="2"/><rect x="50" y="39" width="30" height="32" fill="#3498DB" stroke="#333" stroke-width="2"/><circle cx="105" cy="55" r="16" fill="#27AE60" stroke="#333" stroke-width="2"/>`,
+      options:['Red circle','Blue square (between)','Green circle'], correct:1};
+    case 'beside': return {
+      instruction:'Which animal is BESIDE the tree?',
+      svg:()=>`<rect x="55" y="40" width="10" height="50" fill="#8B4513" stroke="#333" stroke-width="1.5"/><ellipse cx="60" cy="32" rx="20" ry="16" fill="#27AE60" stroke="#333" stroke-width="2"/>`+
+        `<ellipse cx="92" cy="75" rx="12" ry="8" fill="#F39C12" stroke="#333" stroke-width="2"/><circle cx="86" cy="67" r="5" fill="#F39C12" stroke="#333" stroke-width="1.5"/>`+
+        `<ellipse cx="20" cy="40" rx="8" ry="6" fill="#3498DB" stroke="#333" stroke-width="2"/>`,
+      options:['Blue bird (far away)','Orange cat (beside tree)'], correct:1};
+    case 'above': return {
+      instruction:'Which shape is ABOVE the line?',
+      svg:()=>`<line x1="10" y1="55" x2="110" y2="55" stroke="#333" stroke-width="2.5"/>`+drawShape('star',40,30,22,'#F1C40F')+drawShape('diamond',80,75,22,'#8E44AD'),
+      options:['Yellow star (above)','Purple diamond (below)'], correct:0};
+    case 'below': return {
+      instruction:'Which shape is BELOW the line?',
+      svg:()=>`<line x1="10" y1="45" x2="110" y2="45" stroke="#333" stroke-width="2.5"/>`+drawShape('triangle',35,28,22,'#E74C3C')+drawShape('circle',80,68,22,'#3498DB'),
+      options:['Red triangle (above)','Blue circle (below)'], correct:1};
+    case 'nearest': return {
+      instruction:'Which ball is NEAREST to the box?',
+      svg:()=>`<rect x="50" y="40" width="25" height="25" fill="#8B4513" stroke="#333" stroke-width="2"/><circle cx="20" cy="52" r="10" fill="#E74C3C" stroke="#333" stroke-width="2"/><circle cx="88" cy="52" r="10" fill="#3498DB" stroke="#333" stroke-width="2"/><circle cx="110" cy="52" r="10" fill="#27AE60" stroke="#333" stroke-width="2"/>`,
+      options:['Red (near)','Blue (medium)','Green (far)'], correct:0};
+    case 'farthest': return {
+      instruction:'Which star is FARTHEST from the house?',
+      svg:()=>`<rect x="10" y="55" width="25" height="25" fill="#E67E22" stroke="#333" stroke-width="2"/><polygon points="10,55 22,35 35,55" fill="#C0392B" stroke="#333" stroke-width="1.5"/>`+
+        drawShape('star',55,65,16,'#F1C40F')+drawShape('star',80,65,16,'#E74C3C')+drawShape('star',105,65,16,'#27AE60'),
+      options:['Yellow (near)','Red (middle)','Green (farthest)'], correct:2};
+    case 'pair': return {
+      instruction:'Which group shows a PAIR (exactly 2)?',
+      svg:()=>drawShape('circle',15,55,18,'#E74C3C')+
+        drawShape('circle',45,50,14,'#3498DB')+drawShape('circle',62,50,14,'#3498DB')+
+        drawShape('circle',85,45,12,'#27AE60')+drawShape('circle',98,45,12,'#27AE60')+drawShape('circle',91,62,12,'#27AE60')+
+        `<text x="15" y="80" text-anchor="middle" font-size="11" fill="#333">A</text>`+
+        `<text x="53" y="80" text-anchor="middle" font-size="11" fill="#333">B</text>`+
+        `<text x="91" y="80" text-anchor="middle" font-size="11" fill="#333">C</text>`,
+      options:['Group A (1)','Group B (a pair)','Group C (3)'], correct:1};
+    case 'half': return {
+      instruction:'Which shape is HALF colored?',
+      svg:()=>`<circle cx="35" cy="55" r="20" fill="#E74C3C" stroke="#333" stroke-width="2"/>`+
+        `<circle cx="95" cy="55" r="20" fill="#ECF0F1" stroke="#333" stroke-width="2"/><path d="M95 35 A20 20 0 0 1 95 75 Z" fill="#3498DB"/>`,
+      options:['Red circle (all colored)','Blue circle (half colored)'], correct:1};
+    case 'equal': return {
+      instruction:'Which two groups have EQUAL amounts?',
+      svg:()=>{
+        let s='';
+        for(let i=0;i<3;i++) s+=drawShape('circle',15+i*16,40,12,'#E74C3C');
+        for(let i=0;i<4;i++) s+=drawShape('circle',12+i*16,70,12,'#3498DB');
+        for(let i=0;i<3;i++) s+=drawShape('circle',75+i*16,40,12,'#27AE60');
+        s+=`<text x="30" y="25" text-anchor="middle" font-size="10" fill="#333">A(3)</text>`;
+        s+=`<text x="40" y="90" text-anchor="middle" font-size="10" fill="#333">B(4)</text>`;
+        s+=`<text x="90" y="25" text-anchor="middle" font-size="10" fill="#333">C(3)</text>`;
+        return s;
+      },
+      options:['A and B','A and C (equal)','B and C'], correct:1};
+    case 'few': return {
+      instruction:'Which group has FEW dots?',
+      svg:()=>{
+        let s='';
+        for(let i=0;i<2;i++) s+=`<circle cx="${20+i*15}" cy="55" r="6" fill="#E74C3C" stroke="#333" stroke-width="1.5"/>`;
+        for(let i=0;i<7;i++) s+=`<circle cx="${65+i*8}" cy="${50+(i%2)*12}" r="6" fill="#3498DB" stroke="#333" stroke-width="1.5"/>`;
+        s+=`<text x="27" y="80" text-anchor="middle" font-size="11" fill="#333">A</text>`;
+        s+=`<text x="93" y="80" text-anchor="middle" font-size="11" fill="#333">B</text>`;
+        return s;
+      },
+      options:['Group A (few)','Group B (many)'], correct:0};
+    case 'many': return {
+      instruction:'Which box has MANY triangles?',
+      svg:()=>{
+        let s=`<rect x="5" y="25" width="50" height="60" fill="none" stroke="#333" stroke-width="2" rx="4"/>`;
+        s+=`<rect x="65" y="25" width="50" height="60" fill="none" stroke="#333" stroke-width="2" rx="4"/>`;
+        s+=drawShape('triangle',20,50,14,'#E74C3C')+drawShape('triangle',40,50,14,'#E74C3C');
+        for(let r=0;r<2;r++)for(let c=0;c<3;c++) s+=drawShape('triangle',75+c*14,40+r*20,12,'#3498DB');
+        s+=`<text x="30" y="100" text-anchor="middle" font-size="11" fill="#333">A</text>`;
+        s+=`<text x="90" y="100" text-anchor="middle" font-size="11" fill="#333">B</text>`;
+        return s;
+      },
+      options:['Box A (2)','Box B (many)'], correct:1};
+    case 'first': return {
+      instruction:'Which animal is FIRST in line?',
+      svg:()=>`<ellipse cx="22" cy="60" rx="12" ry="8" fill="#F39C12" stroke="#333" stroke-width="2"/><circle cx="16" cy="52" r="5" fill="#F39C12" stroke="#333" stroke-width="1.5"/>`+
+        `<ellipse cx="55" cy="60" rx="12" ry="8" fill="#95A5A6" stroke="#333" stroke-width="2"/><circle cx="49" cy="52" r="5" fill="#95A5A6" stroke="#333" stroke-width="1.5"/>`+
+        `<ellipse cx="88" cy="60" rx="12" ry="8" fill="#8B4513" stroke="#333" stroke-width="2"/><circle cx="82" cy="52" r="5" fill="#8B4513" stroke="#333" stroke-width="1.5"/>`+
+        `<path d="M5 75 L115 75" stroke="#27AE60" stroke-width="2"/><text x="5" y="90" font-size="9" fill="#666">Start</text><text x="100" y="90" font-size="9" fill="#666">End</text>`,
+      options:['Orange (first)','Gray (second)','Brown (third)'], correct:0};
+    case 'last': return {
+      instruction:'Which shape is LAST in the row?',
+      svg:()=>drawShape('circle',20,55,18,'#E74C3C')+drawShape('square',50,55,18,'#3498DB')+drawShape('triangle',80,55,18,'#27AE60')+drawShape('star',110,55,18,'#F1C40F')+
+        `<path d="M5 78 L115 78" stroke="#999" stroke-width="1.5" stroke-dasharray="4,2"/>`,
+      options:['Red circle','Blue square','Green triangle','Yellow star (last)'], correct:3};
+    case 'before': return {
+      instruction:'Which number comes BEFORE 4?',
+      svg:()=>`<text x="25" y="65" font-size="32" fill="#E74C3C" font-weight="700" text-anchor="middle">2</text>`+
+        `<text x="60" y="65" font-size="32" fill="#3498DB" font-weight="700" text-anchor="middle">3</text>`+
+        `<text x="95" y="65" font-size="32" fill="#27AE60" font-weight="700" text-anchor="middle">4</text>`,
+      options:['2','3 (before 4)','4'], correct:1};
+    case 'after': return {
+      instruction:'Which number comes AFTER 5?',
+      svg:()=>`<text x="25" y="65" font-size="32" fill="#E74C3C" font-weight="700" text-anchor="middle">5</text>`+
+        `<text x="60" y="65" font-size="32" fill="#3498DB" font-weight="700" text-anchor="middle">6</text>`+
+        `<text x="95" y="65" font-size="32" fill="#27AE60" font-weight="700" text-anchor="middle">7</text>`,
+      options:['5','6 (after 5)','7'], correct:1};
+    case 'beginning': return {
+      instruction:'Which letter is at the BEGINNING of the word?',
+      svg:()=>`<text x="15" y="65" font-size="34" fill="#E74C3C" font-weight="700">C</text>`+
+        `<text x="42" y="65" font-size="34" fill="#3498DB" font-weight="700">A</text>`+
+        `<text x="72" y="65" font-size="34" fill="#27AE60" font-weight="700">T</text>`,
+      options:['C (beginning)','A','T'], correct:0};
+    case 'end': return {
+      instruction:'Which letter is at the END of the word?',
+      svg:()=>`<text x="15" y="65" font-size="34" fill="#E74C3C" font-weight="700">D</text>`+
+        `<text x="42" y="65" font-size="34" fill="#3498DB" font-weight="700">O</text>`+
+        `<text x="72" y="65" font-size="34" fill="#27AE60" font-weight="700">G</text>`,
+      options:['D','O','G (end)'], correct:2};
+    case 'never': return {
+      instruction:'Fish can NEVER do which activity?',
+      svg:()=>`<ellipse cx="35" cy="50" rx="18" ry="10" fill="#F39C12" stroke="#333" stroke-width="2"/><polygon points="53,50 65,40 65,60" fill="#F39C12" stroke="#333" stroke-width="1.5"/><circle cx="25" cy="47" r="2.5" fill="#333"/>`+
+        `<path d="M20 75 Q35 70 50 75" fill="none" stroke="#3498DB" stroke-width="2"/>`+
+        `<line x1="80" y1="40" x2="80" y2="75" stroke="#333" stroke-width="3"/><path d="M75 40 Q80 30 85 40" fill="#27AE60" stroke="#333" stroke-width="1.5"/>`,
+      options:['Swim','Walk on land (never)','Eat'], correct:1};
+    case 'always': return {
+      instruction:'The sun ALWAYS appears where during daytime?',
+      svg:()=>`<rect x="0" y="60" width="120" height="40" fill="#27AE60"/><rect x="0" y="0" width="120" height="60" fill="#87CEEB"/>`+
+        `<circle cx="60" cy="25" r="16" fill="#F1C40F" stroke="#F39C12" stroke-width="2"/>`+
+        `<line x1="60" y1="3" x2="60" y2="8" stroke="#F39C12" stroke-width="2"/><line x1="60" y1="42" x2="60" y2="47" stroke="#F39C12" stroke-width="2"/>`+
+        `<line x1="38" y1="25" x2="43" y2="25" stroke="#F39C12" stroke-width="2"/><line x1="77" y1="25" x2="82" y2="25" stroke="#F39C12" stroke-width="2"/>`,
+      options:['In the sky (always)','Underground','In the ocean'], correct:0};
+    case 'medium': return {
+      instruction:'Which bear is MEDIUM-sized?',
+      svg:()=>`<ellipse cx="20" cy="42" rx="22" ry="30" fill="#A0522D" stroke="#333" stroke-width="2"/><circle cx="20" cy="10" r="14" fill="#A0522D" stroke="#333" stroke-width="1.5"/>`+
+        `<ellipse cx="60" cy="52" rx="15" ry="20" fill="#8B4513" stroke="#333" stroke-width="2"/><circle cx="60" cy="30" r="10" fill="#8B4513" stroke="#333" stroke-width="1.5"/>`+
+        `<ellipse cx="100" cy="62" rx="10" ry="12" fill="#D2691E" stroke="#333" stroke-width="2"/><circle cx="100" cy="48" r="7" fill="#D2691E" stroke="#333" stroke-width="1.5"/>`,
+      options:['Big bear','Medium bear','Small bear'], correct:1};
+  }
+}
+
+function buildConceptItems3(){
+  const concepts=['top','bottom','big','little','in','on','under','same','different','more','empty','full'];
+  return concepts.map(c=>{
+    const scene=conceptScene(c);
+    return {concept:c, instruction:scene.instruction, svg:scene.svg, options:scene.options, correct:scene.correct};
+  });
+}
+
+function buildConceptItems5(){
+  const concepts=['between','beside','above','below','nearest','farthest','pair','half','equal','few','many','first','last','before','after','beginning','end','never','always','medium'];
+  return concepts.map(c=>{
+    const scene=conceptScene(c);
+    if(!scene) return {concept:c,instruction:'Which is '+c+'?',svg:()=>'',options:['A','B','C'],correct:0};
+    return {concept:c, instruction:scene.instruction, svg:scene.svg, options:scene.options, correct:scene.correct};
+  });
+}
+
+
+// ===== QUANTITATIVE REASONING =====
+
+function buildQuantItems3(){
+  return [
+    // 1. Count 2 objects
+    {type:'count', instruction:'How many stars are there? Count them!',
+     svg:()=>drawShape('star',40,55,28,'#F1C40F')+drawShape('star',80,55,28,'#F1C40F'),
+     options:['1','2','3','4'], correct:1},
+    // 2. Count 3 objects
+    {type:'count', instruction:'How many circles are there?',
+     svg:()=>`<circle cx="30" cy="55" r="16" fill="#E74C3C" stroke="#333" stroke-width="2"/><circle cx="60" cy="55" r="16" fill="#3498DB" stroke="#333" stroke-width="2"/><circle cx="90" cy="55" r="16" fill="#27AE60" stroke="#333" stroke-width="2"/>`,
+     options:['2','3','4','5'], correct:1},
+    // 3. Count 5 objects
+    {type:'count', instruction:'How many hearts are there?',
+     svg:()=>{
+       let s='';
+       const xs=[18,42,66,90,54];const ys=[40,40,40,40,68];
+       for(let i=0;i<5;i++){
+         const x=xs[i],y=ys[i];
+         s+=`<path d="M${x} ${y+5} Q${x} ${y-8} ${x+10} ${y-8} Q${x+18} ${y-8} ${x+10} ${y+12} L${x} ${y+18} L${x-10} ${y+12} Q${x-18} ${y-8} ${x-10} ${y-8} Q${x} ${y-8} ${x} ${y+5}" fill="#E91E63" stroke="#333" stroke-width="1.5"/>`;
+       }
+       return s;
+     },
+     options:['3','4','5','6'], correct:2},
+    // 4. Identify more
+    {type:'compare', instruction:'Which group has MORE?',
+     svg:()=>{
+       let s='<rect x="5" y="20" width="50" height="70" fill="none" stroke="#333" stroke-width="2" rx="4"/>';
+       s+='<rect x="65" y="20" width="50" height="70" fill="none" stroke="#333" stroke-width="2" rx="4"/>';
+       s+=drawShape('circle',20,45,14,'#E74C3C')+drawShape('circle',40,45,14,'#E74C3C');
+       s+=drawShape('circle',80,40,14,'#3498DB')+drawShape('circle',100,40,14,'#3498DB')+drawShape('circle',80,65,14,'#3498DB')+drawShape('circle',100,65,14,'#3498DB');
+       s+='<text x="30" y="105" text-anchor="middle" font-size="11" fill="#333">A</text>';
+       s+='<text x="90" y="105" text-anchor="middle" font-size="11" fill="#333">B</text>';
+       return s;
+     },
+     options:['Group A','Group B'], correct:1},
+    // 5. Identify less
+    {type:'compare', instruction:'Which group has LESS?',
+     svg:()=>{
+       let s='<rect x="5" y="20" width="50" height="70" fill="none" stroke="#333" stroke-width="2" rx="4"/>';
+       s+='<rect x="65" y="20" width="50" height="70" fill="none" stroke="#333" stroke-width="2" rx="4"/>';
+       s+=drawShape('star',20,40,14,'#F1C40F')+drawShape('star',40,40,14,'#F1C40F')+drawShape('star',30,62,14,'#F1C40F');
+       s+=drawShape('star',90,55,14,'#8E44AD');
+       s+='<text x="30" y="105" text-anchor="middle" font-size="11" fill="#333">A</text>';
+       s+='<text x="90" y="105" text-anchor="middle" font-size="11" fill="#333">B</text>';
+       return s;
+     },
+     options:['Group A','Group B'], correct:1},
+    // 6. Match quantity: show 3, pick the group with 3
+    {type:'match', instruction:'Which group has the SAME number as the top group?',
+     svg:()=>{
+       let s='<rect x="25" y="5" width="70" height="30" fill="#FFF9C4" stroke="#333" stroke-width="2" rx="4"/>';
+       s+=drawShape('square',40,20,14,'#F39C12')+drawShape('square',60,20,14,'#F39C12')+drawShape('square',80,20,14,'#F39C12');
+       s+='<rect x="5" y="50" width="50" height="40" fill="none" stroke="#333" stroke-width="2" rx="4"/>';
+       s+='<rect x="65" y="50" width="50" height="40" fill="none" stroke="#333" stroke-width="2" rx="4"/>';
+       s+=drawShape('diamond',20,65,12,'#E74C3C')+drawShape('diamond',40,65,12,'#E74C3C');
+       s+=drawShape('diamond',78,65,12,'#3498DB')+drawShape('diamond',90,65,12,'#3498DB')+drawShape('diamond',102,65,12,'#3498DB');
+       s+='<text x="30" y="105" text-anchor="middle" font-size="11" fill="#333">A(2)</text>';
+       s+='<text x="90" y="105" text-anchor="middle" font-size="11" fill="#333">B(3)</text>';
+       return s;
+     },
+     options:['Group A','Group B'], correct:1},
+    // 7. Recognize number 1
+    {type:'recognize', instruction:'Point to the number 3',
+     svg:()=>`<text x="25" y="70" font-size="42" fill="#E74C3C" font-weight="700">1</text>`+
+       `<text x="55" y="70" font-size="42" fill="#3498DB" font-weight="700">3</text>`+
+       `<text x="85" y="70" font-size="42" fill="#27AE60" font-weight="700">5</text>`,
+     options:['1','3','5'], correct:1},
+    // 8. Recognize number 5
+    {type:'recognize', instruction:'Which number is 5?',
+     svg:()=>`<text x="20" y="70" font-size="42" fill="#E74C3C" font-weight="700">2</text>`+
+       `<text x="55" y="70" font-size="42" fill="#3498DB" font-weight="700">4</text>`+
+       `<text x="90" y="70" font-size="42" fill="#27AE60" font-weight="700">5</text>`,
+     options:['2','4','5'], correct:2},
+    // 9. Count 1 object
+    {type:'count', instruction:'How many squares are there?',
+     svg:()=>`<rect x="40" y="35" width="40" height="40" fill="#8E44AD" stroke="#333" stroke-width="2"/>`,
+     options:['1','2','3'], correct:0},
+    // 10. Count 4 objects
+    {type:'count', instruction:'How many triangles are there?',
+     svg:()=>drawShape('triangle',25,45,22,'#E74C3C')+drawShape('triangle',55,45,22,'#3498DB')+drawShape('triangle',85,45,22,'#27AE60')+drawShape('triangle',55,75,22,'#F1C40F'),
+     options:['2','3','4','5'], correct:2}
+  ];
+}
+
+function buildQuantItems5(){
+  return [
+    // 1. Count 8 objects
+    {type:'count', instruction:'How many circles are there? Count carefully!',
+     svg:()=>{
+       let s=''; const cols=['#E74C3C','#3498DB','#27AE60','#F1C40F','#8E44AD','#F39C12','#E91E63','#1ABC9C'];
+       const xs=[15,35,55,75,95,25,55,85]; const ys=[35,35,35,35,35,65,65,65];
+       for(let i=0;i<8;i++) s+=`<circle cx="${xs[i]}" cy="${ys[i]}" r="10" fill="${cols[i]}" stroke="#333" stroke-width="1.5"/>`;
+       return s;
+     },
+     options:['6','7','8','9'], correct:2},
+    // 2. Count 12 objects
+    {type:'count', instruction:'How many stars are there?',
+     svg:()=>{
+       let s='';
+       for(let r=0;r<3;r++) for(let c=0;c<4;c++) s+=drawShape('star',18+c*28,25+r*28,16,'#F1C40F');
+       return s;
+     },
+     options:['10','11','12','13'], correct:2},
+    // 3. Simple addition: 2+3
+    {type:'addition', instruction:'2 apples plus 3 apples. How many apples altogether?',
+     svg:()=>{
+       let s='';
+       s+=`<circle cx="20" cy="45" r="12" fill="#E74C3C" stroke="#333" stroke-width="1.5"/><circle cx="48" cy="45" r="12" fill="#E74C3C" stroke="#333" stroke-width="1.5"/>`;
+       s+=`<text x="68" y="52" font-size="24" fill="#333" font-weight="700">+</text>`;
+       s+=`<circle cx="85" cy="45" r="12" fill="#27AE60" stroke="#333" stroke-width="1.5"/><circle cx="100" cy="30" r="12" fill="#27AE60" stroke="#333" stroke-width="1.5"/><circle cx="100" cy="60" r="12" fill="#27AE60" stroke="#333" stroke-width="1.5"/>`;
+       return s;
+     },
+     options:['4','5','6','7'], correct:1},
+    // 4. Simple addition: 1+4
+    {type:'addition', instruction:'1 plus 4 equals how many?',
+     svg:()=>{
+       let s=drawShape('star',20,50,20,'#F1C40F');
+       s+=`<text x="42" y="58" font-size="24" fill="#333" font-weight="700">+</text>`;
+       s+=drawShape('star',58,35,16,'#3498DB')+drawShape('star',78,35,16,'#3498DB')+drawShape('star',58,60,16,'#3498DB')+drawShape('star',78,60,16,'#3498DB');
+       return s;
+     },
+     options:['3','4','5','6'], correct:2},
+    // 5. Subtraction: 5-2
+    {type:'subtraction', instruction:'5 balls take away 2. How many are left?',
+     svg:()=>{
+       let s='';
+       for(let i=0;i<3;i++) s+=`<circle cx="${20+i*25}" cy="45" r="12" fill="#3498DB" stroke="#333" stroke-width="1.5"/>`;
+       for(let i=0;i<2;i++) s+=`<circle cx="${95+i*0}" cy="${35+i*25}" r="12" fill="#CCC" stroke="#999" stroke-width="1.5" stroke-dasharray="4,2"/>`;
+       s+=`<line x1="85" y1="25" x2="110" y2="70" stroke="#E74C3C" stroke-width="2.5"/>`;
+       return s;
+     },
+     options:['2','3','4','5'], correct:1},
+    // 6. Subtraction: 4-1
+    {type:'subtraction', instruction:'4 stars minus 1 star. How many stars remain?',
+     svg:()=>{
+       let s='';
+       for(let i=0;i<3;i++) s+=drawShape('star',20+i*25,50,20,'#F1C40F');
+       s+=drawShape('star',95,50,20,'#CCC');
+       s+=`<line x1="85" y1="35" x2="108" y2="65" stroke="#E74C3C" stroke-width="2.5"/>`;
+       return s;
+     },
+     options:['2','3','4','5'], correct:1},
+    // 7. Number sequence: 1,2,3,4,?
+    {type:'sequence', instruction:'What number comes next? 1, 2, 3, 4, ?',
+     svg:()=>`<text x="10" y="65" font-size="28" fill="#333" font-weight="700">1  2  3  4  ?</text>`,
+     options:['3','4','5','6'], correct:2},
+    // 8. Number sequence: 2,4,6,?
+    {type:'sequence', instruction:'What number comes next? 2, 4, 6, ?',
+     svg:()=>`<text x="15" y="65" font-size="28" fill="#333" font-weight="700">2  4  6  ?</text>`,
+     options:['7','8','9','10'], correct:1},
+    // 9. Compare quantities
+    {type:'compare', instruction:'Which number is BIGGER?',
+     svg:()=>`<text x="30" y="70" font-size="48" fill="#E74C3C" font-weight="700">7</text><text x="80" y="70" font-size="48" fill="#3498DB" font-weight="700">4</text>`,
+     options:['7','4'], correct:0},
+    // 10. Compare quantities
+    {type:'compare', instruction:'Which group has MORE shapes?',
+     svg:()=>{
+       let s='<rect x="5" y="15" width="50" height="80" fill="none" stroke="#333" stroke-width="2" rx="4"/>';
+       s+='<rect x="65" y="15" width="50" height="80" fill="none" stroke="#333" stroke-width="2" rx="4"/>';
+       for(let i=0;i<6;i++) s+=drawShape('circle',15+(i%3)*16,35+Math.floor(i/3)*25,12,'#E74C3C');
+       for(let i=0;i<4;i++) s+=drawShape('circle',75+(i%2)*20,40+Math.floor(i/2)*25,12,'#3498DB');
+       s+='<text x="30" y="108" text-anchor="middle" font-size="11" fill="#333">A</text>';
+       s+='<text x="90" y="108" text-anchor="middle" font-size="11" fill="#333">B</text>';
+       return s;
+     },
+     options:['Group A (6)','Group B (4)'], correct:0},
+    // 11. Recognize shapes: which is a triangle?
+    {type:'shape', instruction:'Which shape is a TRIANGLE?',
+     svg:()=>drawShape('circle',25,55,28,'#E74C3C')+drawShape('triangle',60,55,28,'#3498DB')+drawShape('square',95,55,28,'#27AE60'),
+     options:['Circle','Triangle','Square'], correct:1},
+    // 12. Recognize shapes: which is a rectangle?
+    {type:'shape', instruction:'Which shape is a RECTANGLE?',
+     svg:()=>`<circle cx="25" cy="55" r="18" fill="#F1C40F" stroke="#333" stroke-width="2"/><rect x="50" y="40" width="35" height="22" fill="#8E44AD" stroke="#333" stroke-width="2"/><polygon points="100,37 115,55 100,73 85,55" fill="#E74C3C" stroke="#333" stroke-width="2"/>`,
+     options:['Circle','Rectangle','Diamond'], correct:1},
+    // 13. Count 15
+    {type:'count', instruction:'How many dots are there?',
+     svg:()=>{
+       let s='';
+       for(let r=0;r<3;r++) for(let c=0;c<5;c++) s+=`<circle cx="${15+c*22}" cy="${25+r*25}" r="8" fill="#1ABC9C" stroke="#333" stroke-width="1.5"/>`;
+       return s;
+     },
+     options:['12','13','14','15'], correct:3},
+    // 14. Addition 3+3
+    {type:'addition', instruction:'3 plus 3 equals?',
+     svg:()=>{
+       let s='';
+       for(let i=0;i<3;i++) s+=drawShape('diamond',15+i*20,45,16,'#E74C3C');
+       s+=`<text x="73" y="53" font-size="22" fill="#333" font-weight="700">+</text>`;
+       for(let i=0;i<3;i++) s+=drawShape('diamond',88+i*20,45,16,'#3498DB');
+       return s;
+     },
+     options:['5','6','7','8'], correct:1},
+    // 15. Subtraction 7-3
+    {type:'subtraction', instruction:'7 minus 3 equals?',
+     svg:()=>{
+       let s='';
+       for(let i=0;i<4;i++) s+=`<circle cx="${12+i*18}" cy="45" r="8" fill="#27AE60" stroke="#333" stroke-width="1.5"/>`;
+       for(let i=0;i<3;i++) s+=`<circle cx="${88+i*15}" cy="45" r="8" fill="#CCC" stroke="#999" stroke-width="1.5" stroke-dasharray="3,2"/>`;
+       s+=`<line x1="80" y1="30" x2="118" y2="60" stroke="#E74C3C" stroke-width="2"/>`;
+       return s;
+     },
+     options:['3','4','5','6'], correct:1}
+  ];
+}
+
+
+// ===== DRAW-A-PERSON (Goodenough) =====
+
+const DAP_ITEMS = [
+  {group:'A', label:'Body Parts Present', items:[
+    {id:1, text:'Head present'},
+    {id:2, text:'Legs present'},
+    {id:3, text:'Arms present'},
+    {id:'4a', text:'Trunk (body) present'},
+    {id:'4b', text:'Trunk longer than wide'},
+    {id:'4c', text:'Shoulders indicated'},
+    {id:'5a', text:'Arms and legs attached to trunk'},
+    {id:'5b', text:'Legs and arms attached at correct positions'}
+  ]},
+  {group:'B', label:'Head Details', items:[
+    {id:'6a', text:'Eyes present'},
+    {id:'6b', text:'Nose present'},
+    {id:'6c', text:'Mouth present'},
+    {id:'6d', text:'Nose and mouth shown in 2 dimensions'},
+    {id:'6e', text:'Nostrils shown'},
+    {id:'7a', text:'Hair present'},
+    {id:'7b', text:'Hair is more than scribble (non-transparent)'},
+    {id:'7c', text:'Hair covers appropriate area of head'},
+    {id:'8a', text:'Clothing present (any indication)'},
+    {id:'8b', text:'Two or more clothing items shown'},
+    {id:'8c', text:'Full clothing with no transparency'},
+    {id:'8d', text:'Four or more clothing items'},
+    {id:'8e', text:'Complete costume (recognizable type)'}
+  ]},
+  {group:'C', label:'Proportions', items:[
+    {id:'9a', text:'Fingers present'},
+    {id:'9b', text:'Correct number of fingers (5 per hand)'},
+    {id:'9c', text:'Fingers shown in 2 dimensions (not sticks)'},
+    {id:'9d', text:'Thumb shown in opposition'},
+    {id:'9e', text:'Hand shown as distinct from fingers/arm'},
+    {id:'10a', text:'Arm joint shown (elbow or shoulder bend)'},
+    {id:'10b', text:'Leg joint shown (knee or hip bend)'},
+    {id:'11a', text:'Head in proportion (not too large/small)'},
+    {id:'11b', text:'Arms proportional to trunk length'},
+    {id:'11c', text:'Legs proportional to trunk length'},
+    {id:'11d', text:'Feet shown and proportional'},
+    {id:'11e', text:'Arms and legs shown in 2 dimensions'},
+    {id:'12a', text:'Heel shown on foot'},
+    {id:13, text:'Firm, confident lines (not sketchy/uncertain)'},
+    {id:'14a', text:'Controlled line junctures (lines meet cleanly)'},
+    {id:'14b', text:'Controlled head outline (smooth curve)'},
+    {id:'14c', text:'Controlled trunk outline'},
+    {id:'14d', text:'Controlled arms and legs outline'},
+    {id:'14e', text:'Controlled facial features'}
+  ]},
+  {group:'D', label:'Detail', items:[
+    {id:'15a', text:'Ears present'},
+    {id:'15b', text:'Ears in correct position and proportion'},
+    {id:'15c', text:'Eye detail (brow, lashes, or both)'},
+    {id:'15d', text:'Pupil of eye shown'},
+    {id:'15e', text:'Eye proportion (longer than tall)'},
+    {id:'16a', text:'Chin and forehead both shown'},
+    {id:'16b', text:'Chin clearly differentiated from mouth'},
+    {id:'17a', text:'Profile drawing attempted'},
+    {id:'17b', text:'Profile drawn correctly (no transparency errors)'}
+  ]}
+];
+
+// Score to Mental Age mapping (years-months)
+const SCORE_TO_MA = {
+  1:[3,3],2:[3,6],3:[3,9],4:[4,0],5:[4,3],6:[4,6],7:[4,9],8:[5,0],
+  9:[5,3],10:[5,6],11:[5,9],12:[6,0],13:[6,3],14:[6,6],15:[6,9],16:[7,0],
+  17:[7,3],18:[7,6],19:[7,9],20:[8,0],21:[8,3],22:[8,6],23:[8,9],24:[9,0],
+  25:[9,3],26:[9,6],27:[9,9],28:[10,0]
+};
+
+function getDAP_IQ(rawScore, chronologicalAgeYears){
+  const capped = Math.min(Math.max(rawScore,0),28);
+  if(capped===0) return {ma:3, iq:Math.round((3/chronologicalAgeYears)*100)};
+  const entry = SCORE_TO_MA[capped] || [3,3];
+  const maYears = entry[0] + entry[1]/12;
+  const iq = Math.round((maYears / chronologicalAgeYears)*100);
+  return {ma:maYears, maLabel:`${entry[0]} years ${entry[1]} months`, iq:Math.max(50,Math.min(160,iq))};
+}
+
+
+// ===== SCORING & NORMS =====
+
+const NORMS = {
+  matrix: {
+    3:   {mean:11, sd:3, total:12},
+    3.5: {mean:13, sd:3.5, total:12},
+    4:   {mean:14, sd:3.5, total:12},
+    5:   {mean:17, sd:4, total:18},
+    5.5: {mean:19, sd:4, total:18},
+    6:   {mean:21, sd:4.5, total:18}
+  },
+  vocab: {
+    3:   {mean:10, sd:2.5, total:15},
+    5:   {mean:14, sd:3, total:20}
+  },
+  concepts: {
+    3:   {mean:8, sd:2, total:12},
+    5:   {mean:14, sd:3, total:20}
+  },
+  quant: {
+    3:   {mean:6, sd:2, total:10},
+    5:   {mean:10, sd:2.5, total:15}
+  }
+};
+
+function getNorm(module, ageYears){
+  const norms = NORMS[module];
+  if(!norms) return {mean:0,sd:1,total:1};
+  // Find closest age key
+  const keys = Object.keys(norms).map(Number).sort((a,b)=>a-b);
+  let closest = keys[0];
+  for(const k of keys){
+    if(Math.abs(k-ageYears) < Math.abs(closest-ageYears)) closest=k;
+  }
+  return norms[closest];
+}
+
+// Normal CDF approximation (Abramowitz & Stegun)
+function normalCDF(z){
+  if(z<-6) return 0;
+  if(z>6) return 1;
+  const a1=0.254829592, a2=-0.284496736, a3=1.421413741, a4=-1.453152027, a5=1.061405429, p=0.3275911;
+  const sign = z<0?-1:1;
+  const x = Math.abs(z)/Math.sqrt(2);
+  const t = 1/(1+p*x);
+  const erf = 1-(((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-x*x);
+  return 0.5*(1+sign*erf);
+}
+
+function computeScores(module, raw, ageYears){
+  const norm = getNorm(module, ageYears);
+  const z = (raw - norm.mean) / norm.sd;
+  const percentile = Math.round(normalCDF(z)*100);
+  const iq = Math.round(100 + 15*z);
+  const clampedIQ = Math.max(40, Math.min(160, iq));
+  return {raw, total:norm.total, z:Math.round(z*100)/100, percentile:Math.max(1,Math.min(99,percentile)), iq:clampedIQ};
+}
+
+function getClassification(iq){
+  if(iq<70) return {label:'Very Low', color:'#E74C3C'};
+  if(iq<80) return {label:'Low', color:'#E67E22'};
+  if(iq<90) return {label:'Below Average', color:'#F39C12'};
+  if(iq<110) return {label:'Average', color:'#27AE60'};
+  if(iq<120) return {label:'Above Average', color:'#3498DB'};
+  if(iq<130) return {label:'Superior', color:'#8E44AD'};
+  return {label:'Very Superior', color:'#9B59B6'};
+}
+
+function barColor(percentile){
+  if(percentile<10) return '#E74C3C';
+  if(percentile<25) return '#F39C12';
+  if(percentile<75) return '#27AE60';
+  if(percentile<90) return '#3498DB';
+  return '#8E44AD';
+}
+
+
+// ===== UI RENDERING ENGINE =====
+const app = document.getElementById('app');
+let timerInterval = null;
+let totalSeconds = 0;
+let qSeconds = 0;
+
+function clearTimers(){
+  if(timerInterval) clearInterval(timerInterval);
+  timerInterval=null;
+}
+
+function startTimers(){
+  clearTimers();
+  totalSeconds=0; qSeconds=0;
+  state.startTime=Date.now();
+  state.qStartTime=Date.now();
+  timerInterval=setInterval(()=>{
+    totalSeconds=Math.floor((Date.now()-state.startTime)/1000);
+    qSeconds=Math.floor((Date.now()-state.qStartTime)/1000);
+    const tEl=document.getElementById('total-timer');
+    const qEl=document.getElementById('q-timer');
+    if(tEl) tEl.textContent=formatTime(totalSeconds);
+    if(qEl) qEl.textContent=formatTime(qSeconds);
+  },1000);
+}
+
+function resetQTimer(){ state.qStartTime=Date.now(); qSeconds=0; }
+function formatTime(s){ return Math.floor(s/60)+':'+(s%60<10?'0':'')+s%60; }
+
+// ===== PAGE: LANDING =====
+function renderLanding(){
+  clearTimers();
+  state={page:'landing',child:null,modules:[],currentMod:0,currentQ:0,answers:{},startTime:null,qStartTime:null,drawData:null,dapChecklist:[]};
+  app.innerHTML=`
+    <nav><div></div><button class="btn-outline" onclick="renderHistory()">History</button></nav>
+    <h1>Kids Cognitive Assessment</h1>
+    <p style="text-align:center;color:#666;margin:8px 0">Select a child to begin testing</p>
+    <div class="profiles">
+      ${CHILDREN.map((c,i)=>{
+        const age=getAge(c.dob);
+        return `<div class="profile-card" onclick="selectChild(${i})">
+          <div class="avatar" style="background:${c.color}">${c.name[0]}</div>
+          <div class="name">${c.name}</div>
+          <div class="age">${age.label}</div>
+        </div>`;
+      }).join('')}
+    </div>
+  `;
+}
+
+// ===== PAGE: MODULE SELECTION =====
+function selectChild(idx){
+  state.child=CHILDREN[idx];
+  state.page='modules';
+  const age=getAge(state.child.dob);
+  const is5 = age.years>=4;
+  const mods=[
+    {id:'matrix',name:'Matrix Reasoning',desc:'Pattern completion (Raven\'s CPM-style)',color:'#4A90D9',icon:'M10 10h30v30h-30zM50 10h30v30h-30zM10 50h30v30h-30zM50 50h30v30h-30z'},
+    {id:'vocab',name:'Vocabulary',desc:'Picture identification (PPVT-style)',color:'#27AE60',icon:''},
+    {id:'concepts',name:'Basic Concepts',desc:'Spatial and quantitative concepts (Boehm-style)',color:'#F39C12',icon:''},
+    {id:'quant',name:'Quantitative Reasoning',desc:'Counting, addition, subtraction',color:'#8E44AD',icon:''},
+    {id:'dap',name:'Draw-a-Person',desc:'Goodenough drawing assessment',color:'#E74C3C',icon:''}
+  ];
+
+  app.innerHTML=`
+    <nav><button class="btn-outline" onclick="renderLanding()">Back</button><div></div></nav>
+    <h1>Tests for ${state.child.name}</h1>
+    <p style="text-align:center;color:#666">Age: ${age.label} | Select modules to administer</p>
+    <div class="mod-list">
+      ${mods.map(m=>`
+        <label class="mod-item">
+          <input type="checkbox" value="${m.id}" checked>
+          <div class="mod-icon" style="background:${m.color}">
+            <svg viewBox="0 0 40 40" width="32" height="32"><rect x="4" y="4" width="14" height="14" fill="#FFF" rx="2" opacity=".8"/><rect x="22" y="4" width="14" height="14" fill="#FFF" rx="2" opacity=".8"/><rect x="4" y="22" width="14" height="14" fill="#FFF" rx="2" opacity=".8"/><rect x="22" y="22" width="14" height="14" fill="#FFF" rx="2" opacity=".5" stroke="#FFF" stroke-width="1" stroke-dasharray="2,1"/></svg>
+          </div>
+          <div class="mod-info">
+            <div class="mod-name">${m.name}</div>
+            <div class="mod-desc">${m.desc}</div>
+          </div>
+        </label>
+      `).join('')}
+    </div>
+    <button class="next-btn" onclick="startTest()">Start Test</button>
+  `;
+}
+
+function startTest(){
+  const checks=document.querySelectorAll('.mod-list input:checked');
+  state.modules=Array.from(checks).map(c=>c.value);
+  if(state.modules.length===0){alert('Select at least one module');return;}
+  state.currentMod=0;
+  state.currentQ=0;
+  state.answers={};
+  startTimers();
+  runCurrentModule();
+}
+
+function runCurrentModule(){
+  if(state.currentMod >= state.modules.length){
+    showResults();
+    return;
+  }
+  const modId=state.modules[state.currentMod];
+  state.currentQ=0;
+  state.answers[modId]=[];
+  if(modId==='dap'){
+    renderDrawPage();
+  } else {
+    renderQuestion();
+  }
+}
+
+function getModuleItems(modId){
+  const age=getAge(state.child.dob);
+  const is5=age.years>=4;
+  switch(modId){
+    case 'matrix': return is5?buildMatrixItems5():buildMatrixItems3();
+    case 'vocab': return is5?buildVocabItems5():buildVocabItems3();
+    case 'concepts': return is5?buildConceptItems5():buildConceptItems3();
+    case 'quant': return is5?buildQuantItems5():buildQuantItems3();
+    default: return [];
+  }
+}
+
+function getModuleName(modId){
+  const names={matrix:'Matrix Reasoning',vocab:'Vocabulary',concepts:'Basic Concepts',quant:'Quantitative Reasoning',dap:'Draw-a-Person'};
+  return names[modId]||modId;
+}
+
+// Cache items per module so shuffled vocab stays consistent
+let _itemsCache={};
+function getItems(modId){
+  if(!_itemsCache[modId]) _itemsCache[modId]=getModuleItems(modId);
+  return _itemsCache[modId];
+}
+
+// ===== PAGE: QUESTION =====
+function renderQuestion(){
+  const modId=state.modules[state.currentMod];
+  const items=getItems(modId);
+  const qi=state.currentQ;
+  if(qi>=items.length){
+    // Module done, next module
+    state.currentMod++;
+    _itemsCache={};
+    runCurrentModule();
+    return;
+  }
+  const item=items[qi];
+  const progress=((qi)/items.length*100).toFixed(0);
+  resetQTimer();
+
+  let questionHTML='';
+  let optionsHTML='';
+
+  if(modId==='matrix'){
+    questionHTML=`
+      <div class="question-text">Which piece completes the pattern?</div>
+      <div class="svg-display">${renderMatrixSVG(item.cells,220)}</div>`;
+    const numOpts=item.options.length;
+    const colClass=numOpts<=4?'cols-2':'cols-3';
+    optionsHTML=`<div class="options-grid ${colClass}">
+      ${item.options.map((o,i)=>`
+        <div class="opt-btn" onclick="selectOption(${i})" id="opt-${i}">
+          <div class="label">${String.fromCharCode(65+i)}</div>
+          ${renderMatrixOption(o,90)}
+        </div>
+      `).join('')}
+    </div>`;
+  } else if(modId==='vocab'){
+    questionHTML=`
+      <div class="question-text">Point to: "${item.word.toUpperCase()}"</div>
+      <div class="question-sub">(Say the word aloud for the child)</div>`;
+    optionsHTML=`<div class="options-grid cols-2">
+      ${item.options.map((w,i)=>`
+        <div class="opt-btn" onclick="selectOption(${i})" id="opt-${i}">
+          <div class="label">${String.fromCharCode(65+i)}</div>
+          ${getVocabSVG(w)}
+        </div>
+      `).join('')}
+    </div>`;
+  } else if(modId==='concepts'){
+    questionHTML=`
+      <div class="question-text">${item.instruction}</div>
+      <div class="svg-display">${svgWrap(item.svg(),120,110)}</div>`;
+    const cc=item.options.length<=2?'cols-2':item.options.length<=3?'cols-3':'cols-4';
+    optionsHTML=`<div class="options-grid ${cc}">
+      ${item.options.map((o,i)=>`
+        <div class="opt-btn" onclick="selectOption(${i})" id="opt-${i}">
+          <div class="label">${String.fromCharCode(65+i)}</div>
+          <div style="font-size:.9rem;margin-top:4px">${o}</div>
+        </div>
+      `).join('')}
+    </div>`;
+  } else if(modId==='quant'){
+    questionHTML=`
+      <div class="question-text">${item.instruction}</div>
+      <div class="svg-display">${svgWrap(item.svg(),120,110)}</div>`;
+    const cc=item.options.length<=2?'cols-2':item.options.length<=3?'cols-3':'cols-4';
+    optionsHTML=`<div class="options-grid ${cc}">
+      ${item.options.map((o,i)=>`
+        <div class="opt-btn" onclick="selectOption(${i})" id="opt-${i}">
+          <div class="label">${String.fromCharCode(65+i)}</div>
+          <div style="font-size:1.2rem;font-weight:700;margin-top:4px">${o}</div>
+        </div>
+      `).join('')}
+    </div>`;
+  }
+
+  app.innerHTML=`
+    <div class="page">
+      <div class="test-header">
+        <span style="font-weight:700;color:var(--blue)">${getModuleName(modId)}</span>
+        <span style="font-size:.9rem;color:#666">Question ${qi+1} of ${items.length}</span>
+        <div style="display:flex;gap:12px">
+          <span class="timer" id="q-timer">0:00</span>
+          <span class="timer" id="total-timer">${formatTime(totalSeconds)}</span>
+        </div>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
+      <div class="question-area">
+        ${questionHTML}
+        ${optionsHTML}
+        <button class="next-btn" id="next-btn" onclick="nextQuestion()" disabled>Next</button>
+      </div>
+    </div>
+  `;
+}
+
+let _selectedOption=null;
+function selectOption(idx){
+  _selectedOption=idx;
+  document.querySelectorAll('.opt-btn').forEach((el,i)=>{
+    el.classList.toggle('selected',i===idx);
+  });
+  document.getElementById('next-btn').disabled=false;
+}
+
+function nextQuestion(){
+  if(_selectedOption===null) return;
+  const modId=state.modules[state.currentMod];
+  const items=getItems(modId);
+  const item=items[state.currentQ];
+  state.answers[modId].push({
+    question:state.currentQ,
+    selected:_selectedOption,
+    correct:item.correct,
+    isCorrect:_selectedOption===item.correct,
+    time:qSeconds
+  });
+  _selectedOption=null;
+  state.currentQ++;
+  renderQuestion();
+}
+
+
+// ===== DRAW-A-PERSON PAGE =====
+let drawCanvas, drawCtx, isDrawing=false, drawTool='pen', penSize=3, undoStack=[];
+
+function renderDrawPage(){
+  app.innerHTML=`
+    <div class="page">
+      <div class="test-header">
+        <span style="font-weight:700;color:var(--red)">Draw-a-Person</span>
+        <span style="font-size:.9rem;color:#666">Draw a complete person</span>
+        <div style="display:flex;gap:12px">
+          <span class="timer" id="q-timer">0:00</span>
+          <span class="timer" id="total-timer">${formatTime(totalSeconds)}</span>
+        </div>
+      </div>
+      <div class="question-text">Ask ${state.child.name}: "Draw the best person you can!"</div>
+      <div class="draw-tools">
+        <button class="btn-blue tool-active" id="tool-pen" onclick="setDrawTool('pen')">Pen</button>
+        <button class="btn-orange" id="tool-eraser" onclick="setDrawTool('eraser')">Eraser</button>
+        <button class="btn-outline" onclick="changePenSize(-1)">Thinner</button>
+        <button class="btn-outline" onclick="changePenSize(1)">Thicker</button>
+        <button class="btn-outline" onclick="undoDraw()">Undo</button>
+        <button class="btn-red" onclick="clearDraw()">Clear</button>
+      </div>
+      <div class="draw-area" id="draw-area">
+        <canvas id="draw-canvas"></canvas>
+      </div>
+      <button class="next-btn" onclick="finishDrawing()">Done Drawing</button>
+    </div>
+  `;
+  resetQTimer();
+  initCanvas();
+}
+
+function initCanvas(){
+  drawCanvas=document.getElementById('draw-canvas');
+  const area=document.getElementById('draw-area');
+  const w=Math.min(area.clientWidth, 600);
+  const h=Math.min(w*1.2, 500);
+  drawCanvas.width=w;
+  drawCanvas.height=h;
+  drawCanvas.style.width=w+'px';
+  drawCanvas.style.height=h+'px';
+  drawCtx=drawCanvas.getContext('2d');
+  drawCtx.fillStyle='#FFF';
+  drawCtx.fillRect(0,0,w,h);
+  drawCtx.lineCap='round';
+  drawCtx.lineJoin='round';
+  undoStack=[drawCtx.getImageData(0,0,w,h)];
+
+  // Mouse events
+  drawCanvas.addEventListener('mousedown',startDraw);
+  drawCanvas.addEventListener('mousemove',doDraw);
+  drawCanvas.addEventListener('mouseup',endDraw);
+  drawCanvas.addEventListener('mouseleave',endDraw);
+  // Touch events
+  drawCanvas.addEventListener('touchstart',e=>{e.preventDefault();startDraw(touchToMouse(e));},{passive:false});
+  drawCanvas.addEventListener('touchmove',e=>{e.preventDefault();doDraw(touchToMouse(e));},{passive:false});
+  drawCanvas.addEventListener('touchend',e=>{e.preventDefault();endDraw();},{passive:false});
+}
+
+function touchToMouse(e){
+  const t=e.touches[0];
+  const r=drawCanvas.getBoundingClientRect();
+  return {offsetX:t.clientX-r.left, offsetY:t.clientY-r.top};
+}
+
+function getDrawPos(e){
+  const r=drawCanvas.getBoundingClientRect();
+  const scaleX=drawCanvas.width/r.width;
+  const scaleY=drawCanvas.height/r.height;
+  return {x:(e.offsetX||e.clientX-r.left)*scaleX, y:(e.offsetY||e.clientY-r.top)*scaleY};
+}
+
+function startDraw(e){
+  isDrawing=true;
+  const p=getDrawPos(e);
+  drawCtx.beginPath();
+  drawCtx.moveTo(p.x,p.y);
+  drawCtx.strokeStyle=drawTool==='eraser'?'#FFF':'#000';
+  drawCtx.lineWidth=drawTool==='eraser'?penSize*4:penSize;
+}
+
+function doDraw(e){
+  if(!isDrawing) return;
+  const p=getDrawPos(e);
+  drawCtx.lineTo(p.x,p.y);
+  drawCtx.stroke();
+}
+
+function endDraw(){
+  if(!isDrawing) return;
+  isDrawing=false;
+  drawCtx.closePath();
+  undoStack.push(drawCtx.getImageData(0,0,drawCanvas.width,drawCanvas.height));
+  if(undoStack.length>30) undoStack.shift();
+}
+
+function setDrawTool(tool){
+  drawTool=tool;
+  document.getElementById('tool-pen').classList.toggle('tool-active',tool==='pen');
+  document.getElementById('tool-eraser').classList.toggle('tool-active',tool==='eraser');
+}
+
+function changePenSize(d){
+  penSize=Math.max(1,Math.min(12,penSize+d));
+}
+
+function undoDraw(){
+  if(undoStack.length>1){
+    undoStack.pop();
+    drawCtx.putImageData(undoStack[undoStack.length-1],0,0);
+  }
+}
+
+function clearDraw(){
+  drawCtx.fillStyle='#FFF';
+  drawCtx.fillRect(0,0,drawCanvas.width,drawCanvas.height);
+  undoStack=[drawCtx.getImageData(0,0,drawCanvas.width,drawCanvas.height)];
+}
+
+function finishDrawing(){
+  state.drawData=drawCanvas.toDataURL('image/png');
+  renderDAPChecklist();
+}
+
+function renderDAPChecklist(){
+  app.innerHTML=`
+    <div class="page">
+      <h2>Score the Drawing</h2>
+      <p style="color:#666;margin:8px 0">Check each feature that is clearly present in ${state.child.name}'s drawing.</p>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+        <div style="flex:1;min-width:280px">
+          <div class="checklist">
+            ${DAP_ITEMS.map(g=>`
+              <div class="checklist-group">
+                <h3>Class ${g.group}: ${g.label}</h3>
+                ${g.items.map(it=>`
+                  <label><input type="checkbox" value="${it.id}" onchange="updateDAPScore()"> ${it.text}</label>
+                `).join('')}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        <div style="flex:0 0 200px;position:sticky;top:16px">
+          ${state.drawData?`<img src="${state.drawData}" style="width:200px;border-radius:8px;box-shadow:var(--shadow)"/>`:''}
+          <div class="card" style="text-align:center;margin-top:12px">
+            <div style="font-size:.9rem;color:#666">Raw Score</div>
+            <div id="dap-raw" style="font-size:2rem;font-weight:700;color:var(--blue)">0</div>
+            <div id="dap-ma" style="font-size:.85rem;color:#666"></div>
+            <div id="dap-iq" style="font-size:1.1rem;font-weight:700;margin-top:4px"></div>
+          </div>
+        </div>
+      </div>
+      <button class="next-btn" onclick="submitDAP()">Continue</button>
+    </div>
+  `;
+}
+
+function updateDAPScore(){
+  const checks=document.querySelectorAll('.checklist input:checked');
+  const raw=checks.length;
+  document.getElementById('dap-raw').textContent=raw;
+  const age=getAge(state.child.dob);
+  const result=getDAP_IQ(raw, age.total);
+  document.getElementById('dap-ma').textContent=result.maLabel?'MA: '+result.maLabel:'';
+  const cls=getClassification(result.iq);
+  document.getElementById('dap-iq').innerHTML=`IQ: ${result.iq} <span class="classification" style="background:${cls.color}">${cls.label}</span>`;
+}
+
+function submitDAP(){
+  const checks=document.querySelectorAll('.checklist input:checked');
+  const raw=checks.length;
+  const age=getAge(state.child.dob);
+  const result=getDAP_IQ(raw, age.total);
+  state.answers['dap']={raw, iq:result.iq, ma:result.ma, maLabel:result.maLabel, checkedItems:Array.from(checks).map(c=>c.value)};
+  state.currentMod++;
+  _itemsCache={};
+  runCurrentModule();
+}
+
+
+// ===== RESULTS PAGE =====
+
+function showResults(){
+  clearTimers();
+  const age=getAge(state.child.dob);
+  const results={};
+  let iqSum=0, iqCount=0;
+
+  for(const modId of state.modules){
+    if(modId==='dap'){
+      const d=state.answers['dap'];
+      if(d){
+        results['dap']={raw:d.raw, total:51, percentile:null, iq:d.iq, maLabel:d.maLabel};
+        iqSum+=d.iq; iqCount++;
+      }
+    } else {
+      const answers=state.answers[modId]||[];
+      const raw=answers.filter(a=>a.isCorrect).length;
+      const scores=computeScores(modId, raw, age.total);
+      results[modId]=scores;
+      iqSum+=scores.iq; iqCount++;
+    }
+  }
+
+  const compositeIQ = iqCount>0 ? Math.round(iqSum/iqCount) : 100;
+  const compClass=getClassification(compositeIQ);
+
+  // Save to history
+  const entry={
+    date:new Date().toISOString(),
+    child:state.child.name,
+    childDob:state.child.dob,
+    age:age.label,
+    ageTotal:age.total,
+    modules:state.modules,
+    results:results,
+    compositeIQ:compositeIQ,
+    totalTime:totalSeconds,
+    drawData:state.drawData||null
+  };
+  saveHistory(entry);
+
+  // Render
+  let modRows='';
+  let barRows='';
+  for(const modId of state.modules){
+    const r=results[modId];
+    if(!r) continue;
+    const cls=getClassification(r.iq);
+    const pct = r.percentile!==null ? r.percentile+'%' : 'N/A';
+    modRows+=`<tr>
+      <td>${getModuleName(modId)}</td>
+      <td>${r.raw}/${r.total}</td>
+      <td>${pct}</td>
+      <td>${r.iq}</td>
+      <td><span class="classification" style="background:${cls.color}">${cls.label}</span></td>
+    </tr>`;
+    if(r.percentile!==null){
+      barRows+=`<div class="bar-row">
+        <div class="bar-label">${getModuleName(modId)}</div>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:${r.percentile}%;background:${barColor(r.percentile)}">${r.percentile}%</div>
+        </div>
+      </div>`;
+    }
+  }
+
+  app.innerHTML=`
+    <div class="page">
+      <nav><button class="btn-outline" onclick="renderLanding()">Home</button><button class="btn-outline" onclick="renderHistory()">History</button></nav>
+      <h1>Results for ${state.child.name}</h1>
+      <p style="text-align:center;color:#666">Age: ${age.label} | Total time: ${formatTime(totalSeconds)}</p>
+
+      <div class="composite-score">
+        <div class="lbl">Composite IQ Estimate</div>
+        <div class="big">${compositeIQ}</div>
+        <div class="lbl"><span class="classification" style="background:rgba(255,255,255,.2)">${compClass.label}</span></div>
+      </div>
+
+      <div class="result-card">
+        <h2>Percentile by Domain</h2>
+        <div class="bar-chart">${barRows}</div>
+      </div>
+
+      <div class="result-card">
+        <h2>Detailed Scores</h2>
+        <div style="overflow-x:auto">
+          <table class="score-table">
+            <thead><tr><th>Module</th><th>Raw</th><th>Percentile</th><th>IQ</th><th>Classification</th></tr></thead>
+            <tbody>${modRows}</tbody>
+          </table>
+        </div>
+      </div>
+
+      ${state.drawData?`
+      <div class="result-card">
+        <h2>Draw-a-Person</h2>
+        <div style="text-align:center"><img src="${state.drawData}" style="max-width:300px;border-radius:8px;box-shadow:var(--shadow)"/></div>
+        ${results.dap?`<p style="text-align:center;margin-top:12px">Raw Score: ${results.dap.raw}/51 | Mental Age: ${results.dap.maLabel||'N/A'} | IQ: ${results.dap.iq}</p>`:''}
+      </div>`:''}
+
+      <div class="result-card" style="background:#FFF9C4;border:2px solid #F39C12">
+        <h3 style="color:#E67E22">Important Note</h3>
+        <p style="font-size:.9rem;color:#666;line-height:1.5">
+          This assessment provides <strong>estimates only</strong> and is not a substitute for formal psychological testing.
+          Results should be interpreted with caution. Factors such as attention, motivation, familiarity with technology,
+          and testing conditions can all influence performance. For a comprehensive evaluation, consult a licensed psychologist.
+        </p>
+      </div>
+
+      <div class="action-btns">
+        <button class="btn-blue" onclick="renderLanding()">New Test</button>
+        <button class="btn-purple" onclick="renderHistory()">View History</button>
+      </div>
+    </div>
+  `;
+
+  // Animate bars
+  setTimeout(()=>{
+    document.querySelectorAll('.bar-fill').forEach(el=>{
+      el.style.transition='width 0.8s ease';
+    });
+  },100);
+}
+
+
+// ===== HISTORY PAGE =====
+
+function renderHistory(){
+  clearTimers();
+  const history=getHistory();
+
+  let entriesHTML='';
+  if(history.length===0){
+    entriesHTML='<p style="text-align:center;color:#666;padding:32px">No test history yet. Complete a test to see results here.</p>';
+  } else {
+    const sorted=[...history].reverse();
+    entriesHTML=sorted.map((h,i)=>{
+      const cls=getClassification(h.compositeIQ);
+      const d=new Date(h.date);
+      const dateStr=d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+      const mods=h.modules.map(m=>getModuleName(m)).join(', ');
+      return `<div class="history-entry" onclick="showHistoryDetail(${history.length-1-i})">
+        <span class="iq" style="color:${cls.color}">${h.compositeIQ}</span>
+        <div class="child">${h.child}</div>
+        <div class="date">${dateStr} | ${h.age} | ${formatTime(h.totalTime||0)}</div>
+        <div style="font-size:.8rem;color:#999;margin-top:4px">${mods}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // Line chart
+  let chartHTML='';
+  if(history.length>=2){
+    chartHTML=renderLineChart(history);
+  }
+
+  app.innerHTML=`
+    <div class="page">
+      <nav><button class="btn-outline" onclick="renderLanding()">Home</button><div></div></nav>
+      <h1>Test History</h1>
+
+      ${chartHTML?`<div class="line-chart-container"><h3>Composite IQ Over Time</h3>${chartHTML}</div>`:''}
+
+      ${entriesHTML}
+
+      <div class="action-btns">
+        <button class="btn-green" onclick="exportHistory()">Export JSON</button>
+        <button class="btn-red" onclick="clearHistory()">Clear All History</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderLineChart(history){
+  const W=600, H=250, pad={t:30,r:30,b:50,l:50};
+  const plotW=W-pad.l-pad.r, plotH=H-pad.t-pad.b;
+
+  // Get data points per child
+  const childData={};
+  history.forEach((h,i)=>{
+    if(!childData[h.child]) childData[h.child]=[];
+    childData[h.child].push({x:i,iq:h.compositeIQ,date:h.date});
+  });
+
+  const minIQ=Math.min(...history.map(h=>h.compositeIQ))-10;
+  const maxIQ=Math.max(...history.map(h=>h.compositeIQ))+10;
+  const n=history.length;
+
+  function px(xi){return pad.l+(xi/(n-1||1))*plotW}
+  function py(iq){return pad.t+plotH-(iq-minIQ)/(maxIQ-minIQ)*plotH}
+
+  let svg='';
+  // Grid
+  for(let iq=Math.ceil(minIQ/10)*10;iq<=maxIQ;iq+=10){
+    const y=py(iq);
+    svg+=`<line x1="${pad.l}" y1="${y}" x2="${W-pad.r}" y2="${y}" stroke="#EEE" stroke-width="1"/>`;
+    svg+=`<text x="${pad.l-8}" y="${y+4}" text-anchor="end" font-size="10" fill="#999">${iq}</text>`;
+  }
+  // Reference line at 100
+  svg+=`<line x1="${pad.l}" y1="${py(100)}" x2="${W-pad.r}" y2="${py(100)}" stroke="#CCC" stroke-width="1.5" stroke-dasharray="4,3"/>`;
+  svg+=`<text x="${W-pad.r+4}" y="${py(100)+4}" font-size="9" fill="#999">Avg</text>`;
+
+  // Axes
+  svg+=`<line x1="${pad.l}" y1="${pad.t}" x2="${pad.l}" y2="${H-pad.b}" stroke="#333" stroke-width="1.5"/>`;
+  svg+=`<line x1="${pad.l}" y1="${H-pad.b}" x2="${W-pad.r}" y2="${H-pad.b}" stroke="#333" stroke-width="1.5"/>`;
+
+  // X labels
+  history.forEach((h,i)=>{
+    const x=px(i);
+    const d=new Date(h.date);
+    const lbl=d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+    svg+=`<text x="${x}" y="${H-pad.b+16}" text-anchor="middle" font-size="9" fill="#666">${lbl}</text>`;
+    svg+=`<text x="${x}" y="${H-pad.b+28}" text-anchor="middle" font-size="8" fill="#999">${h.child}</text>`;
+  });
+
+  // Lines per child
+  const childColors={Liam:'#4A90D9',Noah:'#27AE60'};
+  for(const [child,pts] of Object.entries(childData)){
+    const col=childColors[child]||'#333';
+    if(pts.length>1){
+      const d=pts.map((p,i)=>`${i===0?'M':'L'}${px(p.x)},${py(p.iq)}`).join(' ');
+      svg+=`<path d="${d}" fill="none" stroke="${col}" stroke-width="2.5"/>`;
+    }
+    pts.forEach(p=>{
+      svg+=`<circle cx="${px(p.x)}" cy="${py(p.iq)}" r="5" fill="${col}" stroke="#FFF" stroke-width="2"/>`;
+      svg+=`<text x="${px(p.x)}" y="${py(p.iq)-10}" text-anchor="middle" font-size="10" fill="${col}" font-weight="700">${p.iq}</text>`;
+    });
+  }
+
+  // Legend
+  let lx=pad.l+10;
+  for(const [child,col] of Object.entries(childColors)){
+    if(childData[child]){
+      svg+=`<circle cx="${lx}" cy="14" r="5" fill="${col}"/>`;
+      svg+=`<text x="${lx+10}" y="18" font-size="11" fill="#333">${child}</text>`;
+      lx+=70;
+    }
+  }
+
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">${svg}</svg>`;
+}
+
+function showHistoryDetail(idx){
+  const history=getHistory();
+  const h=history[idx];
+  if(!h) return;
+
+  let modRows='';
+  for(const modId of h.modules){
+    const r=h.results[modId];
+    if(!r) continue;
+    const cls=getClassification(r.iq);
+    const pct=r.percentile!==null&&r.percentile!==undefined?r.percentile+'%':'N/A';
+    modRows+=`<tr>
+      <td>${getModuleName(modId)}</td>
+      <td>${r.raw}/${r.total}</td>
+      <td>${pct}</td>
+      <td>${r.iq}</td>
+      <td><span class="classification" style="background:${cls.color}">${cls.label}</span></td>
+    </tr>`;
+  }
+  const cls=getClassification(h.compositeIQ);
+  const d=new Date(h.date);
+
+  app.innerHTML=`
+    <div class="page">
+      <nav><button class="btn-outline" onclick="renderHistory()">Back to History</button><button class="btn-outline" onclick="renderLanding()">Home</button></nav>
+      <h1>${h.child} - ${d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}</h1>
+      <p style="text-align:center;color:#666">Age: ${h.age} | Time: ${formatTime(h.totalTime||0)}</p>
+      <div class="composite-score">
+        <div class="lbl">Composite IQ</div>
+        <div class="big">${h.compositeIQ}</div>
+        <div class="lbl"><span class="classification" style="background:rgba(255,255,255,.2)">${cls.label}</span></div>
+      </div>
+      <div class="result-card">
+        <div style="overflow-x:auto">
+          <table class="score-table">
+            <thead><tr><th>Module</th><th>Raw</th><th>Percentile</th><th>IQ</th><th>Classification</th></tr></thead>
+            <tbody>${modRows}</tbody>
+          </table>
+        </div>
+      </div>
+      ${h.drawData?`<div class="result-card"><h2>Drawing</h2><div style="text-align:center"><img src="${h.drawData}" style="max-width:300px;border-radius:8px;box-shadow:var(--shadow)"/></div></div>`:''}
+    </div>
+  `;
+}
+
+function exportHistory(){
+  const h=getHistory();
+  const blob=new Blob([JSON.stringify(h,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='kids-iq-history.json';a.click();
+  URL.revokeObjectURL(url);
+}
+
+function clearHistory(){
+  if(confirm('Are you sure you want to delete ALL test history? This cannot be undone.')){
+    localStorage.removeItem(LS_KEY);
+    renderHistory();
+  }
+}
+
+// ===== INIT =====
+renderLanding();
+
+
+</script>
+</body>
+</html>

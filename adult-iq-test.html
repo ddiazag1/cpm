@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cognitive Assessment Battery</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+--bg:#f0f2f5;--card:#ffffff;--text:#1a1a2e;--text2:#555;--accent:#4361ee;--accent2:#3a56d4;
+--border:#e0e0e0;--success:#2ecc71;--warning:#f1c40f;--danger:#e74c3c;--shadow:0 2px 12px rgba(0,0,0,.08);
+--radius:12px;--nav-bg:#1a1a2e;--nav-text:#fff;--progress-bg:#e0e0e0;--input-bg:#f8f9fa;
+}
+[data-theme="dark"]{
+--bg:#0d1117;--card:#161b22;--text:#e6edf3;--text2:#8b949e;--accent:#4361ee;--accent2:#5a7aff;
+--border:#30363d;--shadow:0 2px 12px rgba(0,0,0,.3);--nav-bg:#010409;--progress-bg:#30363d;--input-bg:#0d1117;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;transition:background .3s,color .3s}
+nav{background:var(--nav-bg);color:var(--nav-text);padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+nav .brand{font-size:18px;font-weight:700;letter-spacing:.5px}
+nav .nav-links{display:flex;gap:4px}
+nav .nav-links button{background:none;border:none;color:var(--nav-text);padding:8px 16px;cursor:pointer;border-radius:8px;font-size:14px;font-weight:500;transition:background .2s;min-height:44px;min-width:44px}
+nav .nav-links button:hover,nav .nav-links button.active{background:rgba(255,255,255,.15)}
+.theme-toggle{background:none;border:1px solid rgba(255,255,255,.3);color:var(--nav-text);padding:6px 12px;border-radius:8px;cursor:pointer;font-size:14px;min-height:44px;min-width:44px}
+.container{max-width:900px;margin:0 auto;padding:20px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:20px;box-shadow:var(--shadow);transition:background .3s,border-color .3s}
+.card h2{font-size:22px;margin-bottom:12px;color:var(--text)}
+.card h3{font-size:18px;margin-bottom:8px}
+.card p{color:var(--text2);margin-bottom:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 24px;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;transition:all .2s;min-height:44px;min-width:44px}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2);transform:translateY(-1px)}
+.btn-secondary{background:transparent;color:var(--accent);border:2px solid var(--accent)}
+.btn-secondary:hover{background:var(--accent);color:#fff}
+.btn-danger{background:var(--danger);color:#fff}
+.btn-danger:hover{background:#c0392b}
+.btn-sm{padding:8px 16px;font-size:13px}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.progress-bar{width:100%;height:8px;background:var(--progress-bg);border-radius:4px;overflow:hidden;margin:16px 0}
+.progress-bar .fill{height:100%;background:var(--accent);border-radius:4px;transition:width .4s ease}
+.module-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin:20px 0}
+.module-card{background:var(--card);border:2px solid var(--border);border-radius:var(--radius);padding:20px;cursor:pointer;transition:all .2s;position:relative}
+.module-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.module-card.selected{border-color:var(--accent);background:rgba(67,97,238,.06)}
+.module-card .check{position:absolute;top:12px;right:12px;width:24px;height:24px;border:2px solid var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.module-card.selected .check{background:var(--accent);border-color:var(--accent);color:#fff}
+.module-card h3{font-size:16px;margin-bottom:4px;padding-right:32px}
+.module-card .meta{font-size:13px;color:var(--text2)}
+.option-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin:16px 0}
+.option-btn{background:var(--input-bg);border:2px solid var(--border);border-radius:8px;padding:14px 16px;cursor:pointer;text-align:left;font-size:15px;transition:all .2s;min-height:44px;color:var(--text)}
+.option-btn:hover{border-color:var(--accent);background:rgba(67,97,238,.06)}
+.option-btn.selected{border-color:var(--accent);background:rgba(67,97,238,.12);font-weight:600}
+.option-btn.correct{border-color:var(--success);background:rgba(46,204,113,.12)}
+.option-btn.incorrect{border-color:var(--danger);background:rgba(231,76,60,.12)}
+input[type="text"],input[type="number"]{width:100%;max-width:300px;padding:12px 16px;border:2px solid var(--border);border-radius:8px;font-size:16px;background:var(--input-bg);color:var(--text);transition:border-color .2s;min-height:44px}
+input:focus{outline:none;border-color:var(--accent)}
+.timer{font-size:28px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--accent);text-align:center;margin:12px 0}
+.timer.warning{color:var(--warning)}
+.timer.danger{color:var(--danger)}
+.digit-display{font-size:64px;font-weight:700;text-align:center;padding:40px;color:var(--accent);min-height:160px;display:flex;align-items:center;justify-content:center}
+.results-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin:20px 0}
+.result-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;text-align:center}
+.result-card .iq-score{font-size:42px;font-weight:800;color:var(--accent);margin:8px 0}
+.result-card .classification{font-size:14px;font-weight:600;padding:4px 12px;border-radius:20px;display:inline-block;margin:4px 0}
+.result-card .raw{font-size:13px;color:var(--text2);margin-top:4px}
+.composite-display{text-align:center;padding:32px}
+.composite-display .big-score{font-size:72px;font-weight:800;color:var(--accent)}
+.composite-display .ci{font-size:16px;color:var(--text2);margin-top:4px}
+.chart-container{margin:24px 0}
+.disclaimer{font-size:12px;color:var(--text2);text-align:center;padding:16px;border-top:1px solid var(--border);margin-top:24px;font-style:italic}
+.history-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)}
+.history-row:last-child{border-bottom:none}
+.seq-prompt{font-size:20px;font-weight:600;text-align:center;padding:20px;background:var(--input-bg);border-radius:8px;margin:16px 0;letter-spacing:1px;font-family:'Courier New',monospace;line-height:1.8;word-break:break-all}
+.svg-matrix{display:flex;justify-content:center;margin:16px 0}
+.svg-options{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:10px;margin:16px 0;justify-items:center}
+.svg-option{border:2px solid var(--border);border-radius:8px;padding:8px;cursor:pointer;transition:all .2s;min-width:80px;min-height:80px;display:flex;align-items:center;justify-content:center;background:var(--card)}
+.svg-option:hover{border-color:var(--accent)}
+.svg-option.selected{border-color:var(--accent);background:rgba(67,97,238,.1)}
+.hidden{display:none!important}
+.fade-in{animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.wonderlic-item{margin-bottom:20px;padding:16px;background:var(--input-bg);border-radius:8px}
+.wonderlic-item .q-num{font-size:13px;color:var(--text2);margin-bottom:4px}
+.wonderlic-item .q-text{font-size:15px;font-weight:500;margin-bottom:10px}
+@media(max-width:600px){
+.container{padding:12px}
+.card{padding:16px}
+nav{padding:0 12px}
+nav .brand{font-size:15px}
+.module-grid{grid-template-columns:1fr}
+.option-grid{grid-template-columns:1fr}
+.composite-display .big-score{font-size:52px}
+.digit-display{font-size:48px;padding:24px}
+.svg-options{grid-template-columns:repeat(auto-fill,minmax(70px,1fr))}
+}
+</style>
+</head>
+<body>
+<nav>
+<span class="brand">Cognitive Assessment</span>
+<div class="nav-links">
+<button onclick="showPage('home')" id="nav-home" class="active">Home</button>
+<button onclick="showPage('test')" id="nav-test">Test</button>
+<button onclick="showPage('results')" id="nav-results">Results</button>
+<button onclick="showPage('history')" id="nav-history">History</button>
+</div>
+<button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark/light mode">&#9681;</button>
+</nav>
+<div class="container" id="app"></div>
+<script>
+"use strict";
+
+/* ============================================================
+   CONSTANTS, STATE, HELPERS
+   ============================================================ */
+
+const COLORS = {
+  red:'#E74C3C',blue:'#3498DB',green:'#2ECC71',yellow:'#F1C40F',
+  purple:'#9B59B6',orange:'#E67E22',teal:'#1ABC9C',dark:'#34495E'
+};
+const COLOR_NAMES = Object.keys(COLORS);
+const COLOR_HEX = Object.values(COLORS);
+
+const CLASSIFICATIONS = [
+  [130,'Very Superior','#8e44ad'],[120,'Superior','#2980b9'],
+  [110,'Above Average','#27ae60'],[90,'Average','#2ecc71'],
+  [80,'Below Average','#f39c12'],[70,'Low','#e67e22'],
+  [0,'Very Low','#e74c3c']
+];
+
+const MODULE_INFO = [
+  {id:'matrix',name:'Matrix Reasoning',desc:'Pattern recognition in visual grids',items:30,time:'Untimed',weight:.25},
+  {id:'vocab',name:'Vocabulary',desc:'Word knowledge and verbal comprehension',items:40,time:'Untimed',weight:.20},
+  {id:'abstract',name:'Abstract Sequences',desc:'Logical pattern completion',items:20,time:'Untimed',weight:.15},
+  {id:'digit',name:'Working Memory',desc:'Digit span forward and backward',items:'Adaptive',time:'~5 min',weight:.10},
+  {id:'quant',name:'Quantitative Reasoning',desc:'Mathematical and numerical problem solving',items:20,time:'Untimed',weight:.15},
+  {id:'speed',name:'Processing Speed',desc:'Timed mixed cognitive items',items:50,time:'12 min',weight:.15}
+];
+
+const WONDERLIC_IQ = {1:65,2:65,3:69,4:69,5:72,6:74,7:75,8:78,9:80,10:83,11:84,12:84,13:85,14:86,15:87,16:89,17:91,18:93,19:95,20:97,21:98,22:100,23:103,24:105,25:107,26:108,27:111,28:113,29:114,30:116,31:118,32:120,33:122,34:125,35:126,36:128,37:131,38:133,39:135,40:137,41:139,42:140,43:141,44:143,45:145,46:146,47:148,48:149,49:151,50:156};
+
+const NORMS = {
+  matrix:{mean:24,sd:4},
+  vocab:{mean:33,sd:4},
+  abstract:{mean:28,sd:6},
+  digit:{mean:12,sd:2},
+  quant:{mean:13,sd:3.5},
+  speed:{mean:null,sd:null}
+};
+
+let state = {
+  page:'home',
+  selectedModules:['matrix','vocab','abstract','digit','quant','speed'],
+  currentModule:null,
+  currentItem:0,
+  answers:{},
+  scores:{},
+  sessionActive:false,
+  digitState:null,
+  speedTimer:null,
+  speedTimeLeft:720,
+  speedStarted:false
+};
+
+function normalCDF(z){
+  const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911;
+  const sign=z<0?-1:1;
+  z=Math.abs(z)/Math.sqrt(2);
+  const t=1.0/(1.0+p*z);
+  const y=1.0-(((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-z*z);
+  return 0.5*(1.0+sign*y);
+}
+
+function classify(iq){
+  for(const[min,label,color] of CLASSIFICATIONS){if(iq>=min)return{label,color}}
+  return{label:'Very Low',color:'#e74c3c'};
+}
+
+function calcIQ(raw,moduleId){
+  if(moduleId==='speed'){
+    const score=Math.max(1,Math.min(50,raw));
+    return WONDERLIC_IQ[score]||100;
+  }
+  const n=NORMS[moduleId];
+  const z=(raw-n.mean)/n.sd;
+  return Math.round(100+15*z);
+}
+
+function percentile(iq){
+  const z=(iq-100)/15;
+  return Math.round(normalCDF(z)*10000)/100;
+}
+
+function clamp(v,lo,hi){return Math.max(lo,Math.min(hi,v))}
+
+function shuffleArray(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}
+  return a;
+}
+
+function saveHistory(result){
+  const hist=JSON.parse(localStorage.getItem('adultIqTestHistory')||'[]');
+  hist.push(result);
+  localStorage.setItem('adultIqTestHistory',JSON.stringify(hist));
+}
+
+function getHistory(){return JSON.parse(localStorage.getItem('adultIqTestHistory')||'[]')}
+
+function toggleTheme(){
+  const d=document.documentElement;
+  const current=d.getAttribute('data-theme');
+  const next=current==='dark'?'light':'dark';
+  d.setAttribute('data-theme',next);
+  localStorage.setItem('iqTestTheme',next);
+}
+
+(function initTheme(){
+  const saved=localStorage.getItem('iqTestTheme');
+  if(saved)document.documentElement.setAttribute('data-theme',saved);
+  else if(window.matchMedia&&window.matchMedia('(prefers-color-scheme:dark)').matches)document.documentElement.setAttribute('data-theme','dark');
+})();
+
+/* ============================================================
+   SVG SHAPE DRAWING
+   ============================================================ */
+
+function drawShape(type, cx, cy, size, color) {
+  const s = size * 0.4;
+  switch(type) {
+    case 'circle':
+      return `<circle cx="${cx}" cy="${cy}" r="${s}" fill="${color}"/>`;
+    case 'square':
+      return `<rect x="${cx-s}" y="${cy-s}" width="${s*2}" height="${s*2}" fill="${color}"/>`;
+    case 'triangle':
+      return `<polygon points="${cx},${cy-s} ${cx+s},${cy+s} ${cx-s},${cy+s}" fill="${color}"/>`;
+    case 'diamond':
+      return `<polygon points="${cx},${cy-s} ${cx+s},${cy} ${cx},${cy+s} ${cx-s},${cy}" fill="${color}"/>`;
+    case 'hexagon': {
+      let pts='';for(let i=0;i<6;i++){const a=Math.PI/3*i-Math.PI/2;pts+=`${cx+s*Math.cos(a)},${cy+s*Math.sin(a)} `}
+      return `<polygon points="${pts.trim()}" fill="${color}"/>`;
+    }
+    case 'pentagon': {
+      let pts='';for(let i=0;i<5;i++){const a=Math.PI*2/5*i-Math.PI/2;pts+=`${cx+s*Math.cos(a)},${cy+s*Math.sin(a)} `}
+      return `<polygon points="${pts.trim()}" fill="${color}"/>`;
+    }
+    case 'cross':
+      return `<rect x="${cx-s/3}" y="${cy-s}" width="${s*2/3}" height="${s*2}" fill="${color}"/><rect x="${cx-s}" y="${cy-s/3}" width="${s*2}" height="${s*2/3}" fill="${color}"/>`;
+    case 'star': {
+      let pts='';for(let i=0;i<10;i++){const r=i%2===0?s:s*0.4;const a=Math.PI/5*i-Math.PI/2;pts+=`${cx+r*Math.cos(a)},${cy+r*Math.sin(a)} `}
+      return `<polygon points="${pts.trim()}" fill="${color}"/>`;
+    }
+    case 'arrow':
+      return `<polygon points="${cx},${cy-s} ${cx+s*0.7},${cy+s*0.3} ${cx+s*0.25},${cy+s*0.3} ${cx+s*0.25},${cy+s} ${cx-s*0.25},${cy+s} ${cx-s*0.25},${cy+s*0.3} ${cx-s*0.7},${cy+s*0.3}" fill="${color}"/>`;
+    case 'semicircle':
+      return `<path d="M${cx-s},${cy} A${s},${s} 0 0,1 ${cx+s},${cy} Z" fill="${color}"/>`;
+    default:
+      return `<circle cx="${cx}" cy="${cy}" r="${s}" fill="${color}"/>`;
+  }
+}
+
+function renderMatrixSVG(cells, gridSize, cellPx) {
+  const pad = 4;
+  const total = gridSize * cellPx + (gridSize+1)*pad;
+  let svg = `<svg width="${total}" height="${total}" viewBox="0 0 ${total} ${total}" xmlns="http://www.w3.org/2000/svg">`;
+  svg += `<rect width="${total}" height="${total}" fill="none"/>`;
+  for(let r=0;r<gridSize;r++){
+    for(let c=0;c<gridSize;c++){
+      const idx=r*gridSize+c;
+      const x=pad+(cellPx+pad)*c;
+      const y=pad+(cellPx+pad)*r;
+      svg+=`<rect x="${x}" y="${y}" width="${cellPx}" height="${cellPx}" rx="4" fill="${document.documentElement.getAttribute('data-theme')==='dark'?'#21262d':'#f8f9fa'}" stroke="${document.documentElement.getAttribute('data-theme')==='dark'?'#30363d':'#dee2e6'}" stroke-width="1.5"/>`;
+      const cell=cells[idx];
+      if(cell===null){
+        svg+=`<text x="${x+cellPx/2}" y="${y+cellPx/2+6}" text-anchor="middle" font-size="20" fill="#999">?</text>`;
+      } else if(cell){
+        svg+=drawShape(cell.shape,x+cellPx/2,y+cellPx/2,cellPx,cell.color);
+      }
+    }
+  }
+  svg+='</svg>';
+  return svg;
+}
+
+function renderOptionSVG(cell, size) {
+  let svg=`<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">`;
+  if(cell){svg+=drawShape(cell.shape,size/2,size/2,size,cell.color)}
+  svg+='</svg>';
+  return svg;
+}
+
+const SHAPES = ['circle','square','triangle','diamond','hexagon','pentagon','cross','star','arrow','semicircle'];
+
+/* ============================================================
+   MATRIX REASONING ITEMS (30)
+   ============================================================ */
+
+function generateMatrixItems() {
+  const items = [];
+
+  // Items 1-10: SIMPLE (single rule)
+  // Pattern: same shape across row, color changes per column
+  function simpleItem(id, shapes, colors, gridSz) {
+    const gs = gridSz || 3;
+    const cells = [];
+    for(let r=0;r<gs;r++){
+      for(let c=0;c<gs;c++){
+        if(r===gs-1 && c===gs-1){cells.push(null)}
+        else{cells.push({shape:shapes[r%shapes.length],color:colors[c%colors.length]})}
+      }
+    }
+    const answer = {shape:shapes[(gs-1)%shapes.length],color:colors[(gs-1)%colors.length]};
+    const distractors = [];
+    for(let i=0;i<7;i++){
+      distractors.push({shape:SHAPES[(SHAPES.indexOf(answer.shape)+i+1)%SHAPES.length],color:COLOR_HEX[(COLOR_HEX.indexOf(answer.color)+i+1)%COLOR_HEX.length]});
+    }
+    return {id,gridSize:gs,cells,answer,options:shuffleArray([answer,...distractors.slice(0,5)]),correctIdx:0};
+  }
+
+  // Item 1: circles, colors change by column
+  items.push(simpleItem(1,['circle','circle','circle'],[COLORS.red,COLORS.blue,COLORS.green],3));
+  // Item 2: squares with color progression
+  items.push(simpleItem(2,['square','square','square'],[COLORS.yellow,COLORS.purple,COLORS.orange],3));
+  // Item 3: triangles
+  items.push(simpleItem(3,['triangle','triangle','triangle'],[COLORS.blue,COLORS.teal,COLORS.red],3));
+  // Item 4: shape constant per row, changes per row
+  items.push(simpleItem(4,['diamond','hexagon','star'],[COLORS.green,COLORS.green,COLORS.green],3));
+  // Item 5: all same shape, all same color
+  items.push(simpleItem(5,['pentagon','pentagon','pentagon'],[COLORS.purple,COLORS.purple,COLORS.purple],3));
+  // Item 6: shape changes by row
+  items.push(simpleItem(6,['cross','arrow','semicircle'],[COLORS.orange,COLORS.orange,COLORS.orange],3));
+  // Item 7: 2x2 simple
+  items.push(simpleItem(7,['circle','square'],[COLORS.red,COLORS.blue],2));
+  // Item 8: color only varies
+  items.push(simpleItem(8,['hexagon','hexagon','hexagon'],[COLORS.red,COLORS.yellow,COLORS.blue],3));
+  // Item 9
+  items.push(simpleItem(9,['star','star','star'],[COLORS.teal,COLORS.green,COLORS.purple],3));
+  // Item 10
+  items.push(simpleItem(10,['diamond','diamond','diamond'],[COLORS.dark,COLORS.orange,COLORS.red],3));
+
+  // Items 11-20: MEDIUM (two rules: shape per row + color per column)
+  function mediumItem(id, rowShapes, colColors) {
+    const cells=[];
+    for(let r=0;r<3;r++){
+      for(let c=0;c<3;c++){
+        if(r===2&&c===2){cells.push(null)}
+        else{cells.push({shape:rowShapes[r],color:colColors[c]})}
+      }
+    }
+    const answer={shape:rowShapes[2],color:colColors[2]};
+    const dist=[];
+    // Distractor: wrong shape right color
+    dist.push({shape:rowShapes[0],color:colColors[2]});
+    dist.push({shape:rowShapes[1],color:colColors[2]});
+    // wrong color right shape
+    dist.push({shape:rowShapes[2],color:colColors[0]});
+    dist.push({shape:rowShapes[2],color:colColors[1]});
+    // both wrong
+    dist.push({shape:rowShapes[0],color:colColors[0]});
+    return {id,gridSize:3,cells,answer,options:shuffleArray([answer,...dist]),correctIdx:0};
+  }
+
+  items.push(mediumItem(11,['circle','square','triangle'],[COLORS.red,COLORS.blue,COLORS.green]));
+  items.push(mediumItem(12,['diamond','hexagon','pentagon'],[COLORS.yellow,COLORS.purple,COLORS.orange]));
+  items.push(mediumItem(13,['star','cross','arrow'],[COLORS.teal,COLORS.dark,COLORS.red]));
+  items.push(mediumItem(14,['circle','diamond','hexagon'],[COLORS.blue,COLORS.green,COLORS.yellow]));
+  items.push(mediumItem(15,['square','triangle','star'],[COLORS.purple,COLORS.orange,COLORS.teal]));
+  items.push(mediumItem(16,['pentagon','semicircle','cross'],[COLORS.red,COLORS.yellow,COLORS.blue]));
+  items.push(mediumItem(17,['arrow','circle','square'],[COLORS.green,COLORS.purple,COLORS.dark]));
+  items.push(mediumItem(18,['triangle','diamond','pentagon'],[COLORS.orange,COLORS.teal,COLORS.red]));
+  items.push(mediumItem(19,['hexagon','star','semicircle'],[COLORS.blue,COLORS.yellow,COLORS.green]));
+  items.push(mediumItem(20,['cross','arrow','circle'],[COLORS.dark,COLORS.red,COLORS.purple]));
+
+  // Items 21-30: HARD (three rules: shape per row, color per column, size/secondary element varies by diagonal)
+  // We use a combined pattern: shape by row, color by column, and a secondary small shape in corner varies by diagonal
+  function hardItem(id, rowShapes, colColors, diagShapes, diagColors) {
+    const cells=[];
+    for(let r=0;r<3;r++){
+      for(let c=0;c<3;c++){
+        if(r===2&&c===2){cells.push(null)}
+        else{
+          cells.push({
+            shape:rowShapes[r],color:colColors[c],
+            badge:diagShapes[(r+c)%3],badgeColor:diagColors[(r+c)%3]
+          });
+        }
+      }
+    }
+    const answer={shape:rowShapes[2],color:colColors[2],badge:diagShapes[(2+2)%3],badgeColor:diagColors[(2+2)%3]};
+    const dist=[];
+    dist.push({shape:rowShapes[0],color:colColors[2],badge:diagShapes[1],badgeColor:diagColors[1]});
+    dist.push({shape:rowShapes[2],color:colColors[0],badge:diagShapes[0],badgeColor:diagColors[0]});
+    dist.push({shape:rowShapes[2],color:colColors[2],badge:diagShapes[0],badgeColor:diagColors[0]});
+    dist.push({shape:rowShapes[2],color:colColors[2],badge:diagShapes[2],badgeColor:diagColors[2]});
+    dist.push({shape:rowShapes[1],color:colColors[1],badge:diagShapes[1],badgeColor:diagColors[1]});
+    dist.push({shape:rowShapes[0],color:colColors[1],badge:diagShapes[2],badgeColor:diagColors[0]});
+    dist.push({shape:rowShapes[1],color:colColors[2],badge:diagShapes[1],badgeColor:diagColors[2]});
+    return {id,gridSize:3,cells,answer,options:shuffleArray([answer,...dist.slice(0,5)]),correctIdx:0,hard:true};
+  }
+
+  items.push(hardItem(21,['circle','square','triangle'],[COLORS.red,COLORS.blue,COLORS.green],['star','diamond','cross'],[COLORS.dark,COLORS.yellow,COLORS.purple]));
+  items.push(hardItem(22,['diamond','hexagon','pentagon'],[COLORS.yellow,COLORS.teal,COLORS.orange],['circle','square','triangle'],[COLORS.red,COLORS.blue,COLORS.green]));
+  items.push(hardItem(23,['star','arrow','semicircle'],[COLORS.purple,COLORS.red,COLORS.blue],['hexagon','pentagon','diamond'],[COLORS.green,COLORS.orange,COLORS.teal]));
+  items.push(hardItem(24,['cross','circle','hexagon'],[COLORS.teal,COLORS.yellow,COLORS.red],['arrow','star','triangle'],[COLORS.blue,COLORS.purple,COLORS.dark]));
+  items.push(hardItem(25,['triangle','pentagon','star'],[COLORS.green,COLORS.dark,COLORS.purple],['square','semicircle','circle'],[COLORS.orange,COLORS.red,COLORS.yellow]));
+  items.push(hardItem(26,['arrow','diamond','cross'],[COLORS.blue,COLORS.orange,COLORS.teal],['pentagon','triangle','hexagon'],[COLORS.yellow,COLORS.green,COLORS.red]));
+  items.push(hardItem(27,['semicircle','star','arrow'],[COLORS.red,COLORS.green,COLORS.dark],['circle','cross','diamond'],[COLORS.teal,COLORS.purple,COLORS.blue]));
+  items.push(hardItem(28,['hexagon','cross','diamond'],[COLORS.orange,COLORS.purple,COLORS.yellow],['star','arrow','pentagon'],[COLORS.dark,COLORS.teal,COLORS.green]));
+  items.push(hardItem(29,['pentagon','triangle','semicircle'],[COLORS.dark,COLORS.red,COLORS.orange],['diamond','hexagon','star'],[COLORS.blue,COLORS.yellow,COLORS.purple]));
+  items.push(hardItem(30,['circle','arrow','hexagon'],[COLORS.green,COLORS.blue,COLORS.red],['cross','pentagon','triangle'],[COLORS.purple,COLORS.dark,COLORS.teal]));
+
+  // Fix correctIdx for shuffled options
+  items.forEach(item=>{
+    item.correctIdx=item.options.findIndex(o=>o.shape===item.answer.shape&&o.color===item.answer.color&&(item.hard?(o.badge===item.answer.badge):true));
+  });
+
+  return items;
+}
+
+function renderMatrixSVGHard(cells, gridSize, cellPx) {
+  const pad=4;
+  const total=gridSize*cellPx+(gridSize+1)*pad;
+  let svg=`<svg width="${total}" height="${total}" viewBox="0 0 ${total} ${total}" xmlns="http://www.w3.org/2000/svg">`;
+  for(let r=0;r<gridSize;r++){
+    for(let c=0;c<gridSize;c++){
+      const idx=r*gridSize+c;
+      const x=pad+(cellPx+pad)*c;
+      const y=pad+(cellPx+pad)*r;
+      const bg=document.documentElement.getAttribute('data-theme')==='dark'?'#21262d':'#f8f9fa';
+      const bdr=document.documentElement.getAttribute('data-theme')==='dark'?'#30363d':'#dee2e6';
+      svg+=`<rect x="${x}" y="${y}" width="${cellPx}" height="${cellPx}" rx="4" fill="${bg}" stroke="${bdr}" stroke-width="1.5"/>`;
+      const cell=cells[idx];
+      if(cell===null){
+        svg+=`<text x="${x+cellPx/2}" y="${y+cellPx/2+6}" text-anchor="middle" font-size="20" fill="#999">?</text>`;
+      } else if(cell){
+        svg+=drawShape(cell.shape,x+cellPx/2,y+cellPx/2,cellPx*0.7,cell.color);
+        if(cell.badge){
+          svg+=drawShape(cell.badge,x+cellPx*0.8,y+cellPx*0.2,cellPx*0.25,cell.badgeColor);
+        }
+      }
+    }
+  }
+  svg+='</svg>';
+  return svg;
+}
+
+function renderOptionSVGHard(cell,size){
+  let svg=`<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">`;
+  if(cell){
+    svg+=drawShape(cell.shape,size/2,size/2,size*0.7,cell.color);
+    if(cell.badge){svg+=drawShape(cell.badge,size*0.78,size*0.22,size*0.28,cell.badgeColor)}
+  }
+  svg+='</svg>';
+  return svg;
+}
+
+/* ============================================================
+   VOCABULARY ITEMS (Shipley, 40 items)
+   ============================================================ */
+
+const VOCAB_ITEMS = [
+  {word:'TALK',options:['draw','eat','speak','sleep'],correct:2},
+  {word:'PERMIT',options:['allow','sew','cut','drive'],correct:0},
+  {word:'PARDON',options:['forgive','pound','divide','tell'],correct:0},
+  {word:'COUCH',options:['pin','eraser','sofa','glass'],correct:2},
+  {word:'REMEMBER',options:['swim','recall','number','defy'],correct:1},
+  {word:'TUMBLE',options:['drink','dress','fall','think'],correct:2},
+  {word:'HIDEOUS',options:['silvery','tilted','young','dreadful'],correct:3},
+  {word:'CORDIAL',options:['leafy','hearty','pliable','rocky'],correct:1},
+  {word:'EVIDENT',options:['green','obvious','skeptical','afraid'],correct:1},
+  {word:'IMPOSTER',options:['conductor','officer','book','pretender'],correct:3},
+  {word:'MERIT',options:['deserve','distrust','fight','separate'],correct:0},
+  {word:'FASCINATE',options:['welcome','fix','enchant','stir'],correct:2},
+  {word:'INDICATE',options:['signify','excite','itchy','administer'],correct:0},
+  {word:'IGNORANT',options:['red','sharp','uninformed','precise'],correct:2},
+  {word:'FORTIFY',options:['strengthen','vent','deaden','lighten'],correct:0},
+  {word:'RENOWN',options:['fame','trespass','width','length'],correct:0},
+  {word:'NARRATE',options:['relate','drive','turn','want'],correct:0},
+  {word:'MASSIVE',options:['bright','large','graceful','low'],correct:1},
+  {word:'HILARITY',options:['laughter','speed','grace','malice'],correct:0},
+  {word:'SMIRCHED',options:['stolen','pointed','remade','soiled'],correct:3},
+  {word:'SQUANDER',options:['belittle','cut','waste','squeeze'],correct:2},
+  {word:'CAPTION',options:['heading','leader','horse','ape'],correct:0},
+  {word:'FACILITATE',options:['help','turn','strip','bewilder'],correct:0},
+  {word:'JOCUND',options:['feeble','merry','varied','plain'],correct:1},
+  {word:'APPRISE',options:['value','strangle','inform','reduce'],correct:2},
+  {word:'RUE',options:['regret','drink','fly','fame'],correct:0},
+  {word:'DENIZEN',options:['senator','inhabitant','fish','atom'],correct:1},
+  {word:'DIVEST',options:['strip','invest','sell','improve'],correct:0},
+  {word:'AMULET',options:['charm','coin','orphan','dagger'],correct:0},
+  {word:'INEXORABLE',options:['relentless','rigid','sparse','untidy'],correct:0},
+  {word:'SERRATED',options:['notched','dried','armed','blunt'],correct:0},
+  {word:'LISSOM',options:['moldy','loose','supple','convex'],correct:2},
+  {word:'MOLLIFY',options:['mitigate','direct','pertain','abuse'],correct:0},
+  {word:'PLAGIARIZE',options:['annoy','steal','maintain','entreat'],correct:1},
+  {word:'ORIFICE',options:['brush','hole','building','wall'],correct:1},
+  {word:'QUERULOUS',options:['maniacal','curious','devout','complaining'],correct:3},
+  {word:'PARIAH',options:['outcast','priest','scholar','friend'],correct:0},
+  {word:'ABET',options:['assist','bet','reduce','turn'],correct:0},
+  {word:'TEMERITY',options:['rashness','timidity','honor','fear'],correct:0},
+  {word:'PRISTINE',options:['primitive','vain','current','modish'],correct:0}
+];
+
+/* ============================================================
+   ABSTRACT SEQUENCE ITEMS (Shipley Abstraction, 20 items)
+   ============================================================ */
+
+const ABSTRACT_ITEMS = [
+  {prompt:'1  2  3  4  5  ___',answers:['6'],partial:[]},
+  {prompt:'white  black  short  long  down  ___',answers:['up'],partial:[]},
+  {prompt:'AB  BC  CD  D___',answers:['e','E','DE'],partial:[]},
+  {prompt:'Z  Y  X  W  V  U  ___',answers:['t','T'],partial:[]},
+  {prompt:'12321  23432  34543  ___',answers:['45654'],partial:[]},
+  {prompt:'NE/SW  SE/NW  E/W  ___',answers:['n/s','N/S'],partial:[]},
+  {prompt:'escape  scape  cape  ___',answers:['ape'],partial:['pe']},
+  {prompt:'oh  ho  rat  tar  mood  ___',answers:['doom'],partial:[]},
+  {prompt:'A  Z  B  Y  C  X  D  ___',answers:['w','W'],partial:[]},
+  {prompt:'tot  tot  bard  drab  537  ___',answers:['735'],partial:[]},
+  {prompt:'mist  is  wasp  as  pint  in  ___',answers:['tone no','no','on'],partial:['tone']},
+  {prompt:'57326  73265  32657  26573  ___',answers:['65732'],partial:['6573']},
+  {prompt:'knit  in  spud  up  both  to  ___',answers:['snap an','an','pa','snap'],partial:[]},
+  {prompt:'Scotland  landscape  scapegoat  ___',answers:['capelet','goatee','goat'],partial:['cape','cap']},
+  {prompt:'surgeon  1234567  snore  17635  ___',answers:['rogue','rogue 64325','64325'],partial:['rog']},
+  {prompt:'tam  tan  rib  rid  rat  raw  ___',answers:['hip hid','hid','hip'],partial:[]},
+  {prompt:'tar  pitch  throw  saloon  bar  rod  fee  tip  end  ___',answers:['plank'],partial:['point','board']},
+  {prompt:'3124  82  73  154  46  ___',answers:['13'],partial:[]},
+  {prompt:'lag  leg  pen  pin  big  bog  ___',answers:['rob','rub','rob rue','rub roe'],partial:['rue','roe']},
+  {prompt:'two  w  four  r  one  o  ___',answers:['three t','t','three'],partial:[]}
+];
+
+/* ============================================================
+   QUANTITATIVE REASONING ITEMS (20 items)
+   ============================================================ */
+
+const QUANT_ITEMS = [
+  {q:'What comes next?  2, 4, 6, 8, ?',options:['9','10','11','12'],correct:1},
+  {q:'What comes next?  3, 6, 9, 12, ?',options:['14','15','16','18'],correct:1},
+  {q:'What comes next?  1, 4, 9, 16, ?',options:['20','24','25','36'],correct:2},
+  {q:'What comes next?  100, 90, 80, 70, ?',options:['50','55','60','65'],correct:2},
+  {q:'What comes next?  2, 6, 18, 54, ?',options:['108','128','162','216'],correct:2},
+  {q:'What comes next?  1, 1, 2, 3, 5, ?',options:['6','7','8','10'],correct:2},
+  {q:'If a shirt costs $45 and is 25% off, what do you pay?',options:['$30.00','$33.75','$35.00','$36.25'],correct:1},
+  {q:'What comes next?  1, 3, 7, 15, 31, ?',options:['47','55','63','72'],correct:2},
+  {q:'What comes next?  2, 3, 5, 7, 11, ?',options:['12','13','14','15'],correct:1},
+  {q:'What comes next?  64, 32, 16, 8, ?',options:['2','4','6','0'],correct:1},
+  {q:'What comes next?  1, 8, 27, 64, ?',options:['100','125','128','216'],correct:1},
+  {q:'A train travels 180 miles in 3 hours. What is its average speed in mph?',options:['45','54','60','90'],correct:2},
+  {q:'What comes next?  3, 5, 9, 17, 33, ?',options:['49','57','65','66'],correct:2},
+  {q:'If 3x + 7 = 22, what is x?',options:['3','4','5','7'],correct:2},
+  {q:'What comes next?  1, 4, 10, 20, 35, ?',options:['48','50','56','70'],correct:2},
+  {q:'What comes next?  2, 5, 10, 17, 26, ?',options:['35','36','37','39'],correct:2},
+  {q:'A pool fills in 6 hours with pipe A and 4 hours with pipe B. How many hours to fill together?',options:['2.0','2.4','3.0','5.0'],correct:1},
+  {q:'What is 15% of 240?',options:['24','32','36','40'],correct:2},
+  {q:'What comes next?  1, 2, 4, 7, 11, 16, ?',options:['20','21','22','23'],correct:2},
+  {q:'If log base 10 of x equals 3, what is x?',options:['30','100','1000','10000'],correct:2}
+];
+
+/* ============================================================
+   PROCESSING SPEED ITEMS (Wonderlic-style, 50 items)
+   ============================================================ */
+
+const SPEED_ITEMS = [
+  {q:'How many months in a year?',options:['10','11','12','13'],correct:2},
+  {q:'Hot is to cold as up is to:',options:['left','down','over','high'],correct:1},
+  {q:'Which word does NOT belong: apple, banana, carrot, grape?',options:['apple','banana','carrot','grape'],correct:2},
+  {q:'If you buy 3 items at $4.50 each and pay with $20, what change do you get?',options:['$5.50','$6.00','$6.50','$7.00'],correct:2},
+  {q:'How many sides does a hexagon have?',options:['5','6','7','8'],correct:1},
+  {q:'RESIN is to RINSE as 54312 is to:',options:['51342','52341','52431','51432'],correct:3},
+  {q:'Which number comes next: 3, 6, 12, 24, ?',options:['30','36','42','48'],correct:3},
+  {q:'All dogs are animals. Some animals are pets. Therefore:',options:['All dogs are pets','Some dogs are pets','All pets are dogs','No valid conclusion from these statements alone'],correct:3},
+  {q:'If a clock shows 3:15, what angle do the hands form?',options:['0 degrees','7.5 degrees','90 degrees','45 degrees'],correct:1},
+  {q:'Which word is the opposite of BENEVOLENT?',options:['kind','malevolent','generous','helpful'],correct:1},
+  {q:'15 is what percent of 60?',options:['15%','20%','25%','30%'],correct:2},
+  {q:'Which word does NOT belong: hammer, screwdriver, pliers, banana?',options:['hammer','screwdriver','pliers','banana'],correct:3},
+  {q:'A car travels 150 miles in 2.5 hours. What is its speed in mph?',options:['50','55','60','65'],correct:2},
+  {q:'OCEAN is to WATER as DESERT is to:',options:['oasis','sand','heat','cactus'],correct:1},
+  {q:'What is 3/4 of 120?',options:['80','85','90','95'],correct:2},
+  {q:'If all roses are flowers and all flowers need water, then:',options:['All water needs roses','All roses need water','Some water is a rose','Roses do not need water'],correct:1},
+  {q:'Which number is missing: 2, 5, 10, 17, ?, 37',options:['24','25','26','28'],correct:2},
+  {q:'BIRD is to FLOCK as FISH is to:',options:['pond','school','swim','fin'],correct:1},
+  {q:'A rectangle is 8 cm long and 5 cm wide. What is its area?',options:['13 sq cm','26 sq cm','35 sq cm','40 sq cm'],correct:3},
+  {q:'Which word means the same as CANDID?',options:['sweet','secretive','frank','careful'],correct:2},
+  {q:'What is 40% of 250?',options:['80','90','100','110'],correct:2},
+  {q:'If today is Wednesday, what day was it 3 days ago?',options:['Saturday','Sunday','Monday','Tuesday'],correct:1},
+  {q:'BOOK is to LIBRARY as PAINTING is to:',options:['artist','canvas','gallery','frame'],correct:2},
+  {q:'7 x 8 = ?',options:['48','54','56','63'],correct:2},
+  {q:'Which shape has 3 sides?',options:['rectangle','triangle','pentagon','hexagon'],correct:1},
+  {q:'If 5 workers finish a job in 12 days, how many days for 10 workers?',options:['4','6','8','24'],correct:1},
+  {q:'Which word does NOT belong: sad, happy, joyful, elated?',options:['sad','happy','joyful','elated'],correct:0},
+  {q:'A shirt normally costs $80 and is on sale for 30% off. What is the sale price?',options:['$24','$50','$56','$62'],correct:2},
+  {q:'DOCTOR is to PATIENT as TEACHER is to:',options:['school','student','lesson','book'],correct:1},
+  {q:'What is the next prime number after 19?',options:['20','21','22','23'],correct:3},
+  {q:'If a box contains 3 red balls and 5 blue balls, what fraction are red?',options:['3/8','3/5','5/8','5/3'],correct:0},
+  {q:'Which word is an antonym of VERBOSE?',options:['wordy','terse','loud','lengthy'],correct:1},
+  {q:'12 squared equals:',options:['124','132','144','156'],correct:2},
+  {q:'CHAPTER is to BOOK as SCENE is to:',options:['movie','play','act','theater'],correct:1},
+  {q:'If you drive 45 mph for 40 minutes, how far do you go?',options:['25 miles','30 miles','35 miles','40 miles'],correct:1},
+  {q:'Which number does NOT fit: 1, 4, 9, 15, 25?',options:['1','4','15','25'],correct:2},
+  {q:'WING is to BIRD as FIN is to:',options:['water','fish','swim','ocean'],correct:1},
+  {q:'What is 125 divided by 5?',options:['20','25','30','35'],correct:1},
+  {q:'If a triangle has angles of 90 and 45 degrees, what is the third angle?',options:['35','40','45','50'],correct:2},
+  {q:'MICROSCOPE is to SMALL as TELESCOPE is to:',options:['near','large','far','sky'],correct:2},
+  {q:'How many inches in 3 feet?',options:['24','30','36','42'],correct:2},
+  {q:'If 2x - 5 = 11, then x = ?',options:['3','6','8','10'],correct:2},
+  {q:'Which word does NOT belong: violin, trumpet, guitar, cello?',options:['violin','trumpet','guitar','cello'],correct:1},
+  {q:'A cube has how many edges?',options:['6','8','10','12'],correct:3},
+  {q:'PETAL is to FLOWER as LEAF is to:',options:['tree','branch','root','forest'],correct:0},
+  {q:'What is 1/3 + 1/6?',options:['1/9','1/3','1/2','2/3'],correct:2},
+  {q:'If APPLE = 1 and BANANA = 2, then CHERRY = ?',options:['3','4','5','6'],correct:0},
+  {q:'An equilateral triangle has all sides equal to 7. What is the perimeter?',options:['14','17','21','28'],correct:2},
+  {q:'Which is largest: 3/4, 5/8, 7/10, 2/3?',options:['3/4','5/8','7/10','2/3'],correct:0},
+  {q:'If you start with $100, spend 20%, then earn 10% of the remainder, how much do you have?',options:['$86','$88','$90','$92'],correct:1}
+];
+
+/* ============================================================
+   DIGIT SPAN ENGINE
+   ============================================================ */
+
+function generateDigitSequence(len){
+  const digits=[];
+  for(let i=0;i<len;i++){
+    let d;
+    do{d=Math.floor(Math.random()*9)+1}while(digits.length>0&&d===digits[digits.length-1]);
+    digits.push(d);
+  }
+  return digits;
+}
+
+function initDigitSpan(){
+  state.digitState={
+    phase:'forward', // 'forward' or 'backward'
+    currentLength:3,
+    trial:1, // 1 or 2
+    failedBoth:false,
+    forwardSpan:0,
+    backwardSpan:0,
+    currentSeq:[],
+    showing:false,
+    showIdx:0,
+    forwardTrials:[],
+    backwardTrials:[],
+    userInput:'',
+    feedbackMsg:'',
+    done:false
+  };
+}
+
+function digitSpanNext(){
+  const ds=state.digitState;
+  ds.currentSeq=generateDigitSequence(ds.currentLength);
+  ds.showing=true;
+  ds.showIdx=0;
+  ds.userInput='';
+  ds.feedbackMsg='';
+  renderCurrentModule();
+  showDigitsSequentially();
+}
+
+function showDigitsSequentially(){
+  const ds=state.digitState;
+  if(ds.showIdx<ds.currentSeq.length){
+    renderCurrentModule();
+    setTimeout(()=>{
+      ds.showIdx++;
+      showDigitsSequentially();
+    },1000);
+  } else {
+    ds.showing=false;
+    renderCurrentModule();
+  }
+}
+
+function submitDigitSpan(){
+  const ds=state.digitState;
+  const input=ds.userInput.replace(/\s+/g,'');
+  let expected;
+  if(ds.phase==='forward'){
+    expected=ds.currentSeq.join('');
+  } else {
+    expected=[...ds.currentSeq].reverse().join('');
+  }
+  const correct=input===expected;
+  const trialResult={length:ds.currentLength,trial:ds.trial,seq:ds.currentSeq.slice(),correct};
+
+  if(ds.phase==='forward'){ds.forwardTrials.push(trialResult)} else {ds.backwardTrials.push(trialResult)}
+
+  if(correct){
+    if(ds.phase==='forward'){ds.forwardSpan=Math.max(ds.forwardSpan,ds.currentLength)}
+    else{ds.backwardSpan=Math.max(ds.backwardSpan,ds.currentLength)}
+    ds.feedbackMsg='Correct!';
+  } else {
+    ds.feedbackMsg=`Incorrect. The ${ds.phase==='forward'?'sequence':'reversed sequence'} was: ${ds.phase==='forward'?ds.currentSeq.join(' '):[...ds.currentSeq].reverse().join(' ')}`;
+  }
+
+  if(ds.trial===1){
+    if(correct){
+      // Move to next length
+      ds.trial=1;
+      ds.currentLength++;
+      renderCurrentModule();
+      setTimeout(()=>digitSpanNext(),1500);
+    } else {
+      // Try second trial
+      ds.trial=2;
+      renderCurrentModule();
+      setTimeout(()=>{
+        ds.currentSeq=generateDigitSequence(ds.currentLength);
+        ds.showing=true;
+        ds.showIdx=0;
+        ds.userInput='';
+        ds.feedbackMsg='';
+        renderCurrentModule();
+        showDigitsSequentially();
+      },1500);
+    }
+  } else {
+    // Trial 2
+    if(correct){
+      ds.trial=1;
+      ds.currentLength++;
+      renderCurrentModule();
+      setTimeout(()=>digitSpanNext(),1500);
+    } else {
+      // Both failed, move to next phase or end
+      if(ds.phase==='forward'){
+        ds.phase='backward';
+        ds.currentLength=2;
+        ds.trial=1;
+        ds.feedbackMsg='Now: Backward Digit Span. Type the digits in REVERSE order.';
+        renderCurrentModule();
+        setTimeout(()=>digitSpanNext(),2500);
+      } else {
+        ds.done=true;
+        finishDigitSpan();
+      }
+    }
+  }
+}
+
+function finishDigitSpan(){
+  const ds=state.digitState;
+  const raw=ds.forwardSpan+ds.backwardSpan;
+  state.scores.digit={raw,forwardSpan:ds.forwardSpan,backwardSpan:ds.backwardSpan,iq:calcIQ(raw,'digit')};
+  advanceModule();
+}
+
+/* ============================================================
+   SCORING ENGINE
+   ============================================================ */
+
+function scoreMatrix(){
+  const items=state.matrixItems;
+  let correct=0;
+  for(let i=0;i<items.length;i++){
+    if(state.answers.matrix&&state.answers.matrix[i]===items[i].correctIdx)correct++;
+  }
+  return correct;
+}
+
+function scoreVocab(){
+  let correct=0;
+  for(let i=0;i<VOCAB_ITEMS.length;i++){
+    if(state.answers.vocab&&state.answers.vocab[i]===VOCAB_ITEMS[i].correct)correct++;
+  }
+  return correct;
+}
+
+function scoreAbstract(){
+  let total=0;
+  for(let i=0;i<ABSTRACT_ITEMS.length;i++){
+    const ans=(state.answers.abstract&&state.answers.abstract[i]||'').trim().toLowerCase();
+    const item=ABSTRACT_ITEMS[i];
+    if(item.answers.some(a=>a.toLowerCase()===ans)){total+=2}
+    else if(item.partial.some(a=>a.toLowerCase()===ans)){total+=1}
+  }
+  return total;
+}
+
+function scoreQuant(){
+  let correct=0;
+  for(let i=0;i<QUANT_ITEMS.length;i++){
+    if(state.answers.quant&&state.answers.quant[i]===QUANT_ITEMS[i].correct)correct++;
+  }
+  return correct;
+}
+
+function scoreSpeed(){
+  let correct=0;
+  for(let i=0;i<SPEED_ITEMS.length;i++){
+    if(state.answers.speed&&state.answers.speed[i]===SPEED_ITEMS[i].correct)correct++;
+  }
+  return Math.max(1,correct);
+}
+
+function computeAllScores(){
+  const selected=state.selectedModules;
+  if(selected.includes('matrix')){
+    const raw=scoreMatrix();
+    state.scores.matrix={raw,max:30,iq:calcIQ(raw,'matrix')};
+  }
+  if(selected.includes('vocab')){
+    const raw=scoreVocab();
+    state.scores.vocab={raw,max:40,iq:calcIQ(raw,'vocab')};
+  }
+  if(selected.includes('abstract')){
+    const raw=scoreAbstract();
+    state.scores.abstract={raw,max:40,iq:calcIQ(raw,'abstract')};
+  }
+  // digit scored in finishDigitSpan
+  if(selected.includes('quant')){
+    const raw=scoreQuant();
+    state.scores.quant={raw,max:20,iq:calcIQ(raw,'quant')};
+  }
+  if(selected.includes('speed')){
+    const raw=scoreSpeed();
+    state.scores.speed={raw,max:50,iq:calcIQ(raw,'speed')};
+  }
+}
+
+function computeComposite(){
+  const weights={matrix:.25,vocab:.20,abstract:.15,digit:.10,quant:.15,speed:.15};
+  let totalW=0,sumIQ=0;
+  for(const m of state.selectedModules){
+    if(state.scores[m]){
+      sumIQ+=state.scores[m].iq*weights[m];
+      totalW+=weights[m];
+    }
+  }
+  if(totalW===0)return 100;
+  return Math.round(sumIQ/totalW);
+}
+
+/* ============================================================
+   MODULE FLOW CONTROL
+   ============================================================ */
+
+function startSession(){
+  if(state.selectedModules.length===0){alert('Select at least one module.');return}
+  state.sessionActive=true;
+  state.answers={};
+  state.scores={};
+  state.currentItem=0;
+  state.matrixItems=generateMatrixItems();
+  state.moduleQueue=[...state.selectedModules];
+  state.currentModule=state.moduleQueue.shift();
+  if(state.currentModule==='digit')initDigitSpan();
+  if(state.currentModule==='speed'){state.speedStarted=false;state.speedTimeLeft=720}
+  showPage('test');
+}
+
+function advanceModule(){
+  if(state.moduleQueue.length>0){
+    state.currentModule=state.moduleQueue.shift();
+    state.currentItem=0;
+    if(state.currentModule==='digit')initDigitSpan();
+    if(state.currentModule==='speed'){state.speedStarted=false;state.speedTimeLeft=720}
+    renderCurrentModule();
+  } else {
+    computeAllScores();
+    const composite=computeComposite();
+    const result={
+      date:new Date().toISOString(),
+      composite,
+      modules:{...state.scores},
+      selectedModules:[...state.selectedModules]
+    };
+    saveHistory(result);
+    state.sessionActive=false;
+    showPage('results');
+  }
+}
+
+function nextItem(moduleId, totalItems){
+  if(state.currentItem<totalItems-1){
+    state.currentItem++;
+    renderCurrentModule();
+  } else {
+    // Score this module
+    if(moduleId==='matrix'){const r=scoreMatrix();state.scores.matrix={raw:r,max:30,iq:calcIQ(r,'matrix')}}
+    if(moduleId==='vocab'){const r=scoreVocab();state.scores.vocab={raw:r,max:40,iq:calcIQ(r,'vocab')}}
+    if(moduleId==='abstract'){const r=scoreAbstract();state.scores.abstract={raw:r,max:40,iq:calcIQ(r,'abstract')}}
+    if(moduleId==='quant'){const r=scoreQuant();state.scores.quant={raw:r,max:20,iq:calcIQ(r,'quant')}}
+    if(moduleId==='speed'){
+      clearInterval(state.speedTimer);
+      const r=scoreSpeed();state.scores.speed={raw:r,max:50,iq:calcIQ(r,'speed')};
+    }
+    advanceModule();
+  }
+}
+
+function selectAnswer(moduleId,itemIdx,ansIdx){
+  if(!state.answers[moduleId])state.answers[moduleId]={};
+  state.answers[moduleId][itemIdx]=ansIdx;
+  renderCurrentModule();
+}
+
+/* ============================================================
+   SPEED TIMER
+   ============================================================ */
+
+function startSpeedTimer(){
+  state.speedStarted=true;
+  state.speedTimeLeft=720;
+  state.speedTimer=setInterval(()=>{
+    state.speedTimeLeft--;
+    if(state.speedTimeLeft<=0){
+      clearInterval(state.speedTimer);
+      state.speedTimeLeft=0;
+      const r=scoreSpeed();
+      state.scores.speed={raw:r,max:50,iq:calcIQ(r,'speed')};
+      advanceModule();
+      return;
+    }
+    const timerEl=document.getElementById('speed-timer');
+    if(timerEl){
+      const m=Math.floor(state.speedTimeLeft/60);
+      const s=state.speedTimeLeft%60;
+      timerEl.textContent=`${m}:${s.toString().padStart(2,'0')}`;
+      timerEl.className='timer'+(state.speedTimeLeft<=120?' danger':state.speedTimeLeft<=300?' warning':'');
+    }
+  },1000);
+}
+
+/* ============================================================
+   PAGE RENDERING
+   ============================================================ */
+
+function showPage(page){
+  state.page=page;
+  document.querySelectorAll('.nav-links button').forEach(b=>{
+    b.classList.toggle('active',b.id==='nav-'+page);
+  });
+  render();
+}
+
+function render(){
+  const app=document.getElementById('app');
+  switch(state.page){
+    case 'home':renderHome(app);break;
+    case 'test':renderTest(app);break;
+    case 'results':renderResults(app);break;
+    case 'history':renderHistory(app);break;
+  }
+}
+
+/* HOME PAGE */
+function renderHome(app){
+  let html=`<div class="fade-in">
+    <div class="card" style="text-align:center;padding:40px 24px">
+      <h2 style="font-size:28px;margin-bottom:8px">Cognitive Assessment Battery</h2>
+      <p style="font-size:16px;max-width:600px;margin:0 auto 24px">A comprehensive evaluation across six cognitive domains using established psychometric instruments and published normative data.</p>
+    </div>
+    <div class="card">
+      <h3>Select Modules</h3>
+      <p>Choose which assessments to include in your session.</p>
+      <div class="module-grid">`;
+  MODULE_INFO.forEach(m=>{
+    const sel=state.selectedModules.includes(m.id);
+    html+=`<div class="module-card${sel?' selected':''}" onclick="toggleModule('${m.id}')">
+      <div class="check">${sel?'&#10003;':''}</div>
+      <h3>${m.name}</h3>
+      <div class="meta">${typeof m.items==='number'?m.items+' items':m.items} &middot; ${m.time} &middot; Weight: ${Math.round(m.weight*100)}%</div>
+      <p style="font-size:13px;margin-top:8px">${m.desc}</p>
+    </div>`;
+  });
+  html+=`</div>
+      <div style="text-align:center;margin-top:24px">
+        <button class="btn btn-primary" onclick="startSession()" style="padding:14px 48px;font-size:17px">Begin Assessment</button>
+      </div>
+    </div>
+    <div class="disclaimer">This assessment provides estimated IQ scores based on published psychometric norms. It is not a substitute for professional psychological evaluation.</div>
+  </div>`;
+  app.innerHTML=html;
+}
+
+function toggleModule(id){
+  const idx=state.selectedModules.indexOf(id);
+  if(idx>=0)state.selectedModules.splice(idx,1);
+  else state.selectedModules.push(id);
+  render();
+}
+
+/* TEST PAGE */
+function renderTest(app){
+  if(!state.sessionActive){
+    app.innerHTML='<div class="card"><p>No active session. Return to Home to start.</p></div>';
+    return;
+  }
+  renderCurrentModule();
+}
+
+function renderCurrentModule(){
+  const app=document.getElementById('app');
+  switch(state.currentModule){
+    case 'matrix':renderMatrixModule(app);break;
+    case 'vocab':renderVocabModule(app);break;
+    case 'abstract':renderAbstractModule(app);break;
+    case 'digit':renderDigitModule(app);break;
+    case 'quant':renderQuantModule(app);break;
+    case 'speed':renderSpeedModule(app);break;
+  }
+}
+
+/* MATRIX MODULE */
+function renderMatrixModule(app){
+  const idx=state.currentItem;
+  const item=state.matrixItems[idx];
+  const gs=item.gridSize;
+  const cellPx=gs===2?80:70;
+  const answered=state.answers.matrix&&state.answers.matrix[idx]!==undefined;
+  const selIdx=answered?state.answers.matrix[idx]:-1;
+  const isHard=item.hard;
+
+  let html=`<div class="fade-in"><div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h3>Matrix Reasoning</h3>
+      <span style="color:var(--text2);font-size:14px">Item ${idx+1} of 30</span>
+    </div>
+    <div class="progress-bar"><div class="fill" style="width:${((idx+1)/30)*100}%"></div></div>
+    <p>Find the missing piece to complete the pattern.</p>
+    <div class="svg-matrix">
+      ${isHard?renderMatrixSVGHard(item.cells,gs,cellPx):renderMatrixSVG(item.cells,gs,cellPx)}
+    </div>
+    <p style="font-weight:600;margin-top:16px">Select the answer:</p>
+    <div class="svg-options">`;
+  item.options.forEach((opt,oi)=>{
+    const sel=selIdx===oi?' selected':'';
+    html+=`<div class="svg-option${sel}" onclick="selectAnswer('matrix',${idx},${oi})">
+      ${isHard?renderOptionSVGHard(opt,64):renderOptionSVG(opt,64)}
+    </div>`;
+  });
+  html+=`</div>
+    <div class="btn-group" style="justify-content:flex-end">
+      <button class="btn btn-primary" ${!answered?'disabled':''} onclick="nextItem('matrix',30)">${idx===29?'Finish Module':'Next'}</button>
+    </div>
+  </div></div>`;
+  app.innerHTML=html;
+}
+
+/* VOCAB MODULE */
+function renderVocabModule(app){
+  const idx=state.currentItem;
+  const item=VOCAB_ITEMS[idx];
+  const selIdx=state.answers.vocab&&state.answers.vocab[idx]!==undefined?state.answers.vocab[idx]:-1;
+  const answered=selIdx>=0;
+
+  let html=`<div class="fade-in"><div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h3>Vocabulary</h3>
+      <span style="color:var(--text2);font-size:14px">Item ${idx+1} of 40</span>
+    </div>
+    <div class="progress-bar"><div class="fill" style="width:${((idx+1)/40)*100}%"></div></div>
+    <p style="margin:16px 0 8px">Which word means the same as:</p>
+    <h2 style="text-align:center;font-size:32px;margin:16px 0;letter-spacing:2px">${item.word}</h2>
+    <div class="option-grid">`;
+  item.options.forEach((opt,oi)=>{
+    const sel=selIdx===oi?' selected':'';
+    html+=`<div class="option-btn${sel}" onclick="selectAnswer('vocab',${idx},${oi})">${opt}</div>`;
+  });
+  html+=`</div>
+    <div class="btn-group" style="justify-content:flex-end">
+      <button class="btn btn-primary" ${!answered?'disabled':''} onclick="nextItem('vocab',40)">${idx===39?'Finish Module':'Next'}</button>
+    </div>
+  </div></div>`;
+  app.innerHTML=html;
+}
+
+/* ABSTRACT MODULE */
+function renderAbstractModule(app){
+  const idx=state.currentItem;
+  const item=ABSTRACT_ITEMS[idx];
+  const currentAns=state.answers.abstract&&state.answers.abstract[idx]||'';
+
+  let html=`<div class="fade-in"><div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h3>Abstract Sequences</h3>
+      <span style="color:var(--text2);font-size:14px">Item ${idx+1} of 20</span>
+    </div>
+    <div class="progress-bar"><div class="fill" style="width:${((idx+1)/20)*100}%"></div></div>
+    <p>Complete the pattern by typing what comes next.</p>
+    <div class="seq-prompt">${item.prompt}</div>
+    <div style="text-align:center;margin:16px 0">
+      <input type="text" id="abstract-input" value="${currentAns}" placeholder="Type your answer..." onkeydown="if(event.key==='Enter')document.getElementById('abstract-next').click()" oninput="saveAbstractAnswer(${idx},this.value)" style="text-align:center;max-width:400px;font-size:18px" autocomplete="off" autocapitalize="off">
+    </div>
+    <div class="btn-group" style="justify-content:flex-end">
+      <button class="btn btn-primary" id="abstract-next" onclick="nextItem('abstract',20)">${idx===19?'Finish Module':'Next'}</button>
+    </div>
+  </div></div>`;
+  app.innerHTML=html;
+  const inp=document.getElementById('abstract-input');
+  if(inp)inp.focus();
+}
+
+function saveAbstractAnswer(idx,val){
+  if(!state.answers.abstract)state.answers.abstract={};
+  state.answers.abstract[idx]=val;
+}
+
+/* DIGIT SPAN MODULE */
+function renderDigitModule(app){
+  const ds=state.digitState;
+  if(!ds)return;
+
+  let html=`<div class="fade-in"><div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h3>Working Memory: Digit Span</h3>
+      <span style="color:var(--text2);font-size:14px">${ds.phase==='forward'?'Forward':'Backward'} &middot; Length ${ds.currentLength} &middot; Trial ${ds.trial}</span>
+    </div>`;
+
+  if(ds.done){
+    html+=`<div style="text-align:center;padding:24px">
+      <p style="font-size:18px">Digit Span Complete</p>
+      <p style="margin:12px 0">Forward Span: <strong>${ds.forwardSpan}</strong> &middot; Backward Span: <strong>${ds.backwardSpan}</strong></p>
+      <p>Combined: <strong>${ds.forwardSpan+ds.backwardSpan}</strong></p>
+    </div>`;
+  } else if(ds.showing){
+    const digit=ds.showIdx<ds.currentSeq.length?ds.currentSeq[ds.showIdx]:'';
+    html+=`<p style="text-align:center;margin:8px 0">${ds.phase==='forward'?'Remember the digits in ORDER':'Remember the digits and type them in REVERSE order'}</p>
+      <div class="digit-display">${ds.showIdx<ds.currentSeq.length?digit:''}</div>
+      <p style="text-align:center;color:var(--text2)">Showing digit ${Math.min(ds.showIdx+1,ds.currentSeq.length)} of ${ds.currentSeq.length}</p>`;
+  } else if(!ds.currentSeq.length){
+    html+=`<div style="text-align:center;padding:24px">
+      <p style="font-size:16px;margin-bottom:16px">${ds.phase==='forward'?'You will see digits one at a time. Type them back in the SAME order.':'Type the digits in REVERSE order.'}</p>
+      <button class="btn btn-primary" onclick="digitSpanNext()">Start</button>
+    </div>`;
+  } else {
+    html+=`<p style="text-align:center;margin:8px 0">${ds.phase==='forward'?'Type the digits in the order shown':'Type the digits in REVERSE order'}</p>
+      <div style="text-align:center;margin:24px 0">
+        <input type="text" id="digit-input" value="${ds.userInput}" placeholder="Type digits..." oninput="state.digitState.userInput=this.value" onkeydown="if(event.key==='Enter')submitDigitSpan()" style="text-align:center;font-size:24px;letter-spacing:8px;max-width:300px" autocomplete="off">
+      </div>`;
+    if(ds.feedbackMsg){
+      html+=`<p style="text-align:center;margin:8px 0;font-weight:600;color:${ds.feedbackMsg.startsWith('Correct')?'var(--success)':'var(--danger)'}">${ds.feedbackMsg}</p>`;
+    }
+    html+=`<div class="btn-group" style="justify-content:center">
+      <button class="btn btn-primary" onclick="submitDigitSpan()">Submit</button>
+    </div>`;
+  }
+
+  html+=`</div></div>`;
+  app.innerHTML=html;
+  const inp=document.getElementById('digit-input');
+  if(inp)inp.focus();
+}
+
+/* QUANT MODULE */
+function renderQuantModule(app){
+  const idx=state.currentItem;
+  const item=QUANT_ITEMS[idx];
+  const selIdx=state.answers.quant&&state.answers.quant[idx]!==undefined?state.answers.quant[idx]:-1;
+  const answered=selIdx>=0;
+
+  let html=`<div class="fade-in"><div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h3>Quantitative Reasoning</h3>
+      <span style="color:var(--text2);font-size:14px">Item ${idx+1} of 20</span>
+    </div>
+    <div class="progress-bar"><div class="fill" style="width:${((idx+1)/20)*100}%"></div></div>
+    <p style="font-size:17px;font-weight:500;margin:16px 0">${item.q}</p>
+    <div class="option-grid">`;
+  item.options.forEach((opt,oi)=>{
+    const sel=selIdx===oi?' selected':'';
+    html+=`<div class="option-btn${sel}" onclick="selectAnswer('quant',${idx},${oi})">${opt}</div>`;
+  });
+  html+=`</div>
+    <div class="btn-group" style="justify-content:flex-end">
+      <button class="btn btn-primary" ${!answered?'disabled':''} onclick="nextItem('quant',20)">${idx===19?'Finish Module':'Next'}</button>
+    </div>
+  </div></div>`;
+  app.innerHTML=html;
+}
+
+/* SPEED MODULE */
+function renderSpeedModule(app){
+  if(!state.speedStarted){
+    app.innerHTML=`<div class="fade-in"><div class="card" style="text-align:center;padding:32px">
+      <h3>Processing Speed</h3>
+      <p style="margin:16px 0">50 mixed cognitive items. You have <strong>12 minutes</strong>. Answer as many as you can correctly.</p>
+      <p style="margin-bottom:24px;color:var(--text2)">The timer starts when you click Begin.</p>
+      <button class="btn btn-primary" onclick="startSpeedTimer();renderCurrentModule()" style="padding:14px 48px;font-size:17px">Begin</button>
+    </div></div>`;
+    return;
+  }
+
+  const idx=state.currentItem;
+  const item=SPEED_ITEMS[idx];
+  const selIdx=state.answers.speed&&state.answers.speed[idx]!==undefined?state.answers.speed[idx]:-1;
+  const answered=selIdx>=0;
+  const m=Math.floor(state.speedTimeLeft/60);
+  const s=state.speedTimeLeft%60;
+  const timerClass=state.speedTimeLeft<=120?'danger':state.speedTimeLeft<=300?'warning':'';
+
+  let html=`<div class="fade-in"><div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h3>Processing Speed</h3>
+      <span style="color:var(--text2);font-size:14px">Item ${idx+1} of 50</span>
+    </div>
+    <div class="progress-bar"><div class="fill" style="width:${((idx+1)/50)*100}%"></div></div>
+    <div class="timer ${timerClass}" id="speed-timer">${m}:${s.toString().padStart(2,'0')}</div>
+    <p style="font-size:17px;font-weight:500;margin:16px 0">${item.q}</p>
+    <div class="option-grid">`;
+  item.options.forEach((opt,oi)=>{
+    const sel=selIdx===oi?' selected':'';
+    html+=`<div class="option-btn${sel}" onclick="selectAnswer('speed',${idx},${oi})">${opt}</div>`;
+  });
+  html+=`</div>
+    <div class="btn-group" style="justify-content:flex-end">
+      <button class="btn btn-primary" ${!answered?'disabled':''} onclick="nextItem('speed',50)">${idx===49?'Finish':'Next'}</button>
+    </div>
+  </div></div>`;
+  app.innerHTML=html;
+}
+
+/* RESULTS PAGE */
+function renderResults(app){
+  const hist=getHistory();
+  const latest=hist.length>0?hist[hist.length-1]:null;
+  if(!latest){
+    app.innerHTML='<div class="card"><p>No results yet. Complete an assessment first.</p></div>';
+    return;
+  }
+
+  const composite=latest.composite;
+  const cl=classify(composite);
+  const pct=percentile(composite);
+
+  let html=`<div class="fade-in">
+    <div class="card composite-display">
+      <h2>Composite IQ</h2>
+      <div class="big-score">${composite}</div>
+      <div class="ci">95% CI: ${composite-5} - ${composite+5}</div>
+      <div class="classification" style="background:${cl.color}22;color:${cl.color};margin-top:8px">${cl.label}</div>
+      <p style="margin-top:8px;color:var(--text2)">Percentile: ${pct}th</p>
+    </div>`;
+
+  // Bar chart
+  const modules=latest.modules;
+  const moduleIds=latest.selectedModules||Object.keys(modules);
+  const barW=600,barH=moduleIds.length*50+40;
+  html+=`<div class="card"><h3>Module Scores</h3><div class="chart-container" style="overflow-x:auto">
+    <svg width="${barW}" height="${barH}" viewBox="0 0 ${barW} ${barH}" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto">`;
+  moduleIds.forEach((mid,i)=>{
+    const sc=modules[mid];
+    if(!sc)return;
+    const iq=sc.iq;
+    const y=i*50+10;
+    const label=MODULE_INFO.find(m=>m.id===mid);
+    const name=label?label.name:mid;
+    const barLen=Math.max(5,Math.min(350,(iq/160)*350));
+    const c=classify(iq);
+    html+=`<text x="140" y="${y+22}" text-anchor="end" font-size="13" fill="currentColor">${name}</text>`;
+    html+=`<rect x="150" y="${y+6}" width="${barLen}" height="24" rx="4" fill="${c.color}"/>`;
+    html+=`<text x="${155+barLen}" y="${y+22}" font-size="13" font-weight="700" fill="currentColor">${iq}</text>`;
+  });
+  html+=`</svg></div></div>`;
+
+  // Per-module detail cards
+  html+=`<div class="results-grid">`;
+  moduleIds.forEach(mid=>{
+    const sc=modules[mid];
+    if(!sc)return;
+    const label=MODULE_INFO.find(m=>m.id===mid);
+    const name=label?label.name:mid;
+    const cl2=classify(sc.iq);
+    const pct2=percentile(sc.iq);
+    let rawLabel=`${sc.raw}`;
+    if(sc.max)rawLabel+=` / ${sc.max}`;
+    if(mid==='digit')rawLabel=`Fwd ${sc.forwardSpan} + Bwd ${sc.backwardSpan} = ${sc.raw}`;
+    html+=`<div class="result-card">
+      <h3 style="font-size:14px;color:var(--text2)">${name}</h3>
+      <div class="iq-score">${sc.iq}</div>
+      <div class="classification" style="background:${cl2.color}22;color:${cl2.color}">${cl2.label}</div>
+      <div class="raw">Raw: ${rawLabel} &middot; ${pct2}th %ile</div>
+    </div>`;
+  });
+  html+=`</div>`;
+
+  html+=`<div class="card" style="text-align:center">
+    <button class="btn btn-secondary" onclick="showPage('home')">Take Another Assessment</button>
+  </div>
+  <div class="disclaimer">This assessment provides estimated IQ scores based on published psychometric norms. It is not a substitute for professional psychological evaluation.</div>
+  </div>`;
+  app.innerHTML=html;
+}
+
+/* HISTORY PAGE */
+function renderHistory(app){
+  const hist=getHistory();
+
+  let html=`<div class="fade-in"><div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <h2>Session History</h2>
+      <div class="btn-group" style="margin:0">
+        <button class="btn btn-sm btn-secondary" onclick="exportHistory()">Export JSON</button>
+        <button class="btn btn-sm btn-danger" onclick="clearHistory()">Clear All</button>
+      </div>
+    </div>`;
+
+  if(hist.length===0){
+    html+=`<p>No sessions recorded yet.</p>`;
+  } else {
+    // Line chart
+    if(hist.length>1){
+      const chartW=Math.max(400,hist.length*80);
+      const chartH=200;
+      const pad=40;
+      const minIQ=Math.min(...hist.map(h=>h.composite))-10;
+      const maxIQ=Math.max(...hist.map(h=>h.composite))+10;
+      const range=maxIQ-minIQ||1;
+      html+=`<div class="chart-container" style="overflow-x:auto"><svg width="${chartW}" height="${chartH+pad*2}" viewBox="0 0 ${chartW} ${chartH+pad*2}" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto">`;
+      // Grid lines
+      for(let iq=Math.ceil(minIQ/10)*10;iq<=maxIQ;iq+=10){
+        const y=pad+chartH-(iq-minIQ)/range*chartH;
+        html+=`<line x1="${pad}" y1="${y}" x2="${chartW-10}" y2="${y}" stroke="var(--border)" stroke-width="1"/>`;
+        html+=`<text x="${pad-4}" y="${y+4}" text-anchor="end" font-size="11" fill="currentColor">${iq}</text>`;
+      }
+      // Line
+      let path='';
+      hist.forEach((h,i)=>{
+        const x=pad+i*(chartW-pad*2)/(hist.length-1||1);
+        const y=pad+chartH-(h.composite-minIQ)/range*chartH;
+        path+=(i===0?'M':'L')+`${x},${y}`;
+      });
+      html+=`<path d="${path}" fill="none" stroke="var(--accent)" stroke-width="2.5"/>`;
+      hist.forEach((h,i)=>{
+        const x=pad+i*(chartW-pad*2)/(hist.length-1||1);
+        const y=pad+chartH-(h.composite-minIQ)/range*chartH;
+        html+=`<circle cx="${x}" cy="${y}" r="5" fill="var(--accent)"/>`;
+        html+=`<text x="${x}" y="${chartH+pad+20}" text-anchor="middle" font-size="10" fill="currentColor">${new Date(h.date).toLocaleDateString()}</text>`;
+      });
+      html+=`</svg></div>`;
+    }
+
+    // Table
+    hist.slice().reverse().forEach((h,i)=>{
+      const d=new Date(h.date);
+      const cl=classify(h.composite);
+      const mods=h.selectedModules||Object.keys(h.modules||{});
+      let details=mods.map(m=>{const s=h.modules[m];return s?`${MODULE_INFO.find(x=>x.id===m)?.name||m}: ${s.iq}`:''}).filter(Boolean).join(' | ');
+      html+=`<div class="history-row">
+        <div>
+          <strong>${d.toLocaleDateString()} ${d.toLocaleTimeString()}</strong><br>
+          <span style="font-size:12px;color:var(--text2)">${details}</span>
+        </div>
+        <div style="text-align:right">
+          <span style="font-size:24px;font-weight:700;color:var(--accent)">${h.composite}</span><br>
+          <span class="classification" style="background:${cl.color}22;color:${cl.color};font-size:11px;padding:2px 8px">${cl.label}</span>
+        </div>
+      </div>`;
+    });
+  }
+
+  html+=`</div>
+    <div class="disclaimer">This assessment provides estimated IQ scores based on published psychometric norms. It is not a substitute for professional psychological evaluation.</div>
+  </div>`;
+  app.innerHTML=html;
+}
+
+function exportHistory(){
+  const data=JSON.stringify(getHistory(),null,2);
+  const blob=new Blob([data],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download='iq-test-history.json';a.click();
+  URL.revokeObjectURL(url);
+}
+
+function clearHistory(){
+  if(confirm('Are you sure you want to delete all session history?')){
+    localStorage.removeItem('adultIqTestHistory');
+    render();
+  }
+}
+
+/* INIT */
+showPage('home');
+
+</script>
+</body>
+</html>
