@@ -1,0 +1,3880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>CPM Test - Coloured Progressive Matrices</title>
+<style>
+  /* ============================
+     CSS VARIABLES / THEME
+     ============================ */
+  :root {
+    --primary: #6C5CE7;
+    --primary-light: #A29BFE;
+    --secondary: #00CEC9;
+    --accent-pink: #FD79A8;
+    --accent-yellow: #FFEAA7;
+    --accent-orange: #FAB1A0;
+    --accent-green: #55EFC4;
+    --danger: #FF7675;
+    --success: #00B894;
+    --dark: #2D3436;
+    --dark-header: #1E272E;
+    --light-bg: #F8F9FD;
+    --card-bg: #FFFFFF;
+    --text-primary: #2D3436;
+    --text-secondary: #636E72;
+    --text-light: #B2BEC3;
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.12);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.16);
+    --shadow-glow: 0 0 20px rgba(108,92,231,0.3);
+    --radius-sm: 12px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-full: 9999px;
+    --transition-fast: 0.2s ease;
+    --transition-med: 0.35s ease;
+    --transition-slow: 0.5s ease;
+  }
+
+  /* ============================
+     RESET & BASE
+     ============================ */
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    font-size: 16px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--light-bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    line-height: 1.5;
+  }
+
+  /* ============================
+     HEADER
+     ============================ */
+  .app-header {
+    background: var(--dark-header);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+
+  .app-header h1 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .app-header h1 .logo-icon {
+    font-size: 1.5rem;
+  }
+
+  .header-user {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    opacity: 0.9;
+  }
+
+  .header-user .header-avatar {
+    font-size: 1.4rem;
+  }
+
+  /* ============================
+     SCREEN MANAGEMENT / TRANSITIONS
+     ============================ */
+  .screen {
+    display: none;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity var(--transition-med), transform var(--transition-med);
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    min-height: calc(100vh - 56px);
+  }
+
+  .screen.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .screen.fade-in {
+    animation: fadeSlideIn var(--transition-med) forwards;
+  }
+
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeSlideOut {
+    from { opacity: 1; transform: translateY(0); }
+    to   { opacity: 0; transform: translateY(-12px); }
+  }
+
+  /* ============================
+     BUTTONS — PRIMARY & SECONDARY
+     ============================ */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 14px 28px;
+    min-height: 48px;
+    min-width: 48px;
+    transition: all var(--transition-fast);
+    text-decoration: none;
+    line-height: 1.2;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .btn:active {
+    transform: scale(0.96);
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    box-shadow: var(--shadow-md), 0 0 0 0 rgba(108,92,231,0);
+  }
+
+  .btn-primary:hover {
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+    transform: translateY(-2px);
+  }
+
+  .btn-primary:active {
+    transform: scale(0.96) translateY(0);
+  }
+
+  .btn-secondary {
+    background: var(--card-bg);
+    color: var(--primary);
+    border: 2px solid var(--primary-light);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .btn-secondary:hover {
+    background: var(--primary);
+    color: white;
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  .btn-success {
+    background: linear-gradient(135deg, var(--success), #00D2A0);
+    color: white;
+    box-shadow: var(--shadow-md), 0 0 0 0 rgba(0,184,148,0);
+    font-size: 1.2rem;
+    padding: 18px 36px;
+  }
+
+  .btn-success:hover {
+    box-shadow: var(--shadow-lg), 0 0 20px rgba(0,184,148,0.3);
+    transform: translateY(-2px);
+  }
+
+  .btn-danger {
+    background: linear-gradient(135deg, var(--danger), #E17055);
+    color: white;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .btn-small {
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    min-height: 36px;
+    border-radius: var(--radius-sm);
+  }
+
+  .btn-icon {
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border-radius: var(--radius-full);
+    font-size: 1.2rem;
+  }
+
+  /* ============================
+     AVATAR BUTTON GRID (User Selection)
+     ============================ */
+  .avatar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 20px;
+    padding: 16px 0;
+  }
+
+  .avatar-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 24px 12px;
+    background: var(--card-bg);
+    border: 3px solid transparent;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    transition: all var(--transition-med);
+    box-shadow: var(--shadow-sm);
+    -webkit-user-select: none;
+    user-select: none;
+    min-height: 160px;
+  }
+
+  .avatar-btn:hover {
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .avatar-btn:active {
+    transform: scale(0.97);
+  }
+
+  .avatar-btn .avatar-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    transition: all var(--transition-med);
+    box-shadow: inset 0 -3px 6px rgba(0,0,0,0.1);
+  }
+
+  .avatar-btn:hover .avatar-circle {
+    animation: avatarPulse 0.8s ease infinite alternate;
+  }
+
+  @keyframes avatarPulse {
+    from { transform: scale(1); box-shadow: inset 0 -3px 6px rgba(0,0,0,0.1), 0 0 0 0 rgba(108,92,231,0.2); }
+    to   { transform: scale(1.08); box-shadow: inset 0 -3px 6px rgba(0,0,0,0.1), 0 0 0 10px rgba(108,92,231,0); }
+  }
+
+  .avatar-btn .avatar-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .avatar-btn .avatar-age {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: -6px;
+  }
+
+  .avatar-btn.add-player {
+    border: 3px dashed var(--text-light);
+    background: transparent;
+  }
+
+  .avatar-btn.add-player:hover {
+    border-color: var(--primary);
+    background: rgba(108,92,231,0.05);
+  }
+
+  .avatar-btn.add-player .avatar-circle {
+    background: var(--light-bg);
+    color: var(--text-light);
+    font-size: 2rem;
+    border: 2px dashed var(--text-light);
+  }
+
+  .avatar-btn.add-player:hover .avatar-circle {
+    border-color: var(--primary);
+    color: var(--primary);
+    animation: none;
+  }
+
+  /* ============================
+     CARD COMPONENT
+     ============================ */
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    padding: 24px;
+    margin-bottom: 20px;
+    transition: box-shadow var(--transition-fast);
+  }
+
+  .card:hover {
+    box-shadow: var(--shadow-md);
+  }
+
+  .card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ============================
+     DASHBOARD USER HEADER
+     ============================ */
+  .dashboard-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding: 20px;
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+  }
+
+  .dashboard-header .user-avatar-lg {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    flex-shrink: 0;
+    box-shadow: inset 0 -4px 8px rgba(0,0,0,0.1);
+  }
+
+  .dashboard-header .user-info h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .dashboard-header .user-info .user-age {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-top: 2px;
+  }
+
+  .dashboard-actions {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  /* ============================
+     HISTORY TABLE
+     ============================ */
+  .history-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--radius-md);
+  }
+
+  .history-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  .history-table th {
+    background: var(--dark-header);
+    color: white;
+    padding: 12px 14px;
+    text-align: left;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .history-table th:first-child {
+    border-radius: var(--radius-sm) 0 0 0;
+  }
+
+  .history-table th:last-child {
+    border-radius: 0 var(--radius-sm) 0 0;
+  }
+
+  .history-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #EEF0F5;
+    white-space: nowrap;
+  }
+
+  .history-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .history-table tr:hover td {
+    background: rgba(108,92,231,0.04);
+  }
+
+  .classification-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: var(--radius-full);
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: white;
+  }
+
+  .classification-badge.grade-i    { background: #00B894; }
+  .classification-badge.grade-ii   { background: #00CEC9; }
+  .classification-badge.grade-iii  { background: #6C5CE7; }
+  .classification-badge.grade-iiim { background: #FDCB6E; color: #2D3436; }
+  .classification-badge.grade-iv   { background: #E17055; }
+  .classification-badge.grade-v    { background: #D63031; }
+
+  .empty-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--text-secondary);
+  }
+
+  .empty-state .empty-icon {
+    font-size: 3.5rem;
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .empty-state p {
+    font-size: 1.05rem;
+    margin-bottom: 8px;
+  }
+
+  .empty-state .empty-sub {
+    font-size: 0.9rem;
+    color: var(--text-light);
+  }
+
+  /* ============================
+     PROGRESS BAR (for test screen)
+     ============================ */
+  .progress-wrap {
+    width: 100%;
+    height: 12px;
+    background: #E0E3EB;
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    margin: 12px 0;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent-green));
+    background-size: 200% 100%;
+    border-radius: var(--radius-full);
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: progressShimmer 2s ease infinite;
+    width: 0%;
+  }
+
+  @keyframes progressShimmer {
+    0%   { background-position: 0% 0%; }
+    50%  { background-position: 100% 0%; }
+    100% { background-position: 0% 0%; }
+  }
+
+  .progress-text {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-align: center;
+  }
+
+  /* ============================
+     TEST SCREEN — OPTION BUTTONS
+     ============================ */
+  .test-container {
+    text-align: center;
+  }
+
+  .matrix-display {
+    margin: 16px auto;
+    max-width: 420px;
+  }
+
+  .matrix-display svg {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+  }
+
+  .options-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 0 8px;
+  }
+
+  .option-btn {
+    aspect-ratio: 1;
+    border: 3px solid #E0E3EB;
+    border-radius: var(--radius-md);
+    background: var(--card-bg);
+    cursor: pointer;
+    padding: 8px;
+    transition: all var(--transition-fast);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80px;
+  }
+
+  .option-btn:hover {
+    border-color: var(--primary);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md), 0 0 0 3px rgba(108,92,231,0.15);
+  }
+
+  .option-btn:active {
+    transform: scale(0.95);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .option-btn.selected {
+    border-color: var(--primary);
+    background: rgba(108,92,231,0.08);
+    box-shadow: 0 0 0 3px rgba(108,92,231,0.2);
+  }
+
+  .option-btn svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ============================
+     RESULTS SCREEN
+     ============================ */
+  .results-summary {
+    text-align: center;
+    padding: 24px;
+  }
+
+  .results-score {
+    font-size: 4rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+  }
+
+  .results-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    height: 140px;
+    padding: 16px 8px 0;
+    border-bottom: 2px solid #E0E3EB;
+    margin: 20px 0;
+  }
+
+  .results-chart .chart-bar {
+    flex: 1;
+    border-radius: 6px 6px 0 0;
+    min-width: 20px;
+    transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+  }
+
+  .results-chart .chart-bar .bar-label {
+    position: absolute;
+    bottom: -22px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.65rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+  }
+
+  .results-chart .chart-bar .bar-value {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .results-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 20px 0;
+  }
+
+  .results-detail-item {
+    background: var(--light-bg);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    text-align: center;
+  }
+
+  .results-detail-item .detail-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+  }
+
+  .results-detail-item .detail-value {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  /* ============================
+     MODAL / FORM
+     ============================ */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition-med);
+  }
+
+  .modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .modal {
+    background: var(--card-bg);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: var(--shadow-lg);
+    transform: scale(0.9) translateY(20px);
+    transition: transform var(--transition-med);
+  }
+
+  .modal-overlay.active .modal {
+    transform: scale(1) translateY(0);
+  }
+
+  .modal h3 {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+  }
+
+  .form-group input,
+  .form-group select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 2px solid #E0E3EB;
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    transition: border-color var(--transition-fast);
+    outline: none;
+    min-height: 48px;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(108,92,231,0.15);
+  }
+
+  .avatar-picker {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .avatar-picker .avatar-option {
+    width: 48px;
+    height: 48px;
+    border: 2px solid #E0E3EB;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    background: var(--card-bg);
+  }
+
+  .avatar-picker .avatar-option:hover {
+    border-color: var(--primary);
+    transform: scale(1.1);
+  }
+
+  .avatar-picker .avatar-option.selected {
+    border-color: var(--primary);
+    background: rgba(108,92,231,0.1);
+    box-shadow: 0 0 0 3px rgba(108,92,231,0.2);
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .form-actions .btn {
+    flex: 1;
+  }
+
+  /* ============================
+     LINK / TEXT BUTTON
+     ============================ */
+  .link-btn {
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 8px 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: color var(--transition-fast);
+    min-height: 48px;
+  }
+
+  .link-btn:hover {
+    color: var(--primary-light);
+    text-decoration: underline;
+  }
+
+  /* ============================
+     RESPONSIVE
+     ============================ */
+  @media (max-width: 480px) {
+    .avatar-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .options-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .dashboard-header {
+      flex-direction: column;
+      text-align: center;
+      gap: 12px;
+    }
+
+    .dashboard-actions {
+      justify-content: center;
+    }
+
+    .results-detail-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .history-table {
+      font-size: 0.8rem;
+    }
+
+    .history-table th,
+    .history-table td {
+      padding: 10px 8px;
+    }
+
+    .screen {
+      padding: 14px;
+    }
+  }
+
+  @media (min-width: 481px) and (max-width: 768px) {
+    .avatar-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (min-width: 769px) {
+    .avatar-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .options-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+  }
+
+  /* ============================
+     UTILITY
+     ============================ */
+  .text-center { text-align: center; }
+  .mt-8  { margin-top: 8px; }
+  .mt-16 { margin-top: 16px; }
+  .mt-24 { margin-top: 24px; }
+  .mb-8  { margin-bottom: 8px; }
+  .mb-16 { margin-bottom: 16px; }
+  .mb-24 { margin-bottom: 24px; }
+  .gap-8  { gap: 8px; }
+  .gap-12 { gap: 12px; }
+  .flex-center { display: flex; align-items: center; justify-content: center; }
+
+  /* Confetti burst animation for results */
+  @keyframes confettiBurst {
+    0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(-200px) rotate(720deg); opacity: 0; }
+  }
+
+  /* Gentle bounce for buttons */
+  @keyframes gentleBounce {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-4px); }
+  }
+
+  .bounce {
+    animation: gentleBounce 1.5s ease infinite;
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================
+     HEADER
+     ============================ -->
+<header class="app-header">
+  <h1><span class="logo-icon">🧩</span> CPM Test</h1>
+  <div class="header-user" id="headerUser" style="display:none;">
+    <span class="header-avatar" id="headerAvatar"></span>
+    <span id="headerName"></span>
+  </div>
+</header>
+
+<!-- ============================
+     APP CONTAINER
+     ============================ -->
+<div id="app">
+  <!-- User Selection Screen -->
+  <div id="screen-users" class="screen active">
+    <h2 class="text-center mb-16" style="font-size:1.4rem;">Who's playing today?</h2>
+    <div id="userGrid" class="avatar-grid"></div>
+  </div>
+
+  <!-- Dashboard Screen -->
+  <div id="screen-dashboard" class="screen">
+    <div id="dashboardContent"></div>
+  </div>
+
+  <!-- Test Screen -->
+  <div id="screen-test" class="screen">
+    <div id="testContent" class="test-container"></div>
+  </div>
+
+  <!-- Results Screen -->
+  <div id="screen-results" class="screen">
+    <div id="resultsContent"></div>
+  </div>
+</div>
+
+<!-- ============================
+     ADD PLAYER MODAL
+     ============================ -->
+<div class="modal-overlay" id="addPlayerModal">
+  <div class="modal">
+    <h3>Add New Player</h3>
+    <div class="form-group">
+      <label for="newPlayerName">Name</label>
+      <input type="text" id="newPlayerName" placeholder="Enter name..." maxlength="20" autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label for="newPlayerBirthDate">Birth Date</label>
+      <input type="date" id="newPlayerBirthDate">
+    </div>
+    <div class="form-group">
+      <label>Pick an Avatar</label>
+      <div class="avatar-picker" id="avatarPicker"></div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeAddPlayerModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveNewPlayer()">Add Player</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ======================================================
+// === APP STATE & CONSTANTS ============================
+// ======================================================
+
+const LS_USERS = 'cpm_users';
+const LS_SESSIONS = 'cpm_sessions';
+
+const DEFAULT_USERS = [
+  { id: 'liam', name: 'Liam', birthDate: '2021-03-01', avatar: '🦁', color: '#FF6B6B' },
+  { id: 'noah', name: 'Noah', birthDate: '2023-03-01', avatar: '🐻', color: '#4ECDC4' },
+  { id: 'oliver', name: 'Oliver', birthDate: '2024-03-01', avatar: '🦊', color: '#45B7D1' },
+  { id: 'emma', name: 'Emma', birthDate: '2025-08-01', avatar: '🦋', color: '#DDA0DD' }
+];
+
+const AVATAR_OPTIONS = ['🦁', '🐻', '🦊', '🦋', '🐶', '🐱', '🐰', '🦄', '🐸', '🐧', '🦉', '🐨', '🦖', '🐙', '🐬', '🦜'];
+const COLOR_OPTIONS = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#DDA0DD', '#FAB1A0', '#FFEAA7', '#55EFC4', '#A29BFE', '#FD79A8', '#00CEC9', '#E17055', '#6C5CE7'];
+
+const state = {
+  currentScreen: 'users',
+  currentUser: null,
+  currentSession: null,
+  currentItemIndex: 0,
+  testType: 'cpm', // 'cpm' or 'spm'
+  responses: [] // array of {set, item, answer, correct, timeMs}
+};
+
+
+// ======================================================
+// === LOCAL STORAGE HELPERS ============================
+// ======================================================
+
+function getUsers() {
+  try {
+    const raw = localStorage.getItem(LS_USERS);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {
+    console.warn('Failed to parse users from localStorage', e);
+  }
+  // Initialize with defaults
+  saveUsers(DEFAULT_USERS);
+  return DEFAULT_USERS;
+}
+
+function saveUsers(users) {
+  localStorage.setItem(LS_USERS, JSON.stringify(users));
+}
+
+function getSessions() {
+  try {
+    const raw = localStorage.getItem(LS_SESSIONS);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {
+    console.warn('Failed to parse sessions from localStorage', e);
+  }
+  return [];
+}
+
+function saveSessions(sessions) {
+  localStorage.setItem(LS_SESSIONS, JSON.stringify(sessions));
+}
+
+function getUserSessions(userId) {
+  return getSessions().filter(s => s.userId === userId).sort((a, b) => new Date(b.startTime || b.date) - new Date(a.startTime || a.date));
+}
+
+
+// ======================================================
+// === UTILITY FUNCTIONS ================================
+// ======================================================
+
+function calculateAge(birthDate, testDate) {
+  const birth = new Date(birthDate);
+  const test = testDate ? new Date(testDate) : new Date();
+  let years = test.getFullYear() - birth.getFullYear();
+  const monthDiff = test.getMonth() - birth.getMonth();
+  const dayDiff = test.getDate() - birth.getDate();
+  // Calculate decimal age
+  const daysInYear = 365.25;
+  const diffMs = test.getTime() - birth.getTime();
+  return diffMs / (daysInYear * 24 * 60 * 60 * 1000);
+}
+
+function formatAge(birthDate, refDate) {
+  const age = calculateAge(birthDate, refDate);
+  const years = Math.floor(age);
+  const months = Math.floor((age - years) * 12);
+  if (years === 0) {
+    return months + ' mo';
+  }
+  return years + 'y ' + months + 'mo';
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '—';
+  const d = new Date(dateStr);
+  const options = { year: 'numeric', month: 'short', day: 'numeric' };
+  return d.toLocaleDateString('en-US', options);
+}
+
+function generateId() {
+  return 'user_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6);
+}
+
+
+// ======================================================
+// === ROUTER / SCREEN MANAGEMENT =======================
+// ======================================================
+
+function showScreen(name) {
+  // Deactivate all screens
+  document.querySelectorAll('.screen').forEach(el => {
+    el.classList.remove('active', 'fade-in');
+  });
+
+  state.currentScreen = name;
+
+  // Activate the target screen
+  const target = document.getElementById('screen-' + name);
+  if (target) {
+    // Small delay to trigger CSS transition
+    requestAnimationFrame(() => {
+      target.classList.add('active', 'fade-in');
+    });
+  }
+
+  // Update header user display
+  const headerUser = document.getElementById('headerUser');
+  if (state.currentUser && name !== 'users') {
+    headerUser.style.display = 'flex';
+    document.getElementById('headerAvatar').textContent = state.currentUser.avatar;
+    document.getElementById('headerName').textContent = state.currentUser.name;
+  } else {
+    headerUser.style.display = 'none';
+  }
+
+  // Render appropriate content
+  switch (name) {
+    case 'users':
+      renderUserSelection();
+      break;
+    case 'dashboard':
+      renderDashboard();
+      break;
+    case 'test':
+      if (typeof renderTest === 'function') renderTest();
+      break;
+    case 'results':
+      if (typeof renderResults === 'function') renderResults();
+      break;
+  }
+}
+
+
+// ======================================================
+// === USER SELECTION SCREEN ============================
+// ======================================================
+
+function renderUserSelection() {
+  const users = getUsers();
+  const grid = document.getElementById('userGrid');
+
+  let html = '';
+
+  users.forEach(user => {
+    const ageStr = formatAge(user.birthDate);
+    html += `
+      <button class="avatar-btn" onclick="selectUser('${user.id}')" aria-label="Select ${user.name}">
+        <div class="avatar-circle" style="background: ${user.color}22; border: 3px solid ${user.color};">
+          ${user.avatar}
+        </div>
+        <span class="avatar-name">${escapeHtml(user.name)}</span>
+        <span class="avatar-age">${ageStr}</span>
+      </button>
+    `;
+  });
+
+  // Add Player button
+  html += `
+    <button class="avatar-btn add-player" onclick="openAddPlayerModal()" aria-label="Add new player">
+      <div class="avatar-circle">+</div>
+      <span class="avatar-name">Add Player</span>
+    </button>
+  `;
+
+  grid.innerHTML = html;
+}
+
+function selectUser(userId) {
+  const users = getUsers();
+  const user = users.find(u => u.id === userId);
+  if (!user) return;
+
+  state.currentUser = user;
+  showScreen('dashboard');
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+
+// ======================================================
+// === ADD PLAYER MODAL =================================
+// ======================================================
+
+let selectedNewAvatar = '🐶';
+let selectedNewColor = '#FF6B6B';
+
+function openAddPlayerModal() {
+  selectedNewAvatar = AVATAR_OPTIONS[Math.floor(Math.random() * AVATAR_OPTIONS.length)];
+  selectedNewColor = COLOR_OPTIONS[Math.floor(Math.random() * COLOR_OPTIONS.length)];
+
+  document.getElementById('newPlayerName').value = '';
+  document.getElementById('newPlayerBirthDate').value = '';
+
+  renderAvatarPicker();
+
+  document.getElementById('addPlayerModal').classList.add('active');
+  // Focus the name input after animation
+  setTimeout(() => document.getElementById('newPlayerName').focus(), 350);
+}
+
+function closeAddPlayerModal() {
+  document.getElementById('addPlayerModal').classList.remove('active');
+}
+
+function renderAvatarPicker() {
+  const picker = document.getElementById('avatarPicker');
+  picker.innerHTML = AVATAR_OPTIONS.map(av => `
+    <div class="avatar-option ${av === selectedNewAvatar ? 'selected' : ''}"
+         onclick="pickAvatar('${av}', this)"
+         role="button" aria-label="${av}">
+      ${av}
+    </div>
+  `).join('');
+}
+
+function pickAvatar(avatar, el) {
+  selectedNewAvatar = avatar;
+  document.querySelectorAll('#avatarPicker .avatar-option').forEach(opt => opt.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function saveNewPlayer() {
+  const name = document.getElementById('newPlayerName').value.trim();
+  const birthDate = document.getElementById('newPlayerBirthDate').value;
+
+  if (!name) {
+    document.getElementById('newPlayerName').style.borderColor = 'var(--danger)';
+    document.getElementById('newPlayerName').focus();
+    return;
+  }
+  if (!birthDate) {
+    document.getElementById('newPlayerBirthDate').style.borderColor = 'var(--danger)';
+    document.getElementById('newPlayerBirthDate').focus();
+    return;
+  }
+
+  const users = getUsers();
+  const newUser = {
+    id: generateId(),
+    name: name,
+    birthDate: birthDate,
+    avatar: selectedNewAvatar,
+    color: selectedNewColor
+  };
+
+  users.push(newUser);
+  saveUsers(users);
+
+  closeAddPlayerModal();
+  renderUserSelection();
+}
+
+// Close modal on overlay click
+document.getElementById('addPlayerModal').addEventListener('click', function(e) {
+  if (e.target === this) closeAddPlayerModal();
+});
+
+
+// ======================================================
+// === DASHBOARD SCREEN =================================
+// ======================================================
+
+function renderDashboard() {
+  const user = state.currentUser;
+  if (!user) { showScreen('users'); return; }
+
+  const sessions = getUserSessions(user.id);
+  const container = document.getElementById('dashboardContent');
+
+  let html = '';
+
+  // User header
+  html += `
+    <div class="dashboard-header">
+      <div class="user-avatar-lg" style="background: ${user.color}22; border: 3px solid ${user.color};">
+        ${user.avatar}
+      </div>
+      <div class="user-info">
+        <h2>${escapeHtml(user.name)}</h2>
+        <div class="user-age">Age: ${formatAge(user.birthDate)} &middot; ${sessions.length} test${sessions.length !== 1 ? 's' : ''} completed</div>
+      </div>
+    </div>
+  `;
+
+  // Actions
+  html += `
+    <div class="dashboard-actions">
+      <button class="btn btn-success bounce" onclick="startTest('cpm')" title="3 sets (A, AB, B) &middot; 36 items &middot; SVG patterns">
+        &#9654; CPM Test (Ages 3-11)
+      </button>
+      <button class="btn btn-primary bounce" onclick="startTest('spm')" title="5 sets (A-E) &middot; 60 items &middot; Image-based" style="background:#e67e22;">
+        &#9654; SPM Test (Ages 6+)
+      </button>
+      <button class="btn btn-secondary" onclick="goBackToUsers()">
+        &#8592; Back to Players
+      </button>
+    </div>
+  `;
+
+  // History
+  html += `<div class="card">`;
+  html += `<div class="card-title">&#128202; Test History</div>`;
+
+  if (sessions.length === 0) {
+    html += `
+      <div class="empty-state">
+        <span class="empty-icon">&#127775;</span>
+        <p>No tests yet!</p>
+        <p class="empty-sub">Tap "Start New Test" to begin the first assessment.</p>
+      </div>
+    `;
+  } else {
+    html += `
+      <div class="history-table-wrap">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Type</th>
+              <th>Score</th>
+              <th>Percentile</th>
+              <th>Grade</th>
+              <th>Classification</th>
+            </tr>
+          </thead>
+          <tbody>
+    `;
+
+    sessions.forEach(session => {
+      const gradeClass = getGradeClass(session.grade);
+      html += `
+        <tr>
+          <td>${formatDate(session.startTime || session.date)}</td>
+          <td><span style="font-weight:600;color:${(session.testType||'cpm')==='spm'?'#e67e22':'#6C5CE7'}">${(session.testType||'cpm').toUpperCase()}</span></td>
+          <td><strong>${session.scores ? session.scores.total : session.score || 0}/${session.testType === 'spm' ? 60 : 36}</strong></td>
+          <td>${session.percentile != null ? session.percentile + '%' : '—'}</td>
+          <td>${session.grade || '—'}</td>
+          <td><span class="classification-badge ${gradeClass}">${escapeHtml(session.classification || '—')}</span></td>
+        </tr>
+      `;
+    });
+
+    html += `
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  html += `</div>`;
+
+  container.innerHTML = html;
+}
+
+function getGradeClass(grade) {
+  if (!grade) return '';
+  const g = grade.toString().toUpperCase().replace('+', 'P').replace('-', 'M').replace(' ', '');
+  if (g === 'I' || g === 'IP') return 'grade-i';
+  if (g === 'II' || g === 'IIP') return 'grade-ii';
+  if (g === 'III' || g === 'IIIP') return 'grade-iii';
+  if (g === 'III-' || g === 'IIIM') return 'grade-iiim';
+  if (g === 'IV' || g === 'IVM') return 'grade-iv';
+  if (g === 'V') return 'grade-v';
+  return 'grade-iii';
+}
+
+function goBackToUsers() {
+  state.currentUser = null;
+  showScreen('users');
+}
+
+// startTest defined in Part 3
+
+
+// ======================================================
+// === INIT =============================================
+// ======================================================
+
+// init() called at end of script (Part 3)
+
+
+// === SVG HELPERS AND ITEM DEFINITIONS ===
+const ANSWER_KEY = {
+  A:  [4,5,1,2,6,3,6,2,1,3,4,5],
+  AB: [4,5,1,6,2,1,3,4,6,3,5,2],
+  B:  [2,6,1,2,1,3,5,6,4,3,4,5]
+};
+
+// === SPM (Standard Progressive Matrices) Constants ===
+const SPM_ANSWER_KEY = {
+  A: [4,5,1,2,6,3,6,2,1,3,4,5],
+  B: [2,6,1,2,1,3,5,6,4,3,4,5],
+  C: [8,2,3,8,7,4,5,1,7,6,1,2],
+  D: [3,4,3,7,8,6,5,4,1,2,5,6],
+  E: [7,6,8,2,1,5,4,6,3,2,4,5]
+};
+const SPM_SETS = ['A','B','C','D','E'];
+const SPM_OPTIONS_PER_SET = { A: 6, B: 6, C: 8, D: 8, E: 8 };
+const SPM_TOTAL_ITEMS = 60;
+const CPM_SETS = ['A','AB','B'];
+const CPM_TOTAL_ITEMS = 36;
+
+// SPM norms (approximate, Raven 1998/2000)
+const SPM_TABLE_XIV = [
+  { ageMin: 5.25, ageMax: 5.75, p5: 8, p10: 10, p25: 13, p50: 15, p75: 18, p90: 21, p95: 23 },
+  { ageMin: 5.75, ageMax: 6.25, p5: 10, p10: 12, p25: 15, p50: 18, p75: 22, p90: 25, p95: 27 },
+  { ageMin: 6.25, ageMax: 6.75, p5: 12, p10: 14, p25: 17, p50: 21, p75: 25, p90: 29, p95: 31 },
+  { ageMin: 6.75, ageMax: 7.25, p5: 14, p10: 16, p25: 19, p50: 24, p75: 29, p90: 33, p95: 35 },
+  { ageMin: 7.25, ageMax: 7.75, p5: 16, p10: 18, p25: 22, p50: 27, p75: 32, p90: 37, p95: 39 },
+  { ageMin: 7.75, ageMax: 8.25, p5: 18, p10: 20, p25: 24, p50: 29, p75: 34, p90: 40, p95: 42 },
+  { ageMin: 8.25, ageMax: 8.75, p5: 19, p10: 22, p25: 26, p50: 31, p75: 36, p90: 42, p95: 44 },
+  { ageMin: 8.75, ageMax: 9.25, p5: 21, p10: 24, p25: 28, p50: 33, p75: 38, p90: 44, p95: 46 },
+  { ageMin: 9.25, ageMax: 9.75, p5: 23, p10: 26, p25: 30, p50: 35, p75: 40, p90: 46, p95: 48 },
+  { ageMin: 9.75, ageMax: 10.25, p5: 25, p10: 28, p25: 32, p50: 37, p75: 42, p90: 48, p95: 50 },
+  { ageMin: 10.25, ageMax: 10.75, p5: 27, p10: 30, p25: 34, p50: 39, p75: 44, p90: 49, p95: 51 },
+  { ageMin: 10.75, ageMax: 11.25, p5: 28, p10: 31, p25: 35, p50: 40, p75: 45, p90: 50, p95: 52 },
+  { ageMin: 11.25, ageMax: 11.75, p5: 29, p10: 32, p25: 36, p50: 41, p75: 46, p90: 51, p95: 53 },
+  { ageMin: 11.75, ageMax: 12.25, p5: 30, p10: 33, p25: 37, p50: 42, p75: 47, p90: 52, p95: 54 },
+  { ageMin: 12.25, ageMax: 13.5, p5: 32, p10: 35, p25: 39, p50: 44, p75: 49, p90: 53, p95: 55 },
+  { ageMin: 13.5, ageMax: 15.0, p5: 34, p10: 37, p25: 41, p50: 46, p75: 50, p90: 54, p95: 56 },
+  { ageMin: 15.0, ageMax: 99, p5: 36, p10: 39, p25: 43, p50: 48, p75: 52, p90: 55, p95: 57 }
+];
+
+// SPM expected score composition (approximate)
+const SPM_TABLE_VIII = {};
+(function buildSpmTableVIII() {
+  for (let t = 10; t <= 60; t++) {
+    const r = t / 60;
+    SPM_TABLE_VIII[t] = {
+      A: Math.round(Math.min(12, 4 + r * 8)),
+      B: Math.round(Math.min(12, 2 + r * 10)),
+      C: Math.round(Math.min(12, r * 12)),
+      D: Math.round(Math.min(12, Math.max(0, (r - 0.1) * 12))),
+      E: Math.round(Math.min(12, Math.max(0, (r - 0.2) * 12)))
+    };
+  }
+})();
+
+function getTestConfig() {
+  const isSpm = state.testType === 'spm';
+  return {
+    sets: isSpm ? SPM_SETS : CPM_SETS,
+    totalItems: isSpm ? SPM_TOTAL_ITEMS : CPM_TOTAL_ITEMS,
+    answerKey: isSpm ? SPM_ANSWER_KEY : ANSWER_KEY,
+    normsTable: isSpm ? SPM_TABLE_XIV : TABLE_XIV,
+    expectedTable: isSpm ? SPM_TABLE_VIII : TABLE_VIII,
+    label: isSpm ? 'SPM' : 'CPM',
+    optionsForSet: function(set) {
+      if (isSpm) return SPM_OPTIONS_PER_SET[set] || 6;
+      return 6;
+    }
+  };
+}
+
+// ============================================================
+// SVG HELPER FUNCTIONS
+// ============================================================
+
+function svgPatternDef(id, type, color1, color2, scale) {
+  scale = scale || 1;
+  const s = 10 * scale;
+  let inner = '';
+  switch (type) {
+    case 'hstripes':
+      inner = `<rect width="${s}" height="${s}" fill="${color2}"/>` +
+              `<rect width="${s}" height="${s/2}" fill="${color1}"/>`;
+      break;
+    case 'vstripes':
+      inner = `<rect width="${s}" height="${s}" fill="${color2}"/>` +
+              `<rect width="${s/2}" height="${s}" fill="${color1}"/>`;
+      break;
+    case 'dstripes':
+      inner = `<rect width="${s}" height="${s}" fill="${color2}"/>` +
+              `<line x1="0" y1="${s}" x2="${s}" y2="0" stroke="${color1}" stroke-width="${s/4}"/>` +
+              `<line x1="${-s/2}" y1="${s/2}" x2="${s/2}" y2="${-s/2}" stroke="${color1}" stroke-width="${s/4}"/>` +
+              `<line x1="${s/2}" y1="${s*1.5}" x2="${s*1.5}" y2="${s/2}" stroke="${color1}" stroke-width="${s/4}"/>`;
+      break;
+    case 'dots':
+      inner = `<rect width="${s}" height="${s}" fill="${color2}"/>` +
+              `<circle cx="${s/2}" cy="${s/2}" r="${s/4}" fill="${color1}"/>`;
+      break;
+    case 'grid':
+      inner = `<rect width="${s}" height="${s}" fill="${color2}"/>` +
+              `<line x1="${s/2}" y1="0" x2="${s/2}" y2="${s}" stroke="${color1}" stroke-width="1.5"/>` +
+              `<line x1="0" y1="${s/2}" x2="${s}" y2="${s/2}" stroke="${color1}" stroke-width="1.5"/>`;
+      break;
+    case 'checker':
+      inner = `<rect width="${s}" height="${s}" fill="${color2}"/>` +
+              `<rect width="${s/2}" height="${s/2}" fill="${color1}"/>` +
+              `<rect x="${s/2}" y="${s/2}" width="${s/2}" height="${s/2}" fill="${color1}"/>`;
+      break;
+    case 'diamond':
+      inner = `<rect width="${s}" height="${s}" fill="${color2}"/>` +
+              `<polygon points="${s/2},0 ${s},${s/2} ${s/2},${s} 0,${s/2}" fill="${color1}"/>`;
+      break;
+    case 'crosshatch':
+      inner = `<rect width="${s}" height="${s}" fill="${color2}"/>` +
+              `<line x1="0" y1="0" x2="${s}" y2="${s}" stroke="${color1}" stroke-width="1.5"/>` +
+              `<line x1="${s}" y1="0" x2="0" y2="${s}" stroke="${color1}" stroke-width="1.5"/>`;
+      break;
+    case 'waves':
+      inner = `<rect width="${s}" height="${s}" fill="${color2}"/>` +
+              `<path d="M0,${s/2} Q${s/4},${s/4} ${s/2},${s/2} T${s},${s/2}" fill="none" stroke="${color1}" stroke-width="2"/>`;
+      break;
+    case 'circles':
+      inner = `<rect width="${s}" height="${s}" fill="${color2}"/>` +
+              `<circle cx="${s/2}" cy="${s/2}" r="${s*0.45}" fill="none" stroke="${color1}" stroke-width="1.5"/>` +
+              `<circle cx="${s/2}" cy="${s/2}" r="${s*0.25}" fill="none" stroke="${color1}" stroke-width="1"/>`;
+      break;
+    case 'zigzag':
+      inner = `<rect width="${s}" height="${s}" fill="${color2}"/>` +
+              `<polyline points="0,${s*0.75} ${s/4},${s/4} ${s/2},${s*0.75} ${s*0.75},${s/4} ${s},${s*0.75}" fill="none" stroke="${color1}" stroke-width="2"/>`;
+      break;
+    default:
+      inner = `<rect width="${s}" height="${s}" fill="${color1}"/>`;
+  }
+  return `<defs><pattern id="${id}" patternUnits="userSpaceOnUse" width="${s}" height="${s}">${inner}</pattern></defs>`;
+}
+
+function svgShape(type, cx, cy, size, fill, stroke, strokeWidth, rotation) {
+  stroke = stroke || 'none';
+  strokeWidth = strokeWidth || 0;
+  rotation = rotation || 0;
+  const r = size / 2;
+  let shape = '';
+  const transform = rotation ? ` transform="rotate(${rotation},${cx},${cy})"` : '';
+
+  switch (type) {
+    case 'circle':
+      shape = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}"${transform}/>`;
+      break;
+    case 'square':
+      shape = `<rect x="${cx - r}" y="${cy - r}" width="${size}" height="${size}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}"${transform}/>`;
+      break;
+    case 'triangle':
+      shape = `<polygon points="${cx},${cy - r} ${cx + r},${cy + r} ${cx - r},${cy + r}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}"${transform}/>`;
+      break;
+    case 'diamond':
+      shape = `<polygon points="${cx},${cy - r} ${cx + r},${cy} ${cx},${cy + r} ${cx - r},${cy}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}"${transform}/>`;
+      break;
+    case 'star': {
+      let pts = [];
+      for (let i = 0; i < 5; i++) {
+        const outerAngle = (i * 72 - 90) * Math.PI / 180;
+        const innerAngle = ((i * 72) + 36 - 90) * Math.PI / 180;
+        pts.push(`${cx + r * Math.cos(outerAngle)},${cy + r * Math.sin(outerAngle)}`);
+        pts.push(`${cx + r * 0.4 * Math.cos(innerAngle)},${cy + r * 0.4 * Math.sin(innerAngle)}`);
+      }
+      shape = `<polygon points="${pts.join(' ')}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}"${transform}/>`;
+      break;
+    }
+    case 'cross':
+      shape = `<g${transform}><rect x="${cx - r/3}" y="${cy - r}" width="${size/3}" height="${size}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}"/>` +
+              `<rect x="${cx - r}" y="${cy - r/3}" width="${size}" height="${size/3}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}"/></g>`;
+      break;
+    case 'hexagon': {
+      let pts = [];
+      for (let i = 0; i < 6; i++) {
+        const angle = (i * 60 - 30) * Math.PI / 180;
+        pts.push(`${cx + r * Math.cos(angle)},${cy + r * Math.sin(angle)}`);
+      }
+      shape = `<polygon points="${pts.join(' ')}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}"${transform}/>`;
+      break;
+    }
+    case 'arrow':
+      shape = `<polygon points="${cx},${cy - r} ${cx + r*0.6},${cy} ${cx + r*0.25},${cy} ${cx + r*0.25},${cy + r} ${cx - r*0.25},${cy + r} ${cx - r*0.25},${cy} ${cx - r*0.6},${cy}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}"${transform}/>`;
+      break;
+    case 'semicircle':
+      shape = `<path d="M${cx - r},${cy} A${r},${r} 0 0,1 ${cx + r},${cy} Z" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}"${transform}/>`;
+      break;
+    case 'ring':
+      shape = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${stroke || fill}" stroke-width="${strokeWidth || size * 0.2}"${transform}/>`;
+      break;
+    default:
+      shape = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}"${transform}/>`;
+  }
+  return shape;
+}
+
+function svgRect(x, y, w, h, fill, stroke) {
+  stroke = stroke || 'none';
+  return `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" stroke="${stroke}" stroke-width="2"/>`;
+}
+
+function svgLine(x1, y1, x2, y2, stroke, width) {
+  width = width || 2;
+  return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${stroke}" stroke-width="${width}"/>`;
+}
+
+// Helper: wrap content in an SVG tag
+function svgWrap(width, height, content) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}">${content}</svg>`;
+}
+
+// Helper: create a main pattern SVG for Set A with a cutout
+function setAMainSVG(patternDef, patternFillId, cutX, cutY, cutW, cutH) {
+  const bg = svgRect(0, 0, 300, 300, '#f0f0f0', '#999');
+  const filled = `<rect x="5" y="5" width="290" height="290" fill="url(#${patternFillId})" stroke="#333" stroke-width="2"/>`;
+  const cutout = `<rect x="${cutX}" y="${cutY}" width="${cutW}" height="${cutH}" fill="white" stroke="#333" stroke-width="2" stroke-dasharray="6,3"/>`;
+  return svgWrap(300, 300, patternDef + bg + filled + cutout);
+}
+
+// Helper: create a main pattern SVG for Set A with solid fill and cutout
+function setAMainSVGSolid(fillColor, cutX, cutY, cutW, cutH) {
+  const bg = svgRect(0, 0, 300, 300, '#f0f0f0', '#999');
+  const filled = `<rect x="5" y="5" width="290" height="290" fill="${fillColor}" stroke="#333" stroke-width="2"/>`;
+  const cutout = `<rect x="${cutX}" y="${cutY}" width="${cutW}" height="${cutH}" fill="white" stroke="#333" stroke-width="2" stroke-dasharray="6,3"/>`;
+  return svgWrap(300, 300, bg + filled + cutout);
+}
+
+// Helper: option SVG with border
+function optionSVG(content) {
+  return svgWrap(120, 120, `<rect x="0" y="0" width="120" height="120" fill="white" stroke="#ccc" stroke-width="2"/>${content}`);
+}
+
+// Helper: option with pattern fill
+function optionWithPattern(patternDef, patternId) {
+  return optionSVG(patternDef + `<rect x="10" y="10" width="100" height="100" fill="url(#${patternId})" stroke="#666" stroke-width="1.5"/>`);
+}
+
+// Helper: option with solid fill
+function optionSolid(color) {
+  return optionSVG(`<rect x="10" y="10" width="100" height="100" fill="${color}" stroke="#666" stroke-width="1.5"/>`);
+}
+
+// Helper: create 2x2 matrix main SVG for Set AB and Set B
+function matrixMainSVG(topLeft, topRight, bottomLeft, bottomRightLabel) {
+  bottomRightLabel = bottomRightLabel || '?';
+  const border = svgRect(0, 0, 300, 300, '#f0f0f0', '#333');
+  const divH = svgLine(0, 150, 300, 150, '#333', 2);
+  const divV = svgLine(150, 0, 150, 300, '#333', 2);
+  // Cells are 150x150 each
+  const tl = `<g transform="translate(0,0)"><rect x="2" y="2" width="146" height="146" fill="white"/>${topLeft}</g>`;
+  const tr = `<g transform="translate(150,0)"><rect x="2" y="2" width="146" height="146" fill="white"/>${topRight}</g>`;
+  const bl = `<g transform="translate(0,150)"><rect x="2" y="2" width="146" height="146" fill="white"/>${bottomLeft}</g>`;
+  const br = `<g transform="translate(150,150)"><rect x="2" y="2" width="146" height="146" fill="#eee"/>` +
+             `<text x="75" y="85" text-anchor="middle" font-size="48" fill="#999" font-weight="bold">${bottomRightLabel}</text></g>`;
+  return svgWrap(300, 300, border + tl + tr + bl + br + divH + divV);
+}
+
+// Helper: option SVG for matrix items (shape inside bordered box)
+function matrixOptionSVG(content) {
+  return svgWrap(120, 120, `<rect x="0" y="0" width="120" height="120" fill="white" stroke="#ccc" stroke-width="2"/>${content}`);
+}
+
+
+// ============================================================
+// ITEM DEFINITIONS
+// ============================================================
+
+function renderItem(set, index) {
+  const key = ANSWER_KEY[set][index];
+  let result;
+
+  // ----- SET A -----
+  if (set === 'A') {
+    switch (index) {
+      // A1: Solid blue background, missing bottom-right piece. Answer 4 (blue)
+      case 0: {
+        const mainSVG = setAMainSVGSolid('#4488CC', 190, 190, 100, 100);
+        const options = [
+          optionSolid('#CC4444'), // 1: red
+          optionSolid('#44AA44'), // 2: green
+          optionSolid('#DDDD44'), // 3: yellow
+          optionSolid('#4488CC'), // 4: blue (correct)
+          optionSolid('#AA44AA'), // 5: purple
+          optionSolid('#FF8844')  // 6: orange
+        ];
+        result = { mainSVG, options, correctAnswer: 4 };
+        break;
+      }
+
+      // A2: Horizontal red stripes on white, missing piece. Answer 5
+      case 1: {
+        const pid = 'a2pat';
+        const pd = svgPatternDef(pid, 'hstripes', '#CC3333', '#FFFFFF', 1);
+        const mainSVG = setAMainSVG(pd, pid, 190, 100, 100, 100);
+        const options = [
+          optionWithPattern(svgPatternDef('a2o1', 'vstripes', '#CC3333', '#FFFFFF', 1), 'a2o1'),  // 1: vertical red
+          optionWithPattern(svgPatternDef('a2o2', 'dstripes', '#CC3333', '#FFFFFF', 1), 'a2o2'),  // 2: diagonal red
+          optionWithPattern(svgPatternDef('a2o3', 'hstripes', '#3333CC', '#FFFFFF', 1), 'a2o3'),  // 3: horizontal blue
+          optionWithPattern(svgPatternDef('a2o4', 'dots', '#CC3333', '#FFFFFF', 1), 'a2o4'),      // 4: dots red
+          optionWithPattern(svgPatternDef('a2o5', 'hstripes', '#CC3333', '#FFFFFF', 1), 'a2o5'),  // 5: horizontal red (correct)
+          optionWithPattern(svgPatternDef('a2o6', 'hstripes', '#CC3333', '#FFDDDD', 1), 'a2o6')   // 6: horizontal red on pink
+        ];
+        result = { mainSVG, options, correctAnswer: 5 };
+        break;
+      }
+
+      // A3: Polka dot pattern (dark dots on light), missing piece. Answer 1
+      case 2: {
+        const pid = 'a3pat';
+        const pd = svgPatternDef(pid, 'dots', '#333366', '#FFFFCC', 1.2);
+        const mainSVG = setAMainSVG(pd, pid, 10, 190, 100, 100);
+        const options = [
+          optionWithPattern(svgPatternDef('a3o1', 'dots', '#333366', '#FFFFCC', 1.2), 'a3o1'),    // 1: matching (correct)
+          optionWithPattern(svgPatternDef('a3o2', 'dots', '#333366', '#CCCCFF', 1.2), 'a3o2'),    // 2: dots on purple bg
+          optionWithPattern(svgPatternDef('a3o3', 'dots', '#CC3333', '#FFFFCC', 1.2), 'a3o3'),    // 3: red dots on yellow
+          optionWithPattern(svgPatternDef('a3o4', 'dots', '#333366', '#FFFFCC', 0.6), 'a3o4'),    // 4: smaller dots
+          optionWithPattern(svgPatternDef('a3o5', 'circles', '#333366', '#FFFFCC', 1.2), 'a3o5'), // 5: circles not dots
+          optionWithPattern(svgPatternDef('a3o6', 'dots', '#333366', '#FFFFCC', 2.0), 'a3o6')     // 6: larger dots
+        ];
+        result = { mainSVG, options, correctAnswer: 1 };
+        break;
+      }
+
+      // A4: Vertical green stripes, missing piece. Answer 2
+      case 3: {
+        const pid = 'a4pat';
+        const pd = svgPatternDef(pid, 'vstripes', '#33AA55', '#FFFFFF', 1);
+        const mainSVG = setAMainSVG(pd, pid, 100, 190, 100, 100);
+        const options = [
+          optionWithPattern(svgPatternDef('a4o1', 'hstripes', '#33AA55', '#FFFFFF', 1), 'a4o1'),  // 1: horizontal green
+          optionWithPattern(svgPatternDef('a4o2', 'vstripes', '#33AA55', '#FFFFFF', 1), 'a4o2'),  // 2: vertical green (correct)
+          optionWithPattern(svgPatternDef('a4o3', 'vstripes', '#3355AA', '#FFFFFF', 1), 'a4o3'),  // 3: vertical blue
+          optionWithPattern(svgPatternDef('a4o4', 'dstripes', '#33AA55', '#FFFFFF', 1), 'a4o4'),  // 4: diagonal green
+          optionWithPattern(svgPatternDef('a4o5', 'vstripes', '#33AA55', '#DDFFDD', 1), 'a4o5'),  // 5: vertical green on green bg
+          optionWithPattern(svgPatternDef('a4o6', 'vstripes', '#33AA55', '#FFFFFF', 2), 'a4o6')   // 6: wider vertical green
+        ];
+        result = { mainSVG, options, correctAnswer: 2 };
+        break;
+      }
+
+      // A5: Grid/crosshatch pattern, missing piece. Answer 6
+      case 4: {
+        const pid = 'a5pat';
+        const pd = svgPatternDef(pid, 'grid', '#555555', '#EEEEDD', 1.5);
+        const mainSVG = setAMainSVG(pd, pid, 190, 10, 100, 100);
+        const options = [
+          optionWithPattern(svgPatternDef('a5o1', 'grid', '#555555', '#DDDDEE', 1.5), 'a5o1'),     // 1: grid wrong bg color
+          optionWithPattern(svgPatternDef('a5o2', 'grid', '#555555', '#EEEEDD', 1.0), 'a5o2'),     // 2: grid smaller scale
+          optionWithPattern(svgPatternDef('a5o3', 'crosshatch', '#555555', '#EEEEDD', 1.5), 'a5o3'),// 3: crosshatch not grid
+          optionWithPattern(svgPatternDef('a5o4', 'grid', '#993333', '#EEEEDD', 1.5), 'a5o4'),     // 4: grid red lines
+          optionWithPattern(svgPatternDef('a5o5', 'grid', '#555555', '#EEEEDD', 2.5), 'a5o5'),     // 5: grid larger scale
+          optionWithPattern(svgPatternDef('a5o6', 'grid', '#555555', '#EEEEDD', 1.5), 'a5o6')      // 6: matching (correct)
+        ];
+        result = { mainSVG, options, correctAnswer: 6 };
+        break;
+      }
+
+      // A6: Diagonal stripe pattern, missing piece. Answer 3
+      case 5: {
+        const pid = 'a6pat';
+        const pd = svgPatternDef(pid, 'dstripes', '#6644AA', '#FFE0CC', 1.2);
+        const mainSVG = setAMainSVG(pd, pid, 10, 100, 100, 100);
+        const options = [
+          optionWithPattern(svgPatternDef('a6o1', 'hstripes', '#6644AA', '#FFE0CC', 1.2), 'a6o1'),  // 1: horizontal
+          optionWithPattern(svgPatternDef('a6o2', 'dstripes', '#AA4466', '#FFE0CC', 1.2), 'a6o2'),  // 2: diagonal wrong color
+          optionWithPattern(svgPatternDef('a6o3', 'dstripes', '#6644AA', '#FFE0CC', 1.2), 'a6o3'),  // 3: matching (correct)
+          optionWithPattern(svgPatternDef('a6o4', 'vstripes', '#6644AA', '#FFE0CC', 1.2), 'a6o4'),  // 4: vertical
+          optionWithPattern(svgPatternDef('a6o5', 'dstripes', '#6644AA', '#CCCCFF', 1.2), 'a6o5'),  // 5: diagonal wrong bg
+          optionWithPattern(svgPatternDef('a6o6', 'dstripes', '#6644AA', '#FFE0CC', 2.0), 'a6o6')   // 6: diagonal wider
+        ];
+        result = { mainSVG, options, correctAnswer: 3 };
+        break;
+      }
+
+      // A7: Checkerboard black/white, missing piece. Answer 6
+      case 6: {
+        const pid = 'a7pat';
+        const pd = svgPatternDef(pid, 'checker', '#222222', '#EEEEEE', 1.5);
+        const mainSVG = setAMainSVG(pd, pid, 100, 100, 100, 100);
+        const options = [
+          optionWithPattern(svgPatternDef('a7o1', 'checker', '#222222', '#EEEEEE', 1.0), 'a7o1'),   // 1: smaller checker
+          optionWithPattern(svgPatternDef('a7o2', 'checker', '#222222', '#EEEEEE', 2.5), 'a7o2'),   // 2: larger checker
+          optionWithPattern(svgPatternDef('a7o3', 'checker', '#222222', '#CCCCCC', 1.5), 'a7o3'),   // 3: darker white
+          optionWithPattern(svgPatternDef('a7o4', 'checker', '#444444', '#EEEEEE', 1.5), 'a7o4'),   // 4: lighter black
+          optionWithPattern(svgPatternDef('a7o5', 'grid', '#222222', '#EEEEEE', 1.5), 'a7o5'),      // 5: grid not checker
+          optionWithPattern(svgPatternDef('a7o6', 'checker', '#222222', '#EEEEEE', 1.5), 'a7o6')    // 6: matching (correct)
+        ];
+        result = { mainSVG, options, correctAnswer: 6 };
+        break;
+      }
+
+      // A8: Wave pattern blue, missing piece. Answer 2
+      case 7: {
+        const pid = 'a8pat';
+        const pd = svgPatternDef(pid, 'waves', '#2266BB', '#D0E8FF', 1.4);
+        const mainSVG = setAMainSVG(pd, pid, 190, 190, 100, 100);
+        const options = [
+          optionWithPattern(svgPatternDef('a8o1', 'waves', '#BB2222', '#FFD0D0', 1.4), 'a8o1'),    // 1: red waves
+          optionWithPattern(svgPatternDef('a8o2', 'waves', '#2266BB', '#D0E8FF', 1.4), 'a8o2'),    // 2: matching (correct)
+          optionWithPattern(svgPatternDef('a8o3', 'waves', '#2266BB', '#D0E8FF', 0.8), 'a8o3'),    // 3: smaller waves
+          optionWithPattern(svgPatternDef('a8o4', 'zigzag', '#2266BB', '#D0E8FF', 1.4), 'a8o4'),   // 4: zigzag not waves
+          optionWithPattern(svgPatternDef('a8o5', 'waves', '#2266BB', '#FFFFDD', 1.4), 'a8o5'),    // 5: waves wrong bg
+          optionWithPattern(svgPatternDef('a8o6', 'waves', '#2266BB', '#D0E8FF', 2.2), 'a8o6')     // 6: larger waves
+        ];
+        result = { mainSVG, options, correctAnswer: 2 };
+        break;
+      }
+
+      // A9: Diamond/argyle pattern, missing piece. Answer 1
+      case 8: {
+        const pid = 'a9pat';
+        const pd = svgPatternDef(pid, 'diamond', '#CC6600', '#FFEEDD', 1.5);
+        const mainSVG = setAMainSVG(pd, pid, 10, 10, 100, 100);
+        const options = [
+          optionWithPattern(svgPatternDef('a9o1', 'diamond', '#CC6600', '#FFEEDD', 1.5), 'a9o1'),   // 1: matching (correct)
+          optionWithPattern(svgPatternDef('a9o2', 'diamond', '#0066CC', '#FFEEDD', 1.5), 'a9o2'),   // 2: blue diamonds
+          optionWithPattern(svgPatternDef('a9o3', 'diamond', '#CC6600', '#DDEEFF', 1.5), 'a9o3'),   // 3: wrong bg
+          optionWithPattern(svgPatternDef('a9o4', 'diamond', '#CC6600', '#FFEEDD', 2.5), 'a9o4'),   // 4: larger diamonds
+          optionWithPattern(svgPatternDef('a9o5', 'checker', '#CC6600', '#FFEEDD', 1.5), 'a9o5'),   // 5: checker not diamond
+          optionWithPattern(svgPatternDef('a9o6', 'diamond', '#CC6600', '#FFEEDD', 0.8), 'a9o6')    // 6: smaller diamonds
+        ];
+        result = { mainSVG, options, correctAnswer: 1 };
+        break;
+      }
+
+      // A10: Brick pattern (hstripes + vstripes combo simulation), missing piece. Answer 3
+      case 9: {
+        // Simulate brick with a custom approach: use hstripes as base
+        const pid = 'a10pat';
+        // Custom brick pattern
+        const brickPat = `<defs><pattern id="${pid}" patternUnits="userSpaceOnUse" width="20" height="16">` +
+          `<rect width="20" height="16" fill="#CC8855"/>` +
+          `<line x1="0" y1="0" x2="20" y2="0" stroke="#AA6633" stroke-width="2"/>` +
+          `<line x1="0" y1="8" x2="20" y2="8" stroke="#AA6633" stroke-width="2"/>` +
+          `<line x1="0" y1="0" x2="0" y2="8" stroke="#AA6633" stroke-width="1.5"/>` +
+          `<line x1="10" y1="8" x2="10" y2="16" stroke="#AA6633" stroke-width="1.5"/>` +
+          `</pattern></defs>`;
+        const mainSVG = setAMainSVG(brickPat, pid, 100, 10, 100, 100);
+
+        // Brick variations for options
+        function brickOption(id, fillColor, lineColor) {
+          return `<defs><pattern id="${id}" patternUnits="userSpaceOnUse" width="20" height="16">` +
+            `<rect width="20" height="16" fill="${fillColor}"/>` +
+            `<line x1="0" y1="0" x2="20" y2="0" stroke="${lineColor}" stroke-width="2"/>` +
+            `<line x1="0" y1="8" x2="20" y2="8" stroke="${lineColor}" stroke-width="2"/>` +
+            `<line x1="0" y1="0" x2="0" y2="8" stroke="${lineColor}" stroke-width="1.5"/>` +
+            `<line x1="10" y1="8" x2="10" y2="16" stroke="${lineColor}" stroke-width="1.5"/>` +
+            `</pattern></defs>`;
+        }
+        const options = [
+          optionWithPattern(brickOption('a10o1', '#CC8855', '#333333'), 'a10o1'),   // 1: brick dark mortar
+          optionWithPattern(brickOption('a10o2', '#8855CC', '#6633AA'), 'a10o2'),   // 2: purple brick
+          optionWithPattern(brickOption('a10o3', '#CC8855', '#AA6633'), 'a10o3'),   // 3: matching (correct)
+          optionWithPattern(svgPatternDef('a10o4', 'hstripes', '#CC8855', '#AA6633', 1.6), 'a10o4'), // 4: just stripes
+          optionWithPattern(brickOption('a10o5', '#CC8855', '#AA6633'), 'a10o5'),   // 5: slight offset trick (same visual but id different)
+          optionWithPattern(brickOption('a10o6', '#CCAA77', '#AA6633'), 'a10o6')    // 6: lighter brick
+        ];
+        // Make option 5 actually different - use wider bricks
+        options[4] = optionSVG(`<defs><pattern id="a10o5" patternUnits="userSpaceOnUse" width="30" height="16">` +
+          `<rect width="30" height="16" fill="#CC8855"/>` +
+          `<line x1="0" y1="0" x2="30" y2="0" stroke="#AA6633" stroke-width="2"/>` +
+          `<line x1="0" y1="8" x2="30" y2="8" stroke="#AA6633" stroke-width="2"/>` +
+          `<line x1="0" y1="0" x2="0" y2="8" stroke="#AA6633" stroke-width="1.5"/>` +
+          `<line x1="15" y1="8" x2="15" y2="16" stroke="#AA6633" stroke-width="1.5"/>` +
+          `</pattern></defs><rect x="10" y="10" width="100" height="100" fill="url(#a10o5)" stroke="#666" stroke-width="1.5"/>`);
+        result = { mainSVG, options, correctAnswer: 3 };
+        break;
+      }
+
+      // A11: Circle pattern (concentric), missing piece. Answer 4
+      case 10: {
+        const pid = 'a11pat';
+        const pd = svgPatternDef(pid, 'circles', '#AA3366', '#FFE0F0', 2);
+        const mainSVG = setAMainSVG(pd, pid, 10, 100, 100, 100);
+        const options = [
+          optionWithPattern(svgPatternDef('a11o1', 'circles', '#3366AA', '#E0F0FF', 2), 'a11o1'),   // 1: blue circles
+          optionWithPattern(svgPatternDef('a11o2', 'circles', '#AA3366', '#FFE0F0', 1), 'a11o2'),   // 2: smaller circles
+          optionWithPattern(svgPatternDef('a11o3', 'dots', '#AA3366', '#FFE0F0', 2), 'a11o3'),      // 3: dots not circles
+          optionWithPattern(svgPatternDef('a11o4', 'circles', '#AA3366', '#FFE0F0', 2), 'a11o4'),   // 4: matching (correct)
+          optionWithPattern(svgPatternDef('a11o5', 'circles', '#AA3366', '#FFE0F0', 3), 'a11o5'),   // 5: larger circles
+          optionWithPattern(svgPatternDef('a11o6', 'circles', '#AA3366', '#CCCCCC', 2), 'a11o6')    // 6: wrong bg
+        ];
+        result = { mainSVG, options, correctAnswer: 4 };
+        break;
+      }
+
+      // A12: Complex crosshatch/overlay, missing piece. Answer 5
+      case 11: {
+        const pid = 'a12pat';
+        const pd = svgPatternDef(pid, 'crosshatch', '#337744', '#DDFFDD', 1.3);
+        const mainSVG = setAMainSVG(pd, pid, 190, 100, 100, 100);
+        const options = [
+          optionWithPattern(svgPatternDef('a12o1', 'crosshatch', '#774433', '#FFDDDD', 1.3), 'a12o1'), // 1: brown crosshatch
+          optionWithPattern(svgPatternDef('a12o2', 'crosshatch', '#337744', '#DDFFDD', 0.7), 'a12o2'), // 2: smaller scale
+          optionWithPattern(svgPatternDef('a12o3', 'grid', '#337744', '#DDFFDD', 1.3), 'a12o3'),       // 3: grid not crosshatch
+          optionWithPattern(svgPatternDef('a12o4', 'crosshatch', '#337744', '#FFFFDD', 1.3), 'a12o4'), // 4: wrong bg
+          optionWithPattern(svgPatternDef('a12o5', 'crosshatch', '#337744', '#DDFFDD', 1.3), 'a12o5'), // 5: matching (correct)
+          optionWithPattern(svgPatternDef('a12o6', 'crosshatch', '#337744', '#DDFFDD', 2.0), 'a12o6')  // 6: larger scale
+        ];
+        result = { mainSVG, options, correctAnswer: 5 };
+        break;
+      }
+
+      default:
+        result = null;
+    }
+  }
+
+  // ----- SET AB -----
+  else if (set === 'AB') {
+    switch (index) {
+      // AB1: Top: red circle, blue circle. Bottom: red square, ? = blue square. Answer 4
+      case 0: {
+        const tl = svgShape('circle', 75, 75, 80, '#CC3333', '#222', 2);
+        const tr = svgShape('circle', 75, 75, 80, '#3366CC', '#222', 2);
+        const bl = svgShape('square', 75, 75, 80, '#CC3333', '#222', 2);
+        const mainSVG = matrixMainSVG(tl, tr, bl);
+        const options = [
+          matrixOptionSVG(svgShape('square', 60, 60, 60, '#33AA33', '#222', 2)),    // 1: green square
+          matrixOptionSVG(svgShape('circle', 60, 60, 60, '#3366CC', '#222', 2)),    // 2: blue circle
+          matrixOptionSVG(svgShape('square', 60, 60, 60, '#CC3333', '#222', 2)),    // 3: red square
+          matrixOptionSVG(svgShape('square', 60, 60, 60, '#3366CC', '#222', 2)),    // 4: blue square (correct)
+          matrixOptionSVG(svgShape('triangle', 60, 60, 60, '#3366CC', '#222', 2)),  // 5: blue triangle
+          matrixOptionSVG(svgShape('diamond', 60, 60, 60, '#3366CC', '#222', 2))    // 6: blue diamond
+        ];
+        result = { mainSVG, options, correctAnswer: 4 };
+        break;
+      }
+
+      // AB2: Top: big triangle, small triangle. Bottom: big star, ? = small star. Answer 5
+      case 1: {
+        const tl = svgShape('triangle', 75, 75, 100, '#FF8800', '#222', 2);
+        const tr = svgShape('triangle', 75, 75, 50, '#FF8800', '#222', 2);
+        const bl = svgShape('star', 75, 75, 100, '#FF8800', '#222', 2);
+        const mainSVG = matrixMainSVG(tl, tr, bl);
+        const options = [
+          matrixOptionSVG(svgShape('star', 60, 60, 80, '#FF8800', '#222', 2)),      // 1: big star
+          matrixOptionSVG(svgShape('triangle', 60, 60, 40, '#FF8800', '#222', 2)),  // 2: small triangle
+          matrixOptionSVG(svgShape('circle', 60, 60, 40, '#FF8800', '#222', 2)),    // 3: small circle
+          matrixOptionSVG(svgShape('star', 60, 60, 80, '#3366CC', '#222', 2)),      // 4: big blue star
+          matrixOptionSVG(svgShape('star', 60, 60, 40, '#FF8800', '#222', 2)),      // 5: small star (correct)
+          matrixOptionSVG(svgShape('diamond', 60, 60, 40, '#FF8800', '#222', 2))    // 6: small diamond
+        ];
+        result = { mainSVG, options, correctAnswer: 5 };
+        break;
+      }
+
+      // AB3: Top: solid circle, striped circle. Bottom: solid square, ? = striped square. Answer 1
+      case 2: {
+        const tl = svgShape('circle', 75, 75, 80, '#5599DD', '#222', 2);
+        const trPat = svgPatternDef('ab3tr', 'hstripes', '#5599DD', '#FFFFFF', 0.8);
+        const tr = trPat + `<circle cx="75" cy="75" r="40" fill="url(#ab3tr)" stroke="#222" stroke-width="2"/>`;
+        const bl = svgShape('square', 75, 75, 80, '#5599DD', '#222', 2);
+        const mainSVG = matrixMainSVG(tl, tr, bl);
+
+        const o1Pat = svgPatternDef('ab3o1', 'hstripes', '#5599DD', '#FFFFFF', 0.8);
+        const options = [
+          matrixOptionSVG(o1Pat + `<rect x="30" y="30" width="60" height="60" fill="url(#ab3o1)" stroke="#222" stroke-width="2"/>`), // 1: striped square (correct)
+          matrixOptionSVG(svgShape('square', 60, 60, 60, '#5599DD', '#222', 2)),           // 2: solid square
+          matrixOptionSVG(svgPatternDef('ab3o3', 'hstripes', '#5599DD', '#FFFFFF', 0.8) +
+            `<circle cx="60" cy="60" r="30" fill="url(#ab3o3)" stroke="#222" stroke-width="2"/>`), // 3: striped circle
+          matrixOptionSVG(svgPatternDef('ab3o4', 'vstripes', '#5599DD', '#FFFFFF', 0.8) +
+            `<rect x="30" y="30" width="60" height="60" fill="url(#ab3o4)" stroke="#222" stroke-width="2"/>`), // 4: vert-striped square
+          matrixOptionSVG(svgShape('circle', 60, 60, 60, '#5599DD', '#222', 2)),           // 5: solid circle
+          matrixOptionSVG(svgPatternDef('ab3o6', 'hstripes', '#CC3333', '#FFFFFF', 0.8) +
+            `<rect x="30" y="30" width="60" height="60" fill="url(#ab3o6)" stroke="#222" stroke-width="2"/>`) // 6: striped square wrong color
+        ];
+        result = { mainSVG, options, correctAnswer: 1 };
+        break;
+      }
+
+      // AB4: Top: 1 dot, 2 dots. Bottom: 1 line, ? = 2 lines. Answer 6
+      case 3: {
+        const tl = `<circle cx="75" cy="75" r="10" fill="#333"/>`;
+        const tr = `<circle cx="55" cy="75" r="10" fill="#333"/><circle cx="95" cy="75" r="10" fill="#333"/>`;
+        const bl = `<line x1="40" y1="75" x2="110" y2="75" stroke="#333" stroke-width="5"/>`;
+        const mainSVG = matrixMainSVG(tl, tr, bl);
+        const options = [
+          matrixOptionSVG(`<line x1="25" y1="60" x2="95" y2="60" stroke="#333" stroke-width="5"/>`),  // 1: 1 line
+          matrixOptionSVG(`<circle cx="45" cy="60" r="8" fill="#333"/><circle cx="75" cy="60" r="8" fill="#333"/>`), // 2: 2 dots
+          matrixOptionSVG(`<line x1="25" y1="40" x2="95" y2="40" stroke="#333" stroke-width="5"/>` +
+                          `<line x1="25" y1="60" x2="95" y2="60" stroke="#333" stroke-width="5"/>` +
+                          `<line x1="25" y1="80" x2="95" y2="80" stroke="#333" stroke-width="5"/>`), // 3: 3 lines
+          matrixOptionSVG(`<circle cx="40" cy="60" r="8" fill="#333"/><circle cx="60" cy="60" r="8" fill="#333"/><circle cx="80" cy="60" r="8" fill="#333"/>`), // 4: 3 dots
+          matrixOptionSVG(`<line x1="25" y1="60" x2="95" y2="60" stroke="#CC3333" stroke-width="5"/>`+
+                          `<line x1="25" y1="80" x2="95" y2="80" stroke="#CC3333" stroke-width="5"/>`), // 5: 2 red lines
+          matrixOptionSVG(`<line x1="25" y1="50" x2="95" y2="50" stroke="#333" stroke-width="5"/>` +
+                          `<line x1="25" y1="70" x2="95" y2="70" stroke="#333" stroke-width="5"/>`)  // 6: 2 lines (correct)
+        ];
+        result = { mainSVG, options, correctAnswer: 6 };
+        break;
+      }
+
+      // AB5: Top: upward arrow, right arrow. Bottom: red diamond, ? = rotated red diamond. Answer 2
+      case 4: {
+        const tl = svgShape('arrow', 75, 75, 70, '#5555AA', '#222', 2, 0);
+        const tr = svgShape('arrow', 75, 75, 70, '#5555AA', '#222', 2, 90);
+        const bl = svgShape('diamond', 75, 75, 70, '#CC3333', '#222', 2, 0);
+        const mainSVG = matrixMainSVG(tl, tr, bl);
+        const options = [
+          matrixOptionSVG(svgShape('diamond', 60, 60, 55, '#CC3333', '#222', 2, 0)),     // 1: diamond not rotated
+          matrixOptionSVG(svgShape('diamond', 60, 60, 55, '#CC3333', '#222', 2, 90)),    // 2: diamond rotated 90 (correct)
+          matrixOptionSVG(svgShape('arrow', 60, 60, 55, '#CC3333', '#222', 2, 90)),      // 3: arrow rotated red
+          matrixOptionSVG(svgShape('diamond', 60, 60, 55, '#5555AA', '#222', 2, 90)),    // 4: diamond rotated blue
+          matrixOptionSVG(svgShape('square', 60, 60, 55, '#CC3333', '#222', 2, 45)),     // 5: rotated square
+          matrixOptionSVG(svgShape('diamond', 60, 60, 55, '#CC3333', '#222', 2, 45))     // 6: diamond rotated 45
+        ];
+        result = { mainSVG, options, correctAnswer: 2 };
+        break;
+      }
+
+      // AB6: Top: large blue circle, small blue circle. Bottom: large red circle, ? = small red circle. Answer 1
+      case 5: {
+        const tl = svgShape('circle', 75, 75, 100, '#3366CC', '#222', 2);
+        const tr = svgShape('circle', 75, 75, 50, '#3366CC', '#222', 2);
+        const bl = svgShape('circle', 75, 75, 100, '#CC3333', '#222', 2);
+        const mainSVG = matrixMainSVG(tl, tr, bl);
+        const options = [
+          matrixOptionSVG(svgShape('circle', 60, 60, 40, '#CC3333', '#222', 2)),   // 1: small red circle (correct)
+          matrixOptionSVG(svgShape('circle', 60, 60, 80, '#CC3333', '#222', 2)),   // 2: large red circle
+          matrixOptionSVG(svgShape('circle', 60, 60, 40, '#3366CC', '#222', 2)),   // 3: small blue circle
+          matrixOptionSVG(svgShape('square', 60, 60, 40, '#CC3333', '#222', 2)),   // 4: small red square
+          matrixOptionSVG(svgShape('circle', 60, 60, 40, '#33AA33', '#222', 2)),   // 5: small green circle
+          matrixOptionSVG(svgShape('circle', 60, 60, 60, '#CC3333', '#222', 2))    // 6: medium red circle
+        ];
+        result = { mainSVG, options, correctAnswer: 1 };
+        break;
+      }
+
+      // AB7: Top: filled triangle, outline triangle. Bottom: filled hexagon, ? = outline hexagon. Answer 3
+      case 6: {
+        const tl = svgShape('triangle', 75, 75, 80, '#DD6600', '#222', 2);
+        const tr = svgShape('triangle', 75, 75, 80, 'none', '#DD6600', 3);
+        const bl = svgShape('hexagon', 75, 75, 80, '#DD6600', '#222', 2);
+        const mainSVG = matrixMainSVG(tl, tr, bl);
+        const options = [
+          matrixOptionSVG(svgShape('hexagon', 60, 60, 60, '#DD6600', '#222', 2)),   // 1: filled hexagon
+          matrixOptionSVG(svgShape('triangle', 60, 60, 60, 'none', '#DD6600', 3)),  // 2: outline triangle
+          matrixOptionSVG(svgShape('hexagon', 60, 60, 60, 'none', '#DD6600', 3)),   // 3: outline hexagon (correct)
+          matrixOptionSVG(svgShape('circle', 60, 60, 60, 'none', '#DD6600', 3)),    // 4: outline circle
+          matrixOptionSVG(svgShape('hexagon', 60, 60, 60, 'none', '#3366CC', 3)),   // 5: outline hexagon blue
+          matrixOptionSVG(svgShape('square', 60, 60, 60, 'none', '#DD6600', 3))     // 6: outline square
+        ];
+        result = { mainSVG, options, correctAnswer: 3 };
+        break;
+      }
+
+      // AB8: Top: circle+square, circle alone. Bottom: triangle+diamond, ? = triangle alone. Answer 4
+      case 7: {
+        const tl = svgShape('circle', 55, 75, 50, '#5599DD', '#222', 2) +
+                   svgShape('square', 95, 75, 50, '#FF8844', '#222', 2);
+        const tr = svgShape('circle', 75, 75, 60, '#5599DD', '#222', 2);
+        const bl = svgShape('triangle', 55, 75, 50, '#44BB44', '#222', 2) +
+                   svgShape('diamond', 100, 75, 50, '#CC44CC', '#222', 2);
+        const mainSVG = matrixMainSVG(tl, tr, bl);
+        const options = [
+          matrixOptionSVG(svgShape('diamond', 60, 60, 50, '#CC44CC', '#222', 2)),    // 1: diamond alone
+          matrixOptionSVG(svgShape('square', 60, 60, 50, '#FF8844', '#222', 2)),     // 2: square alone
+          matrixOptionSVG(svgShape('triangle', 40, 60, 40, '#44BB44', '#222', 2) +
+                          svgShape('diamond', 80, 60, 40, '#CC44CC', '#222', 2)),    // 3: triangle+diamond
+          matrixOptionSVG(svgShape('triangle', 60, 60, 50, '#44BB44', '#222', 2)),   // 4: triangle alone (correct)
+          matrixOptionSVG(svgShape('circle', 60, 60, 50, '#5599DD', '#222', 2)),     // 5: circle alone
+          matrixOptionSVG(svgShape('hexagon', 60, 60, 50, '#44BB44', '#222', 2))     // 6: hexagon
+        ];
+        result = { mainSVG, options, correctAnswer: 4 };
+        break;
+      }
+
+      // AB9: Top: 3 dots horizontal, 3 dots vertical. Bottom: 3 lines horizontal, ? = 3 lines vertical. Answer 6
+      case 8: {
+        const tl = `<circle cx="40" cy="75" r="10" fill="#333"/>` +
+                   `<circle cx="75" cy="75" r="10" fill="#333"/>` +
+                   `<circle cx="110" cy="75" r="10" fill="#333"/>`;
+        const tr = `<circle cx="75" cy="40" r="10" fill="#333"/>` +
+                   `<circle cx="75" cy="75" r="10" fill="#333"/>` +
+                   `<circle cx="75" cy="110" r="10" fill="#333"/>`;
+        const bl = `<line x1="20" y1="55" x2="130" y2="55" stroke="#333" stroke-width="5"/>` +
+                   `<line x1="20" y1="75" x2="130" y2="75" stroke="#333" stroke-width="5"/>` +
+                   `<line x1="20" y1="95" x2="130" y2="95" stroke="#333" stroke-width="5"/>`;
+        const mainSVG = matrixMainSVG(tl, tr, bl);
+        const options = [
+          matrixOptionSVG(`<line x1="15" y1="45" x2="105" y2="45" stroke="#333" stroke-width="4"/>` +
+                          `<line x1="15" y1="60" x2="105" y2="60" stroke="#333" stroke-width="4"/>` +
+                          `<line x1="15" y1="75" x2="105" y2="75" stroke="#333" stroke-width="4"/>`),  // 1: 3 lines horizontal
+          matrixOptionSVG(`<circle cx="60" cy="30" r="8" fill="#333"/>` +
+                          `<circle cx="60" cy="60" r="8" fill="#333"/>` +
+                          `<circle cx="60" cy="90" r="8" fill="#333"/>`),   // 2: 3 dots vertical
+          matrixOptionSVG(`<line x1="40" y1="15" x2="40" y2="105" stroke="#333" stroke-width="4"/>` +
+                          `<line x1="60" y1="15" x2="60" y2="105" stroke="#333" stroke-width="4"/>` +
+                          `<line x1="80" y1="15" x2="80" y2="105" stroke="#CC3333" stroke-width="4"/>`), // 3: 3 vert lines (one red)
+          matrixOptionSVG(`<line x1="30" y1="15" x2="30" y2="105" stroke="#333" stroke-width="4"/>` +
+                          `<line x1="90" y1="15" x2="90" y2="105" stroke="#333" stroke-width="4"/>`), // 4: 2 vertical lines
+          matrixOptionSVG(`<line x1="30" y1="15" x2="30" y2="105" stroke="#333" stroke-width="4"/>` +
+                          `<line x1="50" y1="15" x2="50" y2="105" stroke="#333" stroke-width="4"/>` +
+                          `<line x1="70" y1="15" x2="70" y2="105" stroke="#333" stroke-width="4"/>` +
+                          `<line x1="90" y1="15" x2="90" y2="105" stroke="#333" stroke-width="4"/>`), // 5: 4 vertical lines
+          matrixOptionSVG(`<line x1="35" y1="15" x2="35" y2="105" stroke="#333" stroke-width="4"/>` +
+                          `<line x1="60" y1="15" x2="60" y2="105" stroke="#333" stroke-width="4"/>` +
+                          `<line x1="85" y1="15" x2="85" y2="105" stroke="#333" stroke-width="4"/>`)  // 6: 3 vertical lines (correct)
+        ];
+        result = { mainSVG, options, correctAnswer: 6 };
+        break;
+      }
+
+      // AB10: Top: green circle in square, yellow triangle in square. Bottom: green circle in circle, ? = yellow triangle in circle. Answer 3
+      case 9: {
+        const tl = `<rect x="25" y="25" width="100" height="100" fill="none" stroke="#333" stroke-width="3"/>` +
+                   svgShape('circle', 75, 75, 60, '#33BB55', '#222', 2);
+        const tr = `<rect x="25" y="25" width="100" height="100" fill="none" stroke="#333" stroke-width="3"/>` +
+                   svgShape('triangle', 75, 75, 60, '#DDCC22', '#222', 2);
+        const bl = `<circle cx="75" cy="75" r="55" fill="none" stroke="#333" stroke-width="3"/>` +
+                   svgShape('circle', 75, 75, 50, '#33BB55', '#222', 2);
+        const mainSVG = matrixMainSVG(tl, tr, bl);
+        const options = [
+          matrixOptionSVG(`<circle cx="60" cy="60" r="45" fill="none" stroke="#333" stroke-width="2.5"/>` +
+                          svgShape('circle', 60, 60, 40, '#DDCC22', '#222', 2)),    // 1: yellow circle in circle
+          matrixOptionSVG(`<rect x="15" y="15" width="90" height="90" fill="none" stroke="#333" stroke-width="2.5"/>` +
+                          svgShape('triangle', 60, 60, 50, '#DDCC22', '#222', 2)),  // 2: yellow triangle in square
+          matrixOptionSVG(`<circle cx="60" cy="60" r="45" fill="none" stroke="#333" stroke-width="2.5"/>` +
+                          svgShape('triangle', 60, 60, 50, '#DDCC22', '#222', 2)),  // 3: yellow triangle in circle (correct)
+          matrixOptionSVG(`<circle cx="60" cy="60" r="45" fill="none" stroke="#333" stroke-width="2.5"/>` +
+                          svgShape('triangle', 60, 60, 50, '#33BB55', '#222', 2)),  // 4: green triangle in circle
+          matrixOptionSVG(`<circle cx="60" cy="60" r="45" fill="none" stroke="#333" stroke-width="2.5"/>` +
+                          svgShape('square', 60, 60, 50, '#DDCC22', '#222', 2)),    // 5: yellow square in circle
+          matrixOptionSVG(`<circle cx="60" cy="60" r="45" fill="none" stroke="#333" stroke-width="2.5"/>` +
+                          svgShape('diamond', 60, 60, 50, '#DDCC22', '#222', 2))    // 6: yellow diamond in circle
+        ];
+        result = { mainSVG, options, correctAnswer: 3 };
+        break;
+      }
+
+      // AB11: Top: cross, cross rotated 45. Bottom: arrow up, ? = arrow rotated 45. Answer 5
+      case 10: {
+        const tl = svgShape('cross', 75, 75, 70, '#CC3366', '#222', 2, 0);
+        const tr = svgShape('cross', 75, 75, 70, '#CC3366', '#222', 2, 45);
+        const bl = svgShape('arrow', 75, 75, 70, '#3366CC', '#222', 2, 0);
+        const mainSVG = matrixMainSVG(tl, tr, bl);
+        const options = [
+          matrixOptionSVG(svgShape('arrow', 60, 60, 55, '#3366CC', '#222', 2, 0)),     // 1: arrow up
+          matrixOptionSVG(svgShape('arrow', 60, 60, 55, '#3366CC', '#222', 2, 90)),    // 2: arrow right
+          matrixOptionSVG(svgShape('arrow', 60, 60, 55, '#3366CC', '#222', 2, 180)),   // 3: arrow down
+          matrixOptionSVG(svgShape('cross', 60, 60, 55, '#3366CC', '#222', 2, 45)),    // 4: cross rotated blue
+          matrixOptionSVG(svgShape('arrow', 60, 60, 55, '#3366CC', '#222', 2, 45)),    // 5: arrow rotated 45 (correct)
+          matrixOptionSVG(svgShape('arrow', 60, 60, 55, '#CC3366', '#222', 2, 45))     // 6: arrow rotated 45 pink
+        ];
+        result = { mainSVG, options, correctAnswer: 5 };
+        break;
+      }
+
+      // AB12: Top: red/blue split circle, blue/red split circle. Bottom: green/yellow split square, ? = yellow/green split square. Answer 2
+      case 11: {
+        // Split shapes: left half / right half
+        const tl = `<clipPath id="ab12tlL"><rect x="25" y="25" width="50" height="100"/></clipPath>` +
+                   `<clipPath id="ab12tlR"><rect x="75" y="25" width="50" height="100"/></clipPath>` +
+                   `<circle cx="75" cy="75" r="45" fill="#CC3333" clip-path="url(#ab12tlL)"/>` +
+                   `<circle cx="75" cy="75" r="45" fill="#3366CC" clip-path="url(#ab12tlR)"/>` +
+                   `<circle cx="75" cy="75" r="45" fill="none" stroke="#222" stroke-width="2"/>`;
+        const tr = `<clipPath id="ab12trL"><rect x="25" y="25" width="50" height="100"/></clipPath>` +
+                   `<clipPath id="ab12trR"><rect x="75" y="25" width="50" height="100"/></clipPath>` +
+                   `<circle cx="75" cy="75" r="45" fill="#3366CC" clip-path="url(#ab12trL)"/>` +
+                   `<circle cx="75" cy="75" r="45" fill="#CC3333" clip-path="url(#ab12trR)"/>` +
+                   `<circle cx="75" cy="75" r="45" fill="none" stroke="#222" stroke-width="2"/>`;
+        const bl = `<clipPath id="ab12blL"><rect x="25" y="25" width="50" height="100"/></clipPath>` +
+                   `<clipPath id="ab12blR"><rect x="75" y="25" width="50" height="100"/></clipPath>` +
+                   `<rect x="30" y="30" width="90" height="90" fill="#33AA55" clip-path="url(#ab12blL)"/>` +
+                   `<rect x="30" y="30" width="90" height="90" fill="#DDCC22" clip-path="url(#ab12blR)"/>` +
+                   `<rect x="30" y="30" width="90" height="90" fill="none" stroke="#222" stroke-width="2"/>`;
+        const mainSVG = matrixMainSVG(tl, tr, bl);
+
+        const options = [
+          // 1: green/yellow split square (same as bottom-left)
+          matrixOptionSVG(
+            `<clipPath id="ab12o1L"><rect x="10" y="10" width="50" height="100"/></clipPath>` +
+            `<clipPath id="ab12o1R"><rect x="60" y="10" width="50" height="100"/></clipPath>` +
+            `<rect x="15" y="15" width="90" height="90" fill="#33AA55" clip-path="url(#ab12o1L)"/>` +
+            `<rect x="15" y="15" width="90" height="90" fill="#DDCC22" clip-path="url(#ab12o1R)"/>` +
+            `<rect x="15" y="15" width="90" height="90" fill="none" stroke="#222" stroke-width="2"/>`
+          ),
+          // 2: yellow/green split square (correct — colors swapped)
+          matrixOptionSVG(
+            `<clipPath id="ab12o2L"><rect x="10" y="10" width="50" height="100"/></clipPath>` +
+            `<clipPath id="ab12o2R"><rect x="60" y="10" width="50" height="100"/></clipPath>` +
+            `<rect x="15" y="15" width="90" height="90" fill="#DDCC22" clip-path="url(#ab12o2L)"/>` +
+            `<rect x="15" y="15" width="90" height="90" fill="#33AA55" clip-path="url(#ab12o2R)"/>` +
+            `<rect x="15" y="15" width="90" height="90" fill="none" stroke="#222" stroke-width="2"/>`
+          ),
+          // 3: yellow/green split circle
+          matrixOptionSVG(
+            `<clipPath id="ab12o3L"><rect x="10" y="10" width="50" height="100"/></clipPath>` +
+            `<clipPath id="ab12o3R"><rect x="60" y="10" width="50" height="100"/></clipPath>` +
+            `<circle cx="60" cy="60" r="40" fill="#DDCC22" clip-path="url(#ab12o3L)"/>` +
+            `<circle cx="60" cy="60" r="40" fill="#33AA55" clip-path="url(#ab12o3R)"/>` +
+            `<circle cx="60" cy="60" r="40" fill="none" stroke="#222" stroke-width="2"/>`
+          ),
+          // 4: red/blue split square
+          matrixOptionSVG(
+            `<clipPath id="ab12o4L"><rect x="10" y="10" width="50" height="100"/></clipPath>` +
+            `<clipPath id="ab12o4R"><rect x="60" y="10" width="50" height="100"/></clipPath>` +
+            `<rect x="15" y="15" width="90" height="90" fill="#CC3333" clip-path="url(#ab12o4L)"/>` +
+            `<rect x="15" y="15" width="90" height="90" fill="#3366CC" clip-path="url(#ab12o4R)"/>` +
+            `<rect x="15" y="15" width="90" height="90" fill="none" stroke="#222" stroke-width="2"/>`
+          ),
+          // 5: green/green solid square
+          matrixOptionSVG(
+            `<rect x="15" y="15" width="90" height="90" fill="#33AA55" stroke="#222" stroke-width="2"/>`
+          ),
+          // 6: yellow/yellow solid square
+          matrixOptionSVG(
+            `<rect x="15" y="15" width="90" height="90" fill="#DDCC22" stroke="#222" stroke-width="2"/>`
+          )
+        ];
+        result = { mainSVG, options, correctAnswer: 2 };
+        break;
+      }
+
+      default:
+        result = null;
+    }
+  }
+
+  // ----- SET B -----
+  else if (set === 'B') {
+    switch (index) {
+      // B1: Shape stays same, fill changes from solid to striped. Answer 2
+      case 0: {
+        const tl = svgShape('circle', 75, 75, 80, '#CC5555', '#222', 2);
+        const stripePat = svgPatternDef('b1tr', 'hstripes', '#CC5555', '#FFFFFF', 0.8);
+        const tr = stripePat + `<circle cx="75" cy="75" r="40" fill="url(#b1tr)" stroke="#222" stroke-width="2"/>`;
+        const bl = svgShape('square', 75, 75, 80, '#5555CC', '#222', 2);
+        const mainSVG = matrixMainSVG(tl, tr, bl);
+
+        const o2Pat = svgPatternDef('b1o2', 'hstripes', '#5555CC', '#FFFFFF', 0.8);
+        const options = [
+          matrixOptionSVG(svgShape('square', 60, 60, 60, '#5555CC', '#222', 2)),   // 1: solid blue square
+          matrixOptionSVG(o2Pat + `<rect x="30" y="30" width="60" height="60" fill="url(#b1o2)" stroke="#222" stroke-width="2"/>`), // 2: striped blue square (correct)
+          matrixOptionSVG(svgPatternDef('b1o3', 'hstripes', '#CC5555', '#FFFFFF', 0.8) +
+            `<rect x="30" y="30" width="60" height="60" fill="url(#b1o3)" stroke="#222" stroke-width="2"/>`), // 3: striped red square
+          matrixOptionSVG(svgShape('circle', 60, 60, 60, '#5555CC', '#222', 2)),   // 4: solid blue circle
+          matrixOptionSVG(svgPatternDef('b1o5', 'vstripes', '#5555CC', '#FFFFFF', 0.8) +
+            `<rect x="30" y="30" width="60" height="60" fill="url(#b1o5)" stroke="#222" stroke-width="2"/>`), // 5: vert-striped blue square
+          matrixOptionSVG(svgPatternDef('b1o6', 'hstripes', '#5555CC', '#FFFFFF', 0.8) +
+            `<circle cx="60" cy="60" r="30" fill="url(#b1o6)" stroke="#222" stroke-width="2"/>`) // 6: striped blue circle
+        ];
+        result = { mainSVG, options, correctAnswer: 2 };
+        break;
+      }
+
+      // B2: Shape changes, size stays, both change color. Answer 6
+      case 1: {
+        const tl = svgShape('circle', 75, 75, 80, '#CC3333', '#222', 2);
+        const tr = svgShape('square', 75, 75, 80, '#3366CC', '#222', 2);
+        const bl = svgShape('triangle', 75, 75, 80, '#33AA33', '#222', 2);
+        const mainSVG = matrixMainSVG(tl, tr, bl);
+        const options = [
+          matrixOptionSVG(svgShape('triangle', 60, 60, 60, '#33AA33', '#222', 2)),    // 1: green triangle (same)
+          matrixOptionSVG(svgShape('diamond', 60, 60, 60, '#33AA33', '#222', 2)),     // 2: green diamond
+          matrixOptionSVG(svgShape('diamond', 60, 60, 60, '#CC3333', '#222', 2)),     // 3: red diamond
+          matrixOptionSVG(svgShape('star', 60, 60, 60, '#DDCC22', '#222', 2)),        // 4: yellow star
+          matrixOptionSVG(svgShape('square', 60, 60, 60, '#33AA33', '#222', 2)),      // 5: green square
+          matrixOptionSVG(svgShape('diamond', 60, 60, 60, '#DDCC22', '#222', 2))      // 6: yellow diamond (correct)
+        ];
+        result = { mainSVG, options, correctAnswer: 6 };
+        break;
+      }
+
+      // B3: Orientation change + color change. Answer 1
+      case 2: {
+        const tl = svgShape('arrow', 75, 75, 70, '#CC3333', '#222', 2, 0);    // red arrow up
+        const tr = svgShape('arrow', 75, 75, 70, '#3366CC', '#222', 2, 180);  // blue arrow down
+        const bl = svgShape('triangle', 75, 75, 70, '#CC3333', '#222', 2, 0); // red triangle up
+        const mainSVG = matrixMainSVG(tl, tr, bl);
+        const options = [
+          matrixOptionSVG(svgShape('triangle', 60, 60, 55, '#3366CC', '#222', 2, 180)),  // 1: blue triangle down (correct)
+          matrixOptionSVG(svgShape('triangle', 60, 60, 55, '#CC3333', '#222', 2, 180)),  // 2: red triangle down
+          matrixOptionSVG(svgShape('triangle', 60, 60, 55, '#3366CC', '#222', 2, 0)),    // 3: blue triangle up
+          matrixOptionSVG(svgShape('arrow', 60, 60, 55, '#3366CC', '#222', 2, 180)),     // 4: blue arrow down
+          matrixOptionSVG(svgShape('triangle', 60, 60, 55, '#33AA33', '#222', 2, 180)),  // 5: green triangle down
+          matrixOptionSVG(svgShape('arrow', 60, 60, 55, '#CC3333', '#222', 2, 0))        // 6: red arrow up
+        ];
+        result = { mainSVG, options, correctAnswer: 1 };
+        break;
+      }
+
+      // B4: Number of elements increases left-to-right, pattern changes top-to-bottom. Answer 2
+      case 3: {
+        // Top: 1 circle, 2 circles. Bottom: 1 star, ? = 2 stars
+        const tl = svgShape('circle', 75, 75, 50, '#FF8844', '#222', 2);
+        const tr = svgShape('circle', 50, 75, 45, '#FF8844', '#222', 2) +
+                   svgShape('circle', 100, 75, 45, '#FF8844', '#222', 2);
+        const bl = svgShape('star', 75, 75, 55, '#AA44CC', '#222', 2);
+        const mainSVG = matrixMainSVG(tl, tr, bl);
+        const options = [
+          matrixOptionSVG(svgShape('star', 60, 60, 45, '#AA44CC', '#222', 2)),  // 1: 1 star
+          matrixOptionSVG(svgShape('star', 38, 60, 35, '#AA44CC', '#222', 2) +
+                          svgShape('star', 82, 60, 35, '#AA44CC', '#222', 2)),  // 2: 2 stars (correct)
+          matrixOptionSVG(svgShape('star', 30, 60, 30, '#AA44CC', '#222', 2) +
+                          svgShape('star', 60, 60, 30, '#AA44CC', '#222', 2) +
+                          svgShape('star', 90, 60, 30, '#AA44CC', '#222', 2)),  // 3: 3 stars
+          matrixOptionSVG(svgShape('circle', 38, 60, 35, '#FF8844', '#222', 2) +
+                          svgShape('circle', 82, 60, 35, '#FF8844', '#222', 2)), // 4: 2 circles
+          matrixOptionSVG(svgShape('star', 38, 60, 35, '#FF8844', '#222', 2) +
+                          svgShape('star', 82, 60, 35, '#FF8844', '#222', 2)),   // 5: 2 stars wrong color
+          matrixOptionSVG(svgShape('diamond', 38, 60, 35, '#AA44CC', '#222', 2) +
+                          svgShape('diamond', 82, 60, 35, '#AA44CC', '#222', 2)) // 6: 2 diamonds
+        ];
+        result = { mainSVG, options, correctAnswer: 2 };
+        break;
+      }
+
+      // B5: Shape overlay/combination rule. Answer 1
+      case 4: {
+        // Top-left: circle outline + square outline overlapping
+        // Top-right: just the intersection region (smaller shape)
+        // Bottom-left: triangle outline + diamond outline overlapping
+        // Bottom-right: ? = the intersection/smaller overlap shape
+        const tl = `<circle cx="60" cy="75" r="35" fill="none" stroke="#CC3333" stroke-width="3"/>` +
+                   `<rect x="55" y="40" width="70" height="70" fill="none" stroke="#3366CC" stroke-width="3"/>`;
+        const tr = `<rect x="55" y="40" width="30" height="35" fill="#AA55AA" stroke="#222" stroke-width="2" rx="2"/>`;
+        const bl = `<polygon points="75,30 120,110 30,110" fill="none" stroke="#CC3333" stroke-width="3"/>` +
+                   `<polygon points="75,110 120,45 30,45" fill="none" stroke="#3366CC" stroke-width="3"/>`;
+        const mainSVG = matrixMainSVG(tl, tr, bl);
+        const options = [
+          // 1: hexagonal/star intersection shape (correct)
+          matrixOptionSVG(`<polygon points="60,35 80,50 80,70 60,85 40,70 40,50" fill="#AA55AA" stroke="#222" stroke-width="2"/>`),
+          // 2: full triangle
+          matrixOptionSVG(svgShape('triangle', 60, 60, 60, '#AA55AA', '#222', 2)),
+          // 3: full diamond
+          matrixOptionSVG(svgShape('diamond', 60, 60, 60, '#AA55AA', '#222', 2)),
+          // 4: small square
+          matrixOptionSVG(`<rect x="35" y="35" width="50" height="50" fill="#AA55AA" stroke="#222" stroke-width="2"/>`),
+          // 5: small circle
+          matrixOptionSVG(svgShape('circle', 60, 60, 40, '#AA55AA', '#222', 2)),
+          // 6: inverted triangle
+          matrixOptionSVG(`<polygon points="60,85 80,40 40,40" fill="#AA55AA" stroke="#222" stroke-width="2"/>`)
+        ];
+        result = { mainSVG, options, correctAnswer: 1 };
+        break;
+      }
+
+      // B6: Size decrease + fill change. Answer 3
+      case 5: {
+        const tl = svgShape('circle', 75, 75, 100, '#44AAAA', '#222', 2);   // large solid teal circle
+        const tr = svgShape('circle', 75, 75, 55, 'none', '#44AAAA', 3);    // small outline teal circle
+        const bl = svgShape('hexagon', 75, 75, 100, '#DD7722', '#222', 2);  // large solid orange hexagon
+        const mainSVG = matrixMainSVG(tl, tr, bl);
+        const options = [
+          matrixOptionSVG(svgShape('hexagon', 60, 60, 70, '#DD7722', '#222', 2)),   // 1: large solid hex
+          matrixOptionSVG(svgShape('hexagon', 60, 60, 70, 'none', '#DD7722', 3)),   // 2: large outline hex
+          matrixOptionSVG(svgShape('hexagon', 60, 60, 42, 'none', '#DD7722', 3)),   // 3: small outline hex (correct)
+          matrixOptionSVG(svgShape('circle', 60, 60, 42, 'none', '#DD7722', 3)),    // 4: small outline circle
+          matrixOptionSVG(svgShape('hexagon', 60, 60, 42, '#DD7722', '#222', 2)),   // 5: small solid hex
+          matrixOptionSVG(svgShape('hexagon', 60, 60, 42, 'none', '#44AAAA', 3))    // 6: small outline hex wrong color
+        ];
+        result = { mainSVG, options, correctAnswer: 3 };
+        break;
+      }
+
+      // B7: Rotation + shape change combined. Answer 5
+      case 6: {
+        const tl = svgShape('triangle', 75, 75, 80, '#CC3366', '#222', 2, 0);     // triangle up
+        const tr = svgShape('square', 75, 75, 70, '#CC3366', '#222', 2, 45);      // square rotated 45
+        const bl = svgShape('arrow', 75, 75, 80, '#3366AA', '#222', 2, 0);        // arrow up
+        const mainSVG = matrixMainSVG(tl, tr, bl);
+        const options = [
+          matrixOptionSVG(svgShape('cross', 60, 60, 55, '#3366AA', '#222', 2, 0)),      // 1: cross normal
+          matrixOptionSVG(svgShape('arrow', 60, 60, 55, '#3366AA', '#222', 2, 45)),     // 2: arrow rot 45
+          matrixOptionSVG(svgShape('diamond', 60, 60, 55, '#CC3366', '#222', 2, 45)),   // 3: diamond rot pink
+          matrixOptionSVG(svgShape('cross', 60, 60, 55, '#CC3366', '#222', 2, 45)),     // 4: cross rot pink
+          matrixOptionSVG(svgShape('cross', 60, 60, 55, '#3366AA', '#222', 2, 45)),     // 5: cross rot 45 blue (correct)
+          matrixOptionSVG(svgShape('star', 60, 60, 55, '#3366AA', '#222', 2, 45))       // 6: star rot
+        ];
+        result = { mainSVG, options, correctAnswer: 5 };
+        break;
+      }
+
+      // B8: Complex overlay: what's in both top-right and bottom-left? Answer 6
+      case 7: {
+        // TL: circle + triangle
+        // TR: triangle + star
+        // BL: star + circle
+        // BR: ? = the element shared across TR and BL minus TL's unique -> star (in both TR and BL)
+        // Actually: each cell has 2 shapes. The rule: BR = shape in TR AND BL but NOT in TL
+        // TL has circle, triangle. TR has triangle, star. BL has star, circle.
+        // TR∩BL = star. So answer = star.
+        const tl = svgShape('circle', 50, 75, 50, '#5599DD', '#222', 2) +
+                   svgShape('triangle', 105, 75, 50, '#FF8844', '#222', 2);
+        const tr = svgShape('triangle', 50, 75, 50, '#FF8844', '#222', 2) +
+                   svgShape('star', 105, 75, 55, '#AA44CC', '#222', 2);
+        const bl = svgShape('star', 50, 75, 55, '#AA44CC', '#222', 2) +
+                   svgShape('circle', 105, 75, 50, '#5599DD', '#222', 2);
+        const mainSVG = matrixMainSVG(tl, tr, bl);
+        const options = [
+          matrixOptionSVG(svgShape('circle', 60, 60, 55, '#5599DD', '#222', 2)),      // 1: circle
+          matrixOptionSVG(svgShape('triangle', 60, 60, 55, '#FF8844', '#222', 2)),    // 2: triangle
+          matrixOptionSVG(svgShape('diamond', 60, 60, 55, '#AA44CC', '#222', 2)),     // 3: diamond
+          matrixOptionSVG(svgShape('hexagon', 60, 60, 55, '#AA44CC', '#222', 2)),     // 4: hexagon
+          matrixOptionSVG(svgShape('square', 60, 60, 55, '#AA44CC', '#222', 2)),      // 5: square
+          matrixOptionSVG(svgShape('star', 60, 60, 55, '#AA44CC', '#222', 2))         // 6: star (correct)
+        ];
+        result = { mainSVG, options, correctAnswer: 6 };
+        break;
+      }
+
+      // B9: Triple transformation: shape + size + fill. Answer 4
+      case 8: {
+        // TL: large solid red circle
+        // TR: small dotted red square  (shape change, size change, fill change)
+        // BL: large solid blue triangle
+        // BR: ? = small dotted blue diamond
+        const tl = svgShape('circle', 75, 75, 100, '#CC3333', '#222', 2);
+        const trPat = svgPatternDef('b9tr', 'dots', '#CC3333', '#FFFFFF', 0.6);
+        const tr = trPat + `<rect x="50" y="50" width="50" height="50" fill="url(#b9tr)" stroke="#222" stroke-width="2"/>`;
+        const bl = svgShape('triangle', 75, 75, 100, '#3366CC', '#222', 2);
+        const mainSVG = matrixMainSVG(tl, tr, bl);
+
+        const o4Pat = svgPatternDef('b9o4', 'dots', '#3366CC', '#FFFFFF', 0.6);
+        const options = [
+          matrixOptionSVG(svgShape('diamond', 60, 60, 45, '#3366CC', '#222', 2)),    // 1: small solid blue diamond
+          matrixOptionSVG(svgPatternDef('b9o2', 'dots', '#CC3333', '#FFFFFF', 0.6) +
+            `<polygon points="60,30 90,60 60,90 30,60" fill="url(#b9o2)" stroke="#222" stroke-width="2"/>`), // 2: small dotted red diamond
+          matrixOptionSVG(svgPatternDef('b9o3', 'dots', '#3366CC', '#FFFFFF', 0.6) +
+            `<rect x="30" y="30" width="60" height="60" fill="url(#b9o3)" stroke="#222" stroke-width="2"/>`), // 3: small dotted blue square
+          matrixOptionSVG(o4Pat +
+            `<polygon points="60,25 95,60 60,95 25,60" fill="url(#b9o4)" stroke="#222" stroke-width="2"/>`), // 4: small dotted blue diamond (correct)
+          matrixOptionSVG(svgPatternDef('b9o5', 'dots', '#3366CC', '#FFFFFF', 0.6) +
+            `<polygon points="60,20 95,75 25,75" fill="url(#b9o5)" stroke="#222" stroke-width="2"/>`), // 5: small dotted blue triangle
+          matrixOptionSVG(svgShape('diamond', 60, 60, 80, '#3366CC', '#222', 2))     // 6: large solid blue diamond
+        ];
+        result = { mainSVG, options, correctAnswer: 4 };
+        break;
+      }
+
+      // B10: Spatial arrangement changes. Answer 3
+      case 9: {
+        // TL: 3 shapes in a row (horizontal)
+        // TR: 3 shapes in a column (vertical)
+        // BL: 3 different shapes in a row (horizontal)
+        // BR: ? = 3 different shapes in a column (vertical)
+        const tl = svgShape('circle', 35, 75, 35, '#DD5555', '#222', 2) +
+                   svgShape('circle', 75, 75, 35, '#DD5555', '#222', 2) +
+                   svgShape('circle', 115, 75, 35, '#DD5555', '#222', 2);
+        const tr = svgShape('circle', 75, 35, 35, '#DD5555', '#222', 2) +
+                   svgShape('circle', 75, 75, 35, '#DD5555', '#222', 2) +
+                   svgShape('circle', 75, 115, 35, '#DD5555', '#222', 2);
+        const bl = svgShape('square', 35, 75, 35, '#5588DD', '#222', 2) +
+                   svgShape('square', 75, 75, 35, '#5588DD', '#222', 2) +
+                   svgShape('square', 115, 75, 35, '#5588DD', '#222', 2);
+        const mainSVG = matrixMainSVG(tl, tr, bl);
+        const options = [
+          // 1: 3 squares horizontal
+          matrixOptionSVG(svgShape('square', 25, 60, 28, '#5588DD', '#222', 2) +
+                          svgShape('square', 60, 60, 28, '#5588DD', '#222', 2) +
+                          svgShape('square', 95, 60, 28, '#5588DD', '#222', 2)),
+          // 2: 3 squares vertical (wrong color)
+          matrixOptionSVG(svgShape('square', 60, 25, 28, '#DD5555', '#222', 2) +
+                          svgShape('square', 60, 60, 28, '#DD5555', '#222', 2) +
+                          svgShape('square', 60, 95, 28, '#DD5555', '#222', 2)),
+          // 3: 3 squares vertical (correct)
+          matrixOptionSVG(svgShape('square', 60, 25, 28, '#5588DD', '#222', 2) +
+                          svgShape('square', 60, 60, 28, '#5588DD', '#222', 2) +
+                          svgShape('square', 60, 95, 28, '#5588DD', '#222', 2)),
+          // 4: 2 squares vertical
+          matrixOptionSVG(svgShape('square', 60, 40, 28, '#5588DD', '#222', 2) +
+                          svgShape('square', 60, 80, 28, '#5588DD', '#222', 2)),
+          // 5: 3 circles vertical
+          matrixOptionSVG(svgShape('circle', 60, 25, 28, '#DD5555', '#222', 2) +
+                          svgShape('circle', 60, 60, 28, '#DD5555', '#222', 2) +
+                          svgShape('circle', 60, 95, 28, '#DD5555', '#222', 2)),
+          // 6: 4 squares vertical
+          matrixOptionSVG(svgShape('square', 60, 20, 22, '#5588DD', '#222', 2) +
+                          svgShape('square', 60, 45, 22, '#5588DD', '#222', 2) +
+                          svgShape('square', 60, 70, 22, '#5588DD', '#222', 2) +
+                          svgShape('square', 60, 95, 22, '#5588DD', '#222', 2))
+        ];
+        result = { mainSVG, options, correctAnswer: 3 };
+        break;
+      }
+
+      // B11: Subtraction rule: bottom = top minus something. Answer 4
+      case 10: {
+        // TL: circle + triangle + square (3 shapes)
+        // TR: circle + triangle (2 shapes — square removed)
+        // BL: star + diamond + hexagon (3 shapes)
+        // BR: ? = star + diamond (hexagon removed) — same rule, remove last shape
+        const tl = svgShape('circle', 35, 75, 40, '#DD6644', '#222', 2) +
+                   svgShape('triangle', 75, 75, 40, '#44AADD', '#222', 2) +
+                   svgShape('square', 115, 75, 40, '#66CC66', '#222', 2);
+        const tr = svgShape('circle', 50, 75, 45, '#DD6644', '#222', 2) +
+                   svgShape('triangle', 100, 75, 45, '#44AADD', '#222', 2);
+        const bl = svgShape('star', 35, 75, 45, '#CC44AA', '#222', 2) +
+                   svgShape('diamond', 75, 75, 40, '#AAAA33', '#222', 2) +
+                   svgShape('hexagon', 115, 75, 40, '#55BBAA', '#222', 2);
+        const mainSVG = matrixMainSVG(tl, tr, bl);
+        const options = [
+          // 1: star alone
+          matrixOptionSVG(svgShape('star', 60, 60, 50, '#CC44AA', '#222', 2)),
+          // 2: diamond + hexagon
+          matrixOptionSVG(svgShape('diamond', 40, 60, 35, '#AAAA33', '#222', 2) +
+                          svgShape('hexagon', 85, 60, 35, '#55BBAA', '#222', 2)),
+          // 3: star + hexagon
+          matrixOptionSVG(svgShape('star', 40, 60, 40, '#CC44AA', '#222', 2) +
+                          svgShape('hexagon', 85, 60, 35, '#55BBAA', '#222', 2)),
+          // 4: star + diamond (correct)
+          matrixOptionSVG(svgShape('star', 40, 60, 40, '#CC44AA', '#222', 2) +
+                          svgShape('diamond', 85, 60, 35, '#AAAA33', '#222', 2)),
+          // 5: all three
+          matrixOptionSVG(svgShape('star', 25, 60, 30, '#CC44AA', '#222', 2) +
+                          svgShape('diamond', 60, 60, 30, '#AAAA33', '#222', 2) +
+                          svgShape('hexagon', 95, 60, 30, '#55BBAA', '#222', 2)),
+          // 6: diamond alone
+          matrixOptionSVG(svgShape('diamond', 60, 60, 50, '#AAAA33', '#222', 2))
+        ];
+        result = { mainSVG, options, correctAnswer: 4 };
+        break;
+      }
+
+      // B12: Most complex: three simultaneous rule changes (shape + color + size). Answer 5
+      case 11: {
+        // Rules: left to right: shape changes (circle->square), color changes (red->blue), size decreases
+        //        top to bottom: shape changes (circle->triangle), color changes (red->green), size increases
+        // TL: medium red circle
+        // TR: small blue square
+        // BL: large green triangle
+        // BR: ? = medium-small yellow diamond (combine both transformations)
+        // The answer should show shape=diamond (next progression), color=yellow (blue+green mix), medium size
+        const tl = svgShape('circle', 75, 75, 75, '#CC3333', '#222', 2);
+        const tr = svgShape('square', 75, 75, 50, '#3366CC', '#222', 2);
+        const bl = svgShape('triangle', 75, 75, 100, '#33AA33', '#222', 2);
+        const mainSVG = matrixMainSVG(tl, tr, bl);
+        const options = [
+          // 1: large blue diamond
+          matrixOptionSVG(svgShape('diamond', 60, 60, 70, '#3366CC', '#222', 2)),
+          // 2: small green triangle
+          matrixOptionSVG(svgShape('triangle', 60, 60, 40, '#33AA33', '#222', 2)),
+          // 3: medium red square
+          matrixOptionSVG(svgShape('square', 60, 60, 55, '#CC3333', '#222', 2)),
+          // 4: medium yellow square
+          matrixOptionSVG(svgShape('square', 60, 60, 55, '#DDAA22', '#222', 2)),
+          // 5: medium yellow diamond (correct)
+          matrixOptionSVG(svgShape('diamond', 60, 60, 60, '#DDAA22', '#222', 2)),
+          // 6: small yellow hexagon
+          matrixOptionSVG(svgShape('hexagon', 60, 60, 40, '#DDAA22', '#222', 2))
+        ];
+        result = { mainSVG, options, correctAnswer: 5 };
+        break;
+      }
+
+      default:
+        result = null;
+    }
+  }
+
+  return result;
+}
+
+// === END ITEM DEFINITIONS ===// === TEST SCREEN, SCORING, AND RESULTS ===
+
+// ─── Item Index Mapping ───
+function getSetAndIndex(itemIndex) {
+  if (state.testType === 'spm') {
+    if (itemIndex < 12) return { set: 'A', index: itemIndex };
+    if (itemIndex < 24) return { set: 'B', index: itemIndex - 12 };
+    if (itemIndex < 36) return { set: 'C', index: itemIndex - 24 };
+    if (itemIndex < 48) return { set: 'D', index: itemIndex - 36 };
+    return { set: 'E', index: itemIndex - 48 };
+  }
+  if (itemIndex < 12) return { set: 'A', index: itemIndex };
+  if (itemIndex < 24) return { set: 'AB', index: itemIndex - 12 };
+  return { set: 'B', index: itemIndex - 24 };
+}
+
+// ─── Start Test ───
+function startTest(type) {
+  state.testType = type || 'cpm';
+  const cfg = getTestConfig();
+  state.currentItemIndex = 0;
+  state.responses = new Array(cfg.totalItems).fill(null);
+  state.currentSession = {
+    startTime: new Date().toISOString(),
+    itemStartTime: Date.now(),
+    testType: state.testType
+  };
+  showScreen('test');
+}
+
+// ─── Render Test Screen ───
+function renderTest() {
+  const app = document.getElementById('screen-test');
+  const cfg = getTestConfig();
+  const itemIndex = state.currentItemIndex;
+  const { set, index } = getSetAndIndex(itemIndex);
+  const itemNum = index + 1;
+  const totalItems = cfg.totalItems;
+  const numOptions = cfg.optionsForSet(set);
+  const progressPct = ((itemIndex + 1) / totalItems * 100).toFixed(1);
+  const isLastItem = itemIndex === totalItems - 1;
+  const isFirstItem = itemIndex === 0;
+
+  const currentResponse = state.responses[itemIndex];
+  const selectedOption = currentResponse ? currentResponse.selected : null;
+  const answeredCount = state.responses.filter(r => r && r.selected !== null).length;
+
+  // Set badge color classes
+  const setBadgeClass = {A:'set-a',AB:'set-ab',B:'set-b',C:'set-c',D:'set-d',E:'set-e'}[set] || 'set-a';
+
+  let mainContent;
+  let optionsContent;
+
+  if (state.testType === 'spm') {
+    // SPM: image-based — show the booklet page image
+    const pageNum = itemIndex + 2; // page 1 is cover, items start at page 2
+    const imgSrc = 'spm_images/spm_page_' + String(pageNum).padStart(2, '0') + '.jpeg';
+    mainContent = `<img src="${imgSrc}" alt="SPM ${set}${itemNum}" style="max-width:100%;max-height:50vh;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,0.15);">`;
+
+    // Numbered buttons (no SVG options — the options are in the image)
+    const gridCols = numOptions <= 6 ? 3 : 4;
+    optionsContent = `<div class="test-options-grid" style="grid-template-columns:repeat(${gridCols},1fr);">`;
+    for (let i = 1; i <= numOptions; i++) {
+      const isSelected = selectedOption === i;
+      optionsContent += `
+        <button class="test-option-btn ${isSelected ? 'selected' : ''}"
+                onclick="selectOption(${i})" style="aspect-ratio:auto;min-height:56px;font-size:1.5rem;font-weight:700;">
+          <span class="test-option-number" style="font-size:1.5rem;">${i}</span>
+        </button>`;
+    }
+    optionsContent += '</div>';
+  } else {
+    // CPM: SVG-based
+    const item = renderItem(set, index);
+    mainContent = item.mainSVG;
+    optionsContent = `<div class="test-options-grid">`;
+    optionsContent += item.options.map((optSVG, i) => {
+      const optNum = i + 1;
+      const isSelected = selectedOption === optNum;
+      return `
+        <button class="test-option-btn ${isSelected ? 'selected' : ''}"
+                onclick="selectOption(${optNum})" data-option="${optNum}">
+          <div class="test-option-inner">${optSVG}</div>
+          <span class="test-option-number">${optNum}</span>
+        </button>`;
+    }).join('');
+    optionsContent += '</div>';
+  }
+
+  app.innerHTML = `
+    <div class="test-screen">
+      <div class="test-topbar">
+        <div class="test-topbar-left">
+          <span class="test-set-badge ${setBadgeClass}">Set ${set}</span>
+          <span class="test-item-label">Item ${itemNum}</span>
+        </div>
+        <div class="test-topbar-center">
+          <span class="test-progress-text">${itemIndex + 1} of ${totalItems}</span>
+          <span class="test-answered-text">(${answeredCount} answered)</span>
+        </div>
+        <div class="test-topbar-right">
+          <button class="btn btn-sm btn-outline" onclick="confirmFinishEarly()">Exit Test</button>
+        </div>
+      </div>
+      <div class="test-progress-bar-container">
+        <div class="test-progress-bar" style="width: ${progressPct}%"></div>
+        ${buildProgressDots()}
+      </div>
+      <div class="test-main-pattern">
+        ${mainContent}
+      </div>
+      ${optionsContent}
+      <div class="test-nav">
+        <button class="btn btn-nav ${isFirstItem ? 'btn-disabled' : ''}"
+                onclick="prevItem()" ${isFirstItem ? 'disabled' : ''}>
+          &#9664; Previous
+        </button>
+        <span class="test-nav-indicator">${set} ${itemNum}</span>
+        ${isLastItem
+          ? '<button class="btn btn-nav btn-finish" onclick="confirmFinish()">Finish Test &#10003;</button>'
+          : '<button class="btn btn-nav btn-next" onclick="nextItem()">Next &#9654;</button>'
+        }
+      </div>
+    </div>
+  `;
+}
+
+// ─── Build Progress Dots ───
+function buildProgressDots() {
+  const cfg = getTestConfig();
+  const total = cfg.totalItems;
+  // For SPM (60 items), use smaller dots
+  const dotStyle = total > 40 ? ' style="width:7px;height:7px;gap:2px;"' : '';
+  let dots = `<div class="progress-dots"${dotStyle}>`;
+  for (let i = 0; i < total; i++) {
+    const r = state.responses[i];
+    const isCurrent = i === state.currentItemIndex;
+    let cls = 'dot';
+    if (isCurrent) cls += ' dot-current';
+    if (r && r.selected !== null) cls += ' dot-answered';
+    if (r && r.selected !== null && r.correct) cls += ' dot-correct';
+    // Set separators every 12 items (skip first)
+    if (i > 0 && i % 12 === 0) cls += ' dot-set-start';
+    const sz = total > 40 ? ' style="width:7px;height:7px;"' : '';
+    dots += `<span class="${cls}"${sz} onclick="goToItem(${i})" title="Item ${i + 1}"></span>`;
+  }
+  dots += '</div>';
+  return dots;
+}
+
+// ─── Select Option ───
+function selectOption(optNum) {
+  const cfg = getTestConfig();
+  const itemIndex = state.currentItemIndex;
+  const { set, index } = getSetAndIndex(itemIndex);
+  const itemNum = index + 1;
+  const correctAnswer = cfg.answerKey[set][index];
+  const elapsed = Date.now() - state.currentSession.itemStartTime;
+
+  state.responses[itemIndex] = {
+    set: set,
+    itemNum: itemNum,
+    selected: optNum,
+    correct: optNum === correctAnswer,
+    timeMs: elapsed
+  };
+
+  renderTest();
+
+  // Auto-advance after brief delay (unless last item)
+  if (state.currentItemIndex < cfg.totalItems - 1) {
+    state._autoAdvanceTimer = setTimeout(() => {
+      nextItem();
+    }, 500);
+  }
+}
+
+// ─── Navigation ───
+function nextItem() {
+  clearTimeout(state._autoAdvanceTimer);
+  recordTimeIfUnanswered();
+  const cfg = getTestConfig();
+  if (state.currentItemIndex < cfg.totalItems - 1) {
+    state.currentItemIndex++;
+    state.currentSession.itemStartTime = Date.now();
+    renderTest();
+  }
+}
+
+function prevItem() {
+  clearTimeout(state._autoAdvanceTimer);
+  recordTimeIfUnanswered();
+  if (state.currentItemIndex > 0) {
+    state.currentItemIndex--;
+    state.currentSession.itemStartTime = Date.now();
+    renderTest();
+  }
+}
+
+function goToItem(index) {
+  clearTimeout(state._autoAdvanceTimer);
+  recordTimeIfUnanswered();
+  const cfg = getTestConfig();
+  if (index >= 0 && index < cfg.totalItems) {
+    state.currentItemIndex = index;
+    state.currentSession.itemStartTime = Date.now();
+    renderTest();
+  }
+}
+
+// Record elapsed time for items that were viewed but not answered
+function recordTimeIfUnanswered() {
+  const idx = state.currentItemIndex;
+  if (!state.responses[idx]) {
+    const { set, index } = getSetAndIndex(idx);
+    const elapsed = Date.now() - state.currentSession.itemStartTime;
+    state.responses[idx] = {
+      set: set,
+      itemNum: index + 1,
+      selected: null,
+      correct: false,
+      timeMs: elapsed
+    };
+  }
+}
+
+// ─── Confirm Finish ───
+function confirmFinish() {
+  const cfg = getTestConfig();
+  const answeredCount = state.responses.filter(r => r && r.selected !== null).length;
+  const unanswered = cfg.totalItems - answeredCount;
+
+  let msg = `Are you sure you want to finish?\n\nYou answered ${answeredCount} of ${cfg.totalItems} items.`;
+  if (unanswered > 0) {
+    msg += `\n${unanswered} item${unanswered > 1 ? 's' : ''} unanswered (will be scored as incorrect).`;
+  }
+
+  if (confirm(msg)) {
+    finishTest();
+  }
+}
+
+function confirmFinishEarly() {
+  const cfg = getTestConfig();
+  const answeredCount = state.responses.filter(r => r && r.selected !== null).length;
+  if (confirm(`Exit the test?\n\nYou have answered ${answeredCount} of ${cfg.totalItems} items.\nYour progress will be lost.`)) {
+    showScreen('dashboard');
+  }
+}
+
+// ─── Finish Test ───
+function finishTest() {
+  clearTimeout(state._autoAdvanceTimer);
+  recordTimeIfUnanswered();
+
+  // Fill in any completely unvisited items
+  const cfg = getTestConfig();
+  for (let i = 0; i < cfg.totalItems; i++) {
+    if (!state.responses[i]) {
+      const { set, index } = getSetAndIndex(i);
+      state.responses[i] = {
+        set: set,
+        itemNum: index + 1,
+        selected: null,
+        correct: false,
+        timeMs: 0
+      };
+    }
+  }
+
+  const scores = calculateScores(state.responses);
+  const ageAtTest = calculateAge(state.currentUser.birthDate, state.currentSession.startTime);
+  const percentileData = getPercentile(scores.total, ageAtTest);
+  const gradeData = getGrade(percentileData.percentile);
+  const discrepancyData = checkDiscrepancy(scores.setScores, scores.total);
+
+  saveTestSession(scores, percentileData, gradeData, discrepancyData);
+  showScreen('results');
+}
+
+// ─── TABLE VIII — Expected Score Composition ───
+const TABLE_VIII = {
+  10: { A: 6, AB: 3, B: 1 },
+  11: { A: 7, AB: 3, B: 1 },
+  12: { A: 7, AB: 3, B: 2 },
+  13: { A: 8, AB: 3, B: 2 },
+  14: { A: 8, AB: 4, B: 2 },
+  15: { A: 9, AB: 4, B: 2 },
+  16: { A: 9, AB: 4, B: 3 },
+  17: { A: 9, AB: 5, B: 3 },
+  18: { A: 10, AB: 5, B: 3 },
+  19: { A: 10, AB: 5, B: 4 },
+  20: { A: 10, AB: 6, B: 4 },
+  21: { A: 10, AB: 6, B: 5 },
+  22: { A: 11, AB: 6, B: 5 },
+  23: { A: 11, AB: 7, B: 5 },
+  24: { A: 11, AB: 7, B: 6 },
+  25: { A: 11, AB: 7, B: 7 },
+  26: { A: 11, AB: 8, B: 7 },
+  27: { A: 12, AB: 8, B: 7 },
+  28: { A: 12, AB: 8, B: 8 },
+  29: { A: 12, AB: 9, B: 8 },
+  30: { A: 12, AB: 9, B: 9 },
+  31: { A: 12, AB: 10, B: 9 },
+  32: { A: 12, AB: 10, B: 10 },
+  33: { A: 12, AB: 11, B: 10 },
+  34: { A: 12, AB: 11, B: 11 },
+  35: { A: 12, AB: 12, B: 11 },
+  36: { A: 12, AB: 12, B: 12 }
+};
+
+// ─── TABLE XIV — Orme's Amended Norms (Percentiles by Age) ───
+const TABLE_XIV = [
+  { ageMin: 3.25, ageMax: 3.75, p5: 8, p10: 9, p25: 11, p50: 13, p75: 15, p90: 16, p95: 17 },
+  { ageMin: 3.75, ageMax: 4.25, p5: 9, p10: 10, p25: 12, p50: 14, p75: 16, p90: 18, p95: 19 },
+  { ageMin: 4.25, ageMax: 4.75, p5: 10, p10: 12, p25: 13, p50: 15, p75: 18, p90: 20, p95: 21 },
+  { ageMin: 4.75, ageMax: 5.25, p5: 11, p10: 13, p25: 14, p50: 17, p75: 19, p90: 22, p95: 23 },
+  { ageMin: 5.25, ageMax: 5.75, p5: 12, p10: 14, p25: 16, p50: 19, p75: 22, p90: 25, p95: 27 },
+  { ageMin: 5.75, ageMax: 6.25, p5: 13, p10: 15, p25: 17, p50: 20, p75: 24, p90: 27, p95: 28 },
+  { ageMin: 6.25, ageMax: 6.75, p5: 14, p10: 16, p25: 18, p50: 21, p75: 25, p90: 28, p95: 30 },
+  { ageMin: 6.75, ageMax: 7.25, p5: 14, p10: 16, p25: 19, p50: 23, p75: 27, p90: 30, p95: 31 },
+  { ageMin: 7.25, ageMax: 7.75, p5: 15, p10: 17, p25: 20, p50: 24, p75: 28, p90: 31, p95: 32 },
+  { ageMin: 7.75, ageMax: 8.25, p5: 15, p10: 18, p25: 21, p50: 25, p75: 29, p90: 32, p95: 33 },
+  { ageMin: 8.25, ageMax: 8.75, p5: 16, p10: 19, p25: 22, p50: 26, p75: 30, p90: 33, p95: 34 },
+  { ageMin: 8.75, ageMax: 9.25, p5: 17, p10: 20, p25: 23, p50: 27, p75: 31, p90: 33, p95: 34 },
+  { ageMin: 9.25, ageMax: 9.75, p5: 18, p10: 21, p25: 24, p50: 28, p75: 32, p90: 34, p95: 35 },
+  { ageMin: 9.75, ageMax: 10.25, p5: 20, p10: 22, p25: 25, p50: 29, p75: 32, p90: 34, p95: 35 },
+  { ageMin: 10.25, ageMax: 10.75, p5: 21, p10: 23, p25: 26, p50: 30, p75: 33, p90: 35, p95: 36 },
+  { ageMin: 10.75, ageMax: 11.25, p5: 22, p10: 24, p25: 27, p50: 31, p75: 33, p90: 35, p95: 36 }
+];
+
+// ─── Score Calculation ───
+function calculateScores(responses) {
+  const cfg = getTestConfig();
+  const setScores = {};
+  cfg.sets.forEach(s => setScores[s] = 0);
+  responses.forEach(r => {
+    if (r && r.correct) {
+      if (setScores[r.set] !== undefined) setScores[r.set]++;
+    }
+  });
+  let total = 0;
+  cfg.sets.forEach(s => total += setScores[s]);
+  return { setScores, total };
+}
+
+// ─── Discrepancy Check ───
+function checkDiscrepancy(setScores, total) {
+  const cfg = getTestConfig();
+  const maxTotal = cfg.totalItems;
+  const clampedTotal = Math.min(maxTotal, Math.max(10, total));
+  const expectedTable = cfg.expectedTable;
+  const expected = expectedTable[clampedTotal];
+  if (!expected) {
+    const emptyExp = {};
+    cfg.sets.forEach(s => emptyExp[s] = 0);
+    return { valid: true, discrepancies: {}, expected: emptyExp };
+  }
+
+  const disc = {};
+  let valid = true;
+  for (const set of cfg.sets) {
+    disc[set] = (setScores[set] || 0) - (expected[set] || 0);
+    if (Math.abs(disc[set]) > 2) valid = false;
+  }
+  return { valid, discrepancies: disc, expected };
+}
+
+// ─── Percentile Lookup ───
+function getPercentile(score, ageYears) {
+  const cfg = getTestConfig();
+  const normsTable = cfg.normsTable;
+  let row = normsTable.find(r => ageYears >= r.ageMin && ageYears < r.ageMax);
+  if (!row) {
+    if (ageYears < normsTable[0].ageMin) row = normsTable[0];
+    else row = normsTable[normsTable.length - 1];
+  }
+
+  if (score >= row.p95) return { percentile: 95, band: '\u226595' };
+  if (score >= row.p90) return { percentile: 90, band: '90-94' };
+  if (score >= row.p75) return { percentile: 75, band: '75-89' };
+  if (score >= row.p50) return { percentile: 50, band: '50-74' };
+  if (score >= row.p25) return { percentile: 25, band: '25-49' };
+  if (score >= row.p10) return { percentile: 10, band: '10-24' };
+  if (score >= row.p5) return { percentile: 5, band: '5-9' };
+  return { percentile: 2, band: '<5' };
+}
+
+// ─── Grade Classification ───
+function getGrade(percentile) {
+  if (percentile >= 95) return { grade: 'I', label: 'Intellectually Superior', color: '#2ecc71' };
+  if (percentile >= 75) return { grade: 'II', label: 'Definitely Above Average', color: '#27ae60' };
+  if (percentile >= 25) return { grade: 'III', label: 'Intellectually Average', color: '#3498db' };
+  if (percentile >= 6) return { grade: 'IV', label: 'Definitely Below Average', color: '#e67e22' };
+  return { grade: 'V', label: 'Intellectually Impaired', color: '#e74c3c' };
+}
+
+// ─── Save Test Session ───
+function saveTestSession(scores, percentileData, gradeData, discrepancyData) {
+  const sessions = getSessions();
+  const session = {
+    id: Date.now().toString(),
+    userId: state.currentUser.id,
+    startTime: state.currentSession.startTime,
+    endTime: new Date().toISOString(),
+    responses: state.responses,
+    scores: scores,
+    ageAtTest: calculateAge(state.currentUser.birthDate, state.currentSession.startTime),
+    percentile: percentileData.percentile,
+    percentileBand: percentileData.band,
+    grade: gradeData.grade,
+    classification: gradeData.label,
+    gradeColor: gradeData.color,
+    discrepancyValid: discrepancyData.valid,
+    discrepancies: discrepancyData.discrepancies,
+    expectedScores: discrepancyData.expected,
+    testType: state.testType
+  };
+  sessions.push(session);
+  saveSessions(sessions);
+  state.currentSession = session;
+}
+
+// ─── Helper: Format Duration ───
+function formatDuration(startISO, endISO) {
+  const ms = new Date(endISO) - new Date(startISO);
+  const totalSec = Math.floor(ms / 1000);
+  const min = Math.floor(totalSec / 60);
+  const sec = totalSec % 60;
+  if (min === 0) return `${sec}s`;
+  return `${min}m ${sec}s`;
+}
+
+// ─── Helper: Age in Years and Months ───
+function formatAgeYearsMo(decimalYears) {
+  const years = Math.floor(decimalYears);
+  const months = Math.round((decimalYears - years) * 12);
+  return `${years} yr${years !== 1 ? 's' : ''} ${months} mo`;
+}
+
+// ─── Helper: Stars for Kids ───
+function getStars(total) {
+  if (total >= 32) return '\u2B50\u2B50\u2B50\u2B50\u2B50';
+  if (total >= 26) return '\u2B50\u2B50\u2B50\u2B50';
+  if (total >= 20) return '\u2B50\u2B50\u2B50';
+  if (total >= 14) return '\u2B50\u2B50';
+  return '\u2B50';
+}
+
+// ─── Helper: Encouragement Message ───
+function getEncouragement(percentile) {
+  if (percentile >= 95) return 'Outstanding work! Incredible thinking!';
+  if (percentile >= 75) return 'Great job! You did really well!';
+  if (percentile >= 50) return 'Good effort! Nice work!';
+  if (percentile >= 25) return 'Well done for finishing! Keep practicing!';
+  return 'Great try! Every puzzle makes you smarter!';
+}
+
+// ─── Render Results Screen ───
+function renderResults() {
+  const app = document.getElementById('screen-results');
+  const s = state.currentSession;
+  const user = state.currentUser;
+
+  if (!s || !s.scores) {
+    app.innerHTML = '<div class="results-screen"><p>No results to display.</p><button class="btn btn-primary" onclick="showScreen(\'dashboard\')">Back to Dashboard</button></div>';
+    return;
+  }
+
+  const totalScore = s.scores.total;
+  const setScores = s.scores.setScores;
+  const ageAtTest = s.ageAtTest;
+  const percentile = s.percentile;
+  const percentileBand = s.percentileBand;
+  const grade = s.grade;
+  const classification = s.classification;
+  const gradeColor = s.gradeColor || '#3498db';
+  const discValid = s.discrepancyValid;
+  const discs = s.discrepancies || {};
+  const expected = s.expectedScores || {};
+  const duration = formatDuration(s.startTime, s.endTime);
+  const ageDisplay = formatAgeYearsMo(ageAtTest);
+  const stars = getStars(totalScore);
+  const encouragement = getEncouragement(percentile);
+
+  const testType = s.testType || 'cpm';
+  const sets = testType === 'spm' ? SPM_SETS : CPM_SETS;
+  const maxTotal = testType === 'spm' ? 60 : 36;
+  const ansKey = testType === 'spm' ? SPM_ANSWER_KEY : ANSWER_KEY;
+  const setColors = { A: '#e74c3c', AB: '#f39c12', B: '#3498db', C: '#9b59b6', D: '#1abc9c', E: '#e67e22' };
+
+  const avatarEmoji = user.avatar || user.name.charAt(0).toUpperCase();
+  const avatarColor = user.color || user.avatarColor || '#3498db';
+
+  app.innerHTML = `
+    <div class="results-screen">
+
+      <!-- Header -->
+      <div class="results-header">
+        <div class="results-user-info">
+          <div class="results-avatar" style="background: ${avatarColor}">${avatarEmoji}</div>
+          <div>
+            <h2 class="results-user-name">${user.name || 'Unknown'}</h2>
+            <div class="results-meta">
+              <span>Test Date: ${formatDate(s.startTime)}</span>
+              <span>Age: ${ageDisplay}</span>
+              <span>Duration: ${duration}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stars / Encouragement -->
+      <div class="results-encouragement">
+        <div class="results-stars">${stars}</div>
+        <p class="results-message">${encouragement}</p>
+      </div>
+
+      <!-- Score Summary -->
+      <div class="results-summary">
+        <div class="results-summary-card results-total">
+          <div class="results-big-number">${totalScore}</div>
+          <div class="results-big-label">out of ${maxTotal}</div>
+          <div class="results-big-sub">Total Score</div>
+        </div>
+        <div class="results-summary-card results-percentile">
+          <div class="results-big-number">${percentile}<span class="results-ordinal">${getOrdinalSuffix(percentile)}</span></div>
+          <div class="results-big-label">Percentile</div>
+          <div class="results-big-sub">Band: ${percentileBand}</div>
+        </div>
+        <div class="results-summary-card results-grade-card" style="border-color: ${gradeColor}">
+          <div class="results-grade-badge" style="background: ${gradeColor}">Grade ${grade}</div>
+          <div class="results-grade-label">${classification}</div>
+        </div>
+      </div>
+
+      <!-- Set Breakdown Bar Chart -->
+      <div class="results-section">
+        <h3 class="results-section-title">Score Breakdown by Set</h3>
+        <div class="results-bar-chart">
+          ${sets.map(s => {
+            const actual = setScores[s] || 0;
+            const exp = expected[s] || 0;
+            const barPct = (actual / 12 * 100).toFixed(1);
+            const expPct = (exp / 12 * 100).toFixed(1);
+            return renderBarRow('Set ' + s, actual, exp, barPct, expPct, setColors[s] || '#3498db');
+          }).join('')}
+        </div>
+      </div>
+
+      <!-- Discrepancy Analysis -->
+      <div class="results-section">
+        <h3 class="results-section-title">Discrepancy Analysis (Table VIII)</h3>
+        <div class="results-validity ${discValid ? 'valid' : 'invalid'}">
+          ${discValid
+            ? '<span class="validity-icon">\u2713</span> Score pattern is consistent (all discrepancies \u22642)'
+            : '<span class="validity-icon">\u26A0</span> Inconsistent score pattern detected (discrepancy > 2)'}
+        </div>
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th>Set</th>
+              <th>Actual</th>
+              <th>Expected</th>
+              <th>Difference</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${sets.map(s => renderDiscRow(s, setScores[s]||0, expected[s]||0, discs[s]||0)).join('')}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Item-by-Item Review (Collapsible) -->
+      <div class="results-section">
+        <h3 class="results-section-title results-collapsible" onclick="toggleItemReview()">
+          Item-by-Item Review
+          <span id="item-review-arrow" class="collapse-arrow">\u25B6</span>
+        </h3>
+        <div id="item-review-content" class="results-item-review" style="display:none;">
+          <table class="results-table results-items-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Set</th>
+                <th>Item</th>
+                <th>Selected</th>
+                <th>Correct</th>
+                <th>Result</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${s.responses.map((r, i) => {
+                if (!r) return '';
+                const correctAns = (ansKey[r.set] || [])[r.itemNum - 1] || '?';
+                const isCorrect = r.correct;
+                const selectedStr = r.selected !== null ? r.selected : '-';
+                const timeStr = r.timeMs > 0 ? (r.timeMs / 1000).toFixed(1) + 's' : '-';
+                return `
+                  <tr class="${isCorrect ? 'item-correct' : 'item-incorrect'}">
+                    <td>${i + 1}</td>
+                    <td>${r.set}</td>
+                    <td>${r.itemNum}</td>
+                    <td>${selectedStr}</td>
+                    <td>${correctAns}</td>
+                    <td class="result-icon">${isCorrect ? '<span class="icon-correct">\u2713</span>' : '<span class="icon-incorrect">\u2717</span>'}</td>
+                    <td>${timeStr}</td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="results-actions">
+        <button class="btn btn-primary" onclick="startTest('${testType}')">Take Another ${testType.toUpperCase()} Test</button>
+        <button class="btn btn-secondary" onclick="showScreen('dashboard')">Back to Dashboard</button>
+        <button class="btn btn-outline" onclick="window.print()">Print Results</button>
+      </div>
+
+    </div>
+  `;
+}
+
+// ─── Helpers for Results Rendering ───
+
+function getOrdinalSuffix(n) {
+  const s = ['th', 'st', 'nd', 'rd'];
+  const v = n % 100;
+  return (s[(v - 20) % 10] || s[v] || s[0]);
+}
+
+function renderBarRow(label, actual, expected, actualPct, expectedPct, color) {
+  return `
+    <div class="bar-row">
+      <div class="bar-label">${label}</div>
+      <div class="bar-track">
+        <div class="bar-expected" style="width: ${expectedPct}%" title="Expected: ${expected || 0}/12"></div>
+        <div class="bar-fill" style="width: ${actualPct}%; background: ${color}" title="Actual: ${actual}/12"></div>
+      </div>
+      <div class="bar-value">${actual}/12</div>
+      <div class="bar-expected-value">(exp: ${expected || 0})</div>
+    </div>
+  `;
+}
+
+function renderDiscRow(set, actual, expected, diff) {
+  const absDiff = Math.abs(diff || 0);
+  const cls = absDiff > 2 ? 'disc-warning' : '';
+  const sign = (diff || 0) > 0 ? '+' : '';
+  return `
+    <tr class="${cls}">
+      <td>Set ${set}</td>
+      <td>${actual}</td>
+      <td>${expected || 0}</td>
+      <td class="${cls}">${sign}${diff || 0}</td>
+    </tr>
+  `;
+}
+
+function toggleItemReview() {
+  const content = document.getElementById('item-review-content');
+  const arrow = document.getElementById('item-review-arrow');
+  if (content.style.display === 'none') {
+    content.style.display = 'block';
+    arrow.textContent = '\u25BC';
+  } else {
+    content.style.display = 'none';
+    arrow.textContent = '\u25B6';
+  }
+}
+
+// ─── App Initialization ───
+function init() {
+  const users = getUsers();
+  if (users.length === 0) {
+    saveUsers(DEFAULT_USERS);
+  }
+  showScreen('users');
+}
+
+// ─── Inject Test + Results CSS ───
+(function injectPart3Styles() {
+  const style = document.createElement('style');
+  style.textContent = `
+
+  /* ── Test Screen ── */
+  .test-screen {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 0;
+    background: #f8f9fa;
+  }
+
+  .test-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #fff;
+    border-bottom: 1px solid #e0e0e0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .test-topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .test-set-badge {
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 13px;
+    color: #fff;
+  }
+  .test-set-badge.set-a { background: #e74c3c; }
+  .test-set-badge.set-ab { background: #f39c12; }
+  .test-set-badge.set-b { background: #3498db; }
+  .test-set-badge.set-c { background: #9b59b6; }
+  .test-set-badge.set-d { background: #1abc9c; }
+  .test-set-badge.set-e { background: #e67e22; }
+
+  .test-item-label {
+    font-weight: 600;
+    font-size: 15px;
+    color: #333;
+  }
+
+  .test-topbar-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .test-progress-text {
+    font-weight: 600;
+    font-size: 14px;
+    color: #555;
+  }
+
+  .test-answered-text {
+    font-size: 11px;
+    color: #999;
+  }
+
+  .test-progress-bar-container {
+    position: relative;
+    height: 6px;
+    background: #e0e0e0;
+    width: 100%;
+  }
+
+  .test-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #3498db, #2ecc71);
+    transition: width 0.3s ease;
+    border-radius: 0 3px 3px 0;
+  }
+
+  .progress-dots {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 8px 16px 4px;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #ddd;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid transparent;
+  }
+
+  .dot:hover { transform: scale(1.3); }
+  .dot-current { border-color: #333; transform: scale(1.3); }
+  .dot-answered { background: #f39c12; }
+  .dot-correct { background: #2ecc71; }
+  .dot-set-start { margin-left: 8px; }
+
+  /* ── Main Pattern ── */
+  .test-main-pattern {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    min-height: 200px;
+    max-height: 40vh;
+  }
+
+  .test-main-pattern svg {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+  }
+
+  /* ── Options Grid ── */
+  .test-options-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 12px 16px;
+    max-width: 600px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .test-option-btn {
+    background: #fff;
+    border: 3px solid #ddd;
+    border-radius: 12px;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .test-option-btn:hover {
+    border-color: #3498db;
+    transform: scale(1.03);
+    box-shadow: 0 2px 8px rgba(52,152,219,0.2);
+  }
+
+  .test-option-btn.selected {
+    border-color: #2ecc71;
+    background: #eafaf1;
+    box-shadow: 0 0 0 3px rgba(46,204,113,0.3);
+  }
+
+  .test-option-inner {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .test-option-inner svg {
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  .test-option-number {
+    font-size: 12px;
+    font-weight: 700;
+    color: #999;
+    margin-top: 4px;
+  }
+
+  .test-option-btn.selected .test-option-number {
+    color: #2ecc71;
+  }
+
+  /* ── Navigation ── */
+  .test-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px 20px;
+    background: #fff;
+    border-top: 1px solid #e0e0e0;
+  }
+
+  .btn-nav {
+    padding: 10px 24px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-next {
+    background: #3498db;
+    color: #fff;
+  }
+  .btn-next:hover { background: #2980b9; }
+
+  .btn-finish {
+    background: #2ecc71;
+    color: #fff;
+  }
+  .btn-finish:hover { background: #27ae60; }
+
+  .btn-disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .test-nav-indicator {
+    font-size: 13px;
+    color: #999;
+    font-weight: 500;
+  }
+
+  .btn-sm {
+    padding: 4px 12px;
+    font-size: 12px;
+  }
+
+  .btn-outline {
+    background: transparent;
+    border: 1px solid #ccc;
+    color: #666;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-outline:hover {
+    border-color: #999;
+    color: #333;
+  }
+
+  /* ── Results Screen ── */
+  .results-screen {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 20px 16px 40px;
+    background: #f8f9fa;
+    min-height: 100vh;
+  }
+
+  .results-header {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+
+  .results-user-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .results-avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  .results-user-name {
+    margin: 0 0 4px;
+    font-size: 20px;
+    color: #222;
+  }
+
+  .results-meta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: #777;
+  }
+
+  /* Encouragement */
+  .results-encouragement {
+    text-align: center;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .results-stars {
+    font-size: 36px;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .results-message {
+    font-size: 18px;
+    font-weight: 600;
+    color: #555;
+    margin: 0;
+  }
+
+  /* Score Summary Cards */
+  .results-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .results-summary-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px 12px;
+    text-align: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+
+  .results-big-number {
+    font-size: 42px;
+    font-weight: 800;
+    color: #222;
+    line-height: 1;
+  }
+
+  .results-ordinal {
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .results-big-label {
+    font-size: 14px;
+    color: #888;
+    margin-top: 4px;
+  }
+
+  .results-big-sub {
+    font-size: 12px;
+    color: #aaa;
+    margin-top: 2px;
+  }
+
+  .results-grade-card {
+    border-left: 4px solid;
+  }
+
+  .results-grade-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 18px;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 6px;
+  }
+
+  .results-grade-label {
+    font-size: 13px;
+    color: #555;
+    font-weight: 500;
+  }
+
+  /* Section */
+  .results-section {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+
+  .results-section-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0 0 14px;
+    color: #333;
+  }
+
+  /* Bar Chart */
+  .results-bar-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .bar-label {
+    width: 55px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .bar-track {
+    flex: 1;
+    height: 24px;
+    background: #f0f0f0;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 12px;
+    position: relative;
+    z-index: 2;
+    transition: width 0.5s ease;
+  }
+
+  .bar-expected {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    background: rgba(0,0,0,0.08);
+    border-radius: 12px;
+    z-index: 1;
+    border-right: 2px dashed rgba(0,0,0,0.2);
+  }
+
+  .bar-value {
+    width: 40px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #333;
+    flex-shrink: 0;
+  }
+
+  .bar-expected-value {
+    width: 55px;
+    font-size: 11px;
+    color: #999;
+    flex-shrink: 0;
+  }
+
+  /* Validity */
+  .results-validity {
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-bottom: 14px;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .results-validity.valid {
+    background: #eafaf1;
+    color: #27ae60;
+    border: 1px solid #a3d9b1;
+  }
+
+  .results-validity.invalid {
+    background: #fef5e7;
+    color: #e67e22;
+    border: 1px solid #f5cba7;
+  }
+
+  .validity-icon {
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  /* Tables */
+  .results-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  .results-table th {
+    text-align: left;
+    padding: 8px 10px;
+    background: #f5f5f5;
+    font-weight: 600;
+    color: #555;
+    border-bottom: 2px solid #ddd;
+  }
+
+  .results-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .disc-warning {
+    color: #e74c3c;
+    font-weight: 700;
+  }
+
+  /* Item Review */
+  .results-collapsible {
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .results-collapsible:hover {
+    color: #3498db;
+  }
+
+  .collapse-arrow {
+    font-size: 12px;
+    transition: transform 0.2s;
+  }
+
+  .results-item-review {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .results-items-table td,
+  .results-items-table th {
+    padding: 6px 8px;
+    font-size: 13px;
+    text-align: center;
+  }
+
+  .item-correct { background: #f0fdf4; }
+  .item-incorrect { background: #fef2f2; }
+
+  .icon-correct { color: #2ecc71; font-weight: 700; font-size: 16px; }
+  .icon-incorrect { color: #e74c3c; font-weight: 700; font-size: 16px; }
+
+  /* Actions */
+  .results-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding: 20px 0 10px;
+  }
+
+  .results-actions .btn {
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: #3498db;
+    color: #fff;
+  }
+  .btn-primary:hover { background: #2980b9; }
+
+  .btn-secondary {
+    background: #ecf0f1;
+    color: #555;
+  }
+  .btn-secondary:hover { background: #d5dbdb; }
+
+  /* ── Responsive ── */
+  @media (max-width: 480px) {
+    .results-summary {
+      grid-template-columns: 1fr;
+    }
+    .results-meta {
+      flex-direction: column;
+      gap: 4px;
+    }
+    .test-options-grid {
+      gap: 6px;
+      padding: 8px 10px;
+    }
+    .bar-expected-value {
+      display: none;
+    }
+  }
+
+  /* ── Print Styles ── */
+  @media print {
+    body {
+      background: #fff !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .test-screen,
+    .results-actions,
+    .test-topbar .btn,
+    .progress-dots,
+    .results-collapsible .collapse-arrow {
+      display: none !important;
+    }
+
+    .results-screen {
+      max-width: 100%;
+      padding: 0;
+      margin: 0;
+      background: #fff;
+      min-height: auto;
+    }
+
+    .results-header,
+    .results-section,
+    .results-summary-card {
+      box-shadow: none;
+      border: 1px solid #ddd;
+      page-break-inside: avoid;
+    }
+
+    .results-encouragement {
+      display: none;
+    }
+
+    .results-item-review {
+      display: block !important;
+      max-height: none !important;
+      overflow: visible !important;
+    }
+
+    .results-summary {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .results-grade-badge {
+      border: 2px solid currentColor;
+    }
+
+    .bar-fill {
+      border: 1px solid rgba(0,0,0,0.3);
+    }
+
+    .item-correct { background: #f0f0f0 !important; }
+    .item-incorrect { background: #fff !important; }
+
+    .icon-correct { color: #000 !important; }
+    .icon-incorrect { color: #666 !important; }
+
+    .results-validity.valid {
+      background: #f5f5f5 !important;
+      color: #333 !important;
+      border-color: #999 !important;
+    }
+
+    .results-validity.invalid {
+      background: #f5f5f5 !important;
+      color: #333 !important;
+      border-color: #999 !important;
+    }
+
+    a, .btn { color: #000 !important; }
+  }
+
+  `;
+  document.head.appendChild(style);
+})();
+
+// Start the app
+init();
+
+  </script>
+</body>
+</html>
