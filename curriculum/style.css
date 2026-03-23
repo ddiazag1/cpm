@@ -380,6 +380,35 @@ img {
   height: auto;
 }
 
+/* --- Scene Images --- */
+.scene-img {
+  width: 100%;
+  border-radius: var(--radius);
+  border: 2px solid #283550;
+  margin: 20px 0 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.4);
+}
+
+.scene-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 20px 0 8px;
+}
+
+.scene-pair img {
+  border-radius: var(--radius);
+  border: 2px solid #283550;
+  box-shadow: 0 4px 16px rgba(0,0,0,.4);
+  width: 100%;
+}
+
+@media (max-width: 520px) {
+  .scene-pair {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* --- Discussion Section --- */
 .discussion {
   background: var(--bg-card);
