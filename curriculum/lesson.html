@@ -125,6 +125,7 @@
             el.src = img.basePath + img.prefix + num + '.jpg';
             el.alt = 'Scene illustration';
             el.loading = 'lazy';
+            el.onerror = function() { this.style.display = 'none'; };
             story.appendChild(el);
             imgIdx++;
           } else if (imgsForBlock >= 2) {
@@ -136,6 +137,7 @@
               el.src = img.basePath + img.prefix + num + '.jpg';
               el.alt = 'Scene illustration';
               el.loading = 'lazy';
+              el.onerror = function() { this.style.display = 'none'; };
               pair.appendChild(el);
               imgIdx++;
             }
